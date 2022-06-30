@@ -8,24 +8,24 @@ export default function Navbar() {
     <nav>
       <div className="navbar-container">
         <div className="navbar-links">
-          <ul class="nav nav-tabs">
-            <li class="nav-item">
-              <Link to="/home" class="nav-link active ">
+          <ul className="nav nav-tabs">
+            <li className="nav-item">
+              <Link to="/home" className="nav-link ">
                 Home
               </Link>
             </li>
 
-            <li class="nav-item">
-              <Link to="/recent" class="nav-link  ">
-                Recent Activity
+            <li className="nav-item">
+              <Link to="/profile" className="nav-link  ">
+                Profile
               </Link>
             </li>
-            <li class="nav-item">
+            <li className="nav-item">
               <Link to="/new-post" class="nav-link  ">
                 New Post
               </Link>
             </li>
-            <li class="nav-item">
+            <li className="nav-item">
               <Link to="/statistics" class="nav-link ">
                 Statistics
               </Link>

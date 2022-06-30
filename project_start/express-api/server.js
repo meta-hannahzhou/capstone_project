@@ -67,31 +67,7 @@ app.get('/login', function(req, res) {
       state: state
     }));
 });
-app.get('/random', function (req, res){
-  // console.log(access_token)
-  // var options = {
-  //   url: 'https://api.spotify.com/v1/me',
-  //   headers: { 'Authorization': 'Bearer ' + access_token },
-  //   json: true
-  // };
-  // request.get(options, function(error, response, body) {
-  //   res.send(body)
-  // });
-  // console.log(req)
-  // console.log(res)
 
-
-  var options = {
-    url: 'https://api.spotify.com/v1/search?q=olivia&type=track,artist',
-    headers: { 'Authorization': 'Bearer ' + access_token, },
-    json: true
-  };
-  request.get(options, function(error, response, body) {
-    res.send(body)
-  });
-  console.log(req)
-  console.log(res)
-})
 
 
 app.get('/callback', function(req, res) {
@@ -128,6 +104,7 @@ app.get('/callback', function(req, res) {
       if (!error && response.statusCode === 200) {
 
         access_token = body.access_token;
+        // req.session.key = body.access_token
         var refresh_token = body.refresh_token;
 
         var options = {
@@ -164,7 +141,7 @@ app.post('/', async (req, res, next) => {
     const { search } = req.body
 
     var options = {
-      url: `https://api.spotify.com/v1/search?q=${search}&type=artist`,
+      url: `https://api.spotify.com/v1/search?q=${search}&type=track&limit=8`,
       headers: { 'Authorization': 'Bearer ' + access_token},
       json: true
     };
@@ -173,9 +150,16 @@ app.post('/', async (req, res, next) => {
       res.status(201).json({body})
     });
 
-    // console.log(req.body)
-    // res.send("s")
   } catch(err) {
+    next(err)
+  }
+})
+
+app.post("/new-post", async (req, res, next) => {
+  try {
+    const {songTitle, review, mood} = req.body
+    res.status(201).json({songTitle, review, mood})
+  } catch (err) {
     next(err)
   }
 })

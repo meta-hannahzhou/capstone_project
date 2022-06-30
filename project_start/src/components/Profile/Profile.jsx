@@ -1,4 +1,4 @@
-import "./Recent.css";
+import "./Profile.css";
 
 export default function Recent(props) {
   return (

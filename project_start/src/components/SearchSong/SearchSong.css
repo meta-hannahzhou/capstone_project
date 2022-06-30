@@ -1,0 +1,16 @@
+.song {
+    display: flex;
+}
+
+.song  {
+    background-color: white;
+}
+.active{
+    background-color: lightgreen;
+    opacity: 50%;
+}
+
+.description {
+    display: flex;
+    flex-direction: column;
+}
