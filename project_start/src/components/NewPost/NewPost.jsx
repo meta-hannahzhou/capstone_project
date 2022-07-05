@@ -13,6 +13,7 @@ export default function NewPost() {
     const { data } = await axios.post("http://localhost:8888/", {
       search: e.target.value,
     });
+    console.log(data);
     setTracks(data.body.tracks.items);
   };
 
@@ -26,6 +27,26 @@ export default function NewPost() {
         }}
       />
     ));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const review = document.getElementById("review");
+    const moods = Array.prototype.slice.call(
+      document.getElementsByClassName("form-check-input")
+    );
+    const mood = moods.find((item) => item.checked).value;
+    const ratings = Array.prototype.slice.call(
+      document.getElementsByClassName("form-check-input-rating")
+    );
+    const rating = ratings.find((rating) => rating.checked).value;
+
+    // await axios.post("http://localhost:8888/post", {
+    //   selectedSongId,
+    //   review,
+    //   mood,
+    //   rating,
+    // });
   };
 
   return (
@@ -48,19 +69,21 @@ export default function NewPost() {
             />
           </div>
         </div>
-      </form>
 
-      {tracks ? <div className="">{displayTracks()}</div> : null}
+        {tracks ? <div className="">{displayTracks()}</div> : null}
 
-      <form>
         <div className="input-group">
           <div className="input-group-prepend">
             <span className="input-group-text">Review</span>
           </div>
-          <input className="form-control" aria-label="With textarea" />
+          <input
+            className="form-control"
+            aria-label="With textarea"
+            id="review"
+          />
         </div>
 
-        <fieldset className="form-group">
+        <fieldset className="form-group" id="mood">
           <div className="row">
             <legend className="col-form-label col-sm-2 pt-0">Mood</legend>
             <div className="col-sm-10">
@@ -70,7 +93,7 @@ export default function NewPost() {
                   type="radio"
                   name="gridRadios"
                   id="gridRadios1"
-                  value="option1"
+                  value="happy"
                 />
                 <label className="form-check-label" for="gridRadios1">
                   Happy
@@ -82,7 +105,7 @@ export default function NewPost() {
                   type="radio"
                   name="gridRadios"
                   id="gridRadios2"
-                  value="option2"
+                  value="sad"
                 />
                 <label className="form-check-label" for="gridRadios2">
                   Sad
@@ -94,7 +117,7 @@ export default function NewPost() {
                   type="radio"
                   name="gridRadios"
                   id="gridRadios3"
-                  value="option3"
+                  value="angry"
                 />
                 <label className="form-check-label" for="gridRadios3">
                   Angry
@@ -104,42 +127,82 @@ export default function NewPost() {
           </div>
         </fieldset>
 
-        <div className="dropdown">
-          <button
-            className="btn btn-secondary dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            Rating
-          </button>
-          <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a className="dropdown-item" href="#">
-              1
-            </a>
-            <a className="dropdown-item" href="#">
-              2
-            </a>
-            <a className="dropdown-item" href="#">
-              3
-            </a>
-            <a className="dropdown-item" href="#">
-              4
-            </a>
-            <a className="dropdown-item" href="#">
-              5
-            </a>
+        <fieldset className="form-group-new">
+          <div className="row">
+            <legend className="col-form-label col-sm-2 pt-0">Rating</legend>
+            <div className="col-sm-10">
+              <div className="form-check">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios1"
+                  value="1"
+                />
+                <label className="form-check-label" for="gridRadios1">
+                  1
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios2"
+                  value="2"
+                />
+                <label className="form-check-label" for="gridRadios2">
+                  2
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios3"
+                  value="3"
+                />
+                <label className="form-check-label" for="gridRadios3">
+                  3
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios3"
+                  value="4"
+                />
+                <label className="form-check-label" for="gridRadios3">
+                  4
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios3"
+                  value="5"
+                />
+                <label className="form-check-label" for="gridRadios3">
+                  5
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
+        </fieldset>
 
         <div className="form-group row">
           <div className="col-sm-10">
             <button
               type="submit"
               className="btn btn-primary"
-              onClick={() => {}}
+              onClick={(e) => {
+                handleSubmit(e);
+              }}
             >
               Submit
             </button>

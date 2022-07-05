@@ -17,6 +17,23 @@ function App() {
   const [artists, setArtists] = useState([])
   const [newPost, setNewPost] = useState({title:"", review:"", mood: ""})
   const [isFetching, setIsFetching] = useState(false)
+
+
+  
+
+  // const displayProfile = async () => {
+  //   if (!userInfo) {
+  //       <div className="profile">
+  //         <p>ID: {userInfo.id}</p>
+  //         <p>Email: {userInfo.email}</p>
+  //         <p>Profile Picture:</p>
+  //         <img src={userInfo.images[0].url} />
+  //       </div>
+  //   } else {
+  //     null;
+  //   }
+  // };
+
   // const [tracks, setTracks] = useState([])
 
 
@@ -80,10 +97,7 @@ function App() {
               element={
                 <>
                   <Home />
-                  {/* <Search searchArtists={searchArtists}
-                         setSearch={setSearch} />
-                  <SearchGrid displayArtists={displayArtists}
-                              artists={artists}/> */}
+                  
                 </>
                 
               }
@@ -93,7 +107,9 @@ function App() {
               path="/profile"
               element={
                 <>
-                  <Profile />
+                  <Profile 
+                          // displayProfile={displayProfile()}
+                          />
                 </>
                 
               }
@@ -103,8 +119,7 @@ function App() {
               path="/new-post"
               element={
                 <>
-                  <NewPost 
-                  />
+                  <NewPost />
                   
                 </>
                 

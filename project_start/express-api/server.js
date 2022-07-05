@@ -8,24 +8,32 @@
  */
 
 var express = require('express'); // Express web server framework
+// var ParseServer = require('parse-server').ParseServer;
 var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var access_token ="";
 const { access } = require('fs');
-const router = express.Router()
+// const Post = require('./routes/post.js')
 
+// const Parse = require('parse/node');
+// Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
+// Parse.serverURL = "https://parseapi.back4app.com/"
+
+// const TestPost = Parse.Object.extend("TestPost");
+// const testPost = new TestPost();
+// testPost.set("score", 1337);
 
 // import axios from 'axios'
 
-var client_id = 'e5f5464982df4aa9a5b28e499c1a6863'; // Your client id
-var client_secret = 'fb03604a76c74e4baa8bdc4cc2a29981'; // Your secret
+// var client_id = 'e5f5464982df4aa9a5b28e499c1a6863'; // Your client id
+// var client_secret = 'fb03604a76c74e4baa8bdc4cc2a29981'; // Your secret
+// var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+
+var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
+var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
-
-
-// const [search, setSearch] = useState("")
-// const [tracks, setTracks] = useState([])
 
 /**
  * Generates a random string containing numbers and letters
@@ -68,7 +76,7 @@ app.get('/login', function(req, res) {
     }));
 });
 
-
+// app.use('/post', Post)
 
 app.get('/callback', function(req, res) {
   console.log(querystring)
@@ -155,14 +163,41 @@ app.post('/', async (req, res, next) => {
   }
 })
 
-app.post("/new-post", async (req, res, next) => {
+app.get('/profile', async (req, res, next) => {
   try {
-    const {songTitle, review, mood} = req.body
-    res.status(201).json({songTitle, review, mood})
-  } catch (err) {
+    var options = {
+      url: `https://api.spotify.com/v1/me`,
+      headers: { 'Authorization': 'Bearer ' + access_token},
+      json: true
+    };
+
+    request.get(options, function(error, response, body) {
+      res.status(200).json({body})
+    });
+
+  } catch(err) {
     next(err)
   }
 })
+
+app.get('/statistics', async (req, res, next) => {
+  try {
+    var options = {
+      url: `https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=10`,
+      headers: { 'Authorization': 'Bearer ' + access_token},
+      json: true
+    };
+
+    request.get(options, function(error, response, body) {
+      console.log(body)
+      res.status(200).json({body})
+    });
+
+  } catch(err) {
+    next(err)
+  }
+})
+
 
 console.log('Listening on 8888');
 app.listen(8888);

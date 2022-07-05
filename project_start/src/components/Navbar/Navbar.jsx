@@ -2,8 +2,10 @@ import * as React from "react";
 import "./Navbar.css";
 // import { Link, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-export default function Navbar() {
+export default function Navbar(props) {
   return (
     <nav>
       <div className="navbar-container">
@@ -21,12 +23,12 @@ export default function Navbar() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/new-post" class="nav-link  ">
+              <Link to="/new-post" className="nav-link  ">
                 New Post
               </Link>
             </li>
             <li className="nav-item">
-              <Link to="/statistics" class="nav-link ">
+              <Link to="/statistics" className="nav-link ">
                 Statistics
               </Link>
             </li>
