@@ -1,5 +1,4 @@
 import "./NewPost.css";
-import Search from "../Search/Search";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SearchSong from "../SearchSong/SearchSong";
@@ -10,7 +9,7 @@ export default function NewPost() {
 
   const searchTracks = async (e) => {
     e.preventDefault();
-    const { data } = await axios.post("http://localhost:8888/", {
+    const { data } = await axios.post("http://localhost:8888/search", {
       search: e.target.value,
     });
     console.log(data);
@@ -41,7 +40,7 @@ export default function NewPost() {
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
-    // await axios.post("http://localhost:8888/post", {
+    // await axios.post("http://localhost:8888/new-post", {
     //   selectedSongId,
     //   review,
     //   mood,

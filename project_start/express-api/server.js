@@ -15,6 +15,8 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var access_token ="";
 const { access } = require('fs');
+const { BadRequestError } = require("./utils/errors.js")
+
 // const Post = require('./routes/post.js')
 
 // const Parse = require('parse/node');
@@ -65,7 +67,7 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-top-read user-read-recently-played';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -144,7 +146,7 @@ app.get('/callback', function(req, res) {
   }
 });
 
-app.post('/', async (req, res, next) => {
+app.post('/search', async (req, res, next) => {
   try {
     const { search } = req.body
 
@@ -159,6 +161,24 @@ app.post('/', async (req, res, next) => {
     });
 
   } catch(err) {
+    next(err)
+  }
+})
+
+app.post('/new-post', async (req, res, next) => {
+  try {
+    const {  selectedSongId, review, mood, rating } = req.body
+
+    // write to database here 
+  } catch (err) {
+    next(err)
+  }
+}) 
+
+app.get('/feed', async (req, res, next) => {
+  try {
+    // get info from database 
+  } catch (err) {
     next(err)
   }
 })
@@ -183,7 +203,7 @@ app.get('/profile', async (req, res, next) => {
 app.get('/statistics', async (req, res, next) => {
   try {
     var options = {
-      url: `https://api.spotify.com/v1/me/top/artists?time_range=medium_term&limit=10`,
+      url: `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=20&time_range=long_term`,
       headers: { 'Authorization': 'Bearer ' + access_token},
       json: true
     };

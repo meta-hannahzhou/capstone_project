@@ -1,11 +1,20 @@
 import * as React from "react";
 import "./Post.css";
 import { Link } from "react-router-dom";
+import Pic from "./test_image.png";
 
 export default function Post(props) {
   return (
     <div className="post">
       <div className="element-image">
+        <img src={Pic} />
+      </div>
+
+      <div className="item-wrapper">
+        <p className="item-title">Test</p>
+        <div className="item-review">This song is great! I love it!</div>
+      </div>
+      {/* <div className="element-image">
         <Link
           to={`/posts/${props.postId}`}
           className="test"
@@ -24,25 +33,6 @@ export default function Post(props) {
             </>
           ) : null}
         </div>
-      </div>
-
-      {/* <div className="buttons">
-        <button
-          className="add"
-          onClick={() => {
-            props.handleAddItemToCart(props.productId);
-          }}
-        >
-          +
-        </button>
-        <button
-          className="remove"
-          onClick={() => {
-            props.handleRemoveItemFromCart(props.productId);
-          }}
-        >
-          -
-        </button>
       </div> */}
     </div>
   );

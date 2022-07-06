@@ -1,0 +1,7 @@
+.d-flex flex-column comment-section {
+    background-color: #121212;
+}
+.card {
+    background-color: #121212;
+    outline-color: white
+}

@@ -1,6 +1,10 @@
 import "./SearchSong.css";
 
-export default function Home({ track, isActive = false, onClick = () => {} }) {
+export default function SearchSong({
+  track,
+  isActive = false,
+  onClick = () => {},
+}) {
   let songClassName = isActive ? "song active" : "song";
   return (
     <div className={songClassName} key={track.id} onClick={onClick}>
