@@ -55,18 +55,18 @@ function App() {
   // }
 
 
-  const handleOnSubmitNewPost = (songTitle, review, mood) => {
-    axios.post("http://localhost:8888/new-post", {
-      songTitle: songTitle, 
-      review: review, 
-      mood: mood})
-    .then((response) => {
-      setNewPost(response.data)
-    })
-    .catch((err) => {
-      console.log(err)
-    });
-  }
+  // const handleOnSubmitNewPost = (songTitle, review, mood) => {
+  //   axios.post("http://localhost:8888/new-post", {
+  //     songTitle: songTitle, 
+  //     review: review, 
+  //     mood: mood})
+  //   .then((response) => {
+  //     setNewPost(response.data)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //   });
+  // }
 
   return (
     // make this blank route

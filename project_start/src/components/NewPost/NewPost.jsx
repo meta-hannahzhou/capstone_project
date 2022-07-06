@@ -12,7 +12,6 @@ export default function NewPost() {
     const { data } = await axios.post("http://localhost:8888/search", {
       search: e.target.value,
     });
-    console.log(data);
     setTracks(data.body.tracks.items);
   };
 
@@ -30,22 +29,24 @@ export default function NewPost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const review = document.getElementById("review");
+    const review = document.getElementById("review").value;
+
     const moods = Array.prototype.slice.call(
       document.getElementsByClassName("form-check-input")
     );
     const mood = moods.find((item) => item.checked).value;
+
     const ratings = Array.prototype.slice.call(
       document.getElementsByClassName("form-check-input-rating")
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
-    // await axios.post("http://localhost:8888/new-post", {
-    //   selectedSongId,
-    //   review,
-    //   mood,
-    //   rating,
-    // });
+    await axios.post("http://localhost:8888/new-post", {
+      selectedSongId: selectedSongId,
+      review: review,
+      mood: mood,
+      rating: rating,
+    });
   };
 
   return (

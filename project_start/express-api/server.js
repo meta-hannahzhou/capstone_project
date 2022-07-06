@@ -14,14 +14,16 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 var access_token ="";
+var userId = "";
+// maybe put this into an app id?
 const { access } = require('fs');
 const { BadRequestError } = require("./utils/errors.js")
 
 // const Post = require('./routes/post.js')
 
-// const Parse = require('parse/node');
-// Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
-// Parse.serverURL = "https://parseapi.back4app.com/"
+const Parse = require('parse/node');
+Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
+Parse.serverURL = "https://parseapi.back4app.com/"
 
 // const TestPost = Parse.Object.extend("TestPost");
 // const testPost = new TestPost();
@@ -126,6 +128,7 @@ app.get('/callback', function(req, res) {
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
           console.log(body);
+          userId = body.id
         });
 
         // we can also pass the token to the browser to make requests from there
@@ -145,6 +148,31 @@ app.get('/callback', function(req, res) {
     });
   }
 });
+
+app.get('/refresh_token', function(req, res) {
+
+  // requesting access token from refresh token
+  var refresh_token = req.query.refresh_token;
+  var authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+    form: {
+      grant_type: 'refresh_token',
+      refresh_token: refresh_token
+    },
+    json: true
+  };
+
+  request.post(authOptions, function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      access_token = body.access_token;
+      res.send({
+        'access_token': access_token
+      });
+    }
+  });
+});
+
 
 app.post('/search', async (req, res, next) => {
   try {
@@ -168,16 +196,35 @@ app.post('/search', async (req, res, next) => {
 app.post('/new-post', async (req, res, next) => {
   try {
     const {  selectedSongId, review, mood, rating } = req.body
+    const Posts = Parse.Object.extend("Posts");
+    const post = new Posts();
 
-    // write to database here 
+    post.set({
+      "selectedSongId": selectedSongId,
+      "review": review, 
+      "mood": mood, 
+      "rating": rating,
+      "userId": userId
+    })
+
+    post.save()
+    res.send({"post comleted": "success"})
   } catch (err) {
     next(err)
   }
 }) 
 
+  // const getPost = async (query, item) => {
+  //   const currPost = await query.get(item.id)
+  //   console.log(currPost)
+  //   return currPost
+  // }
 app.get('/feed', async (req, res, next) => {
   try {
-    // get info from database 
+    const Posts = Parse.Object.extend("Posts");
+    const query = new Parse.Query(Posts);
+    const response = await query.find()
+    res.status(200).json(response)
   } catch (err) {
     next(err)
   }

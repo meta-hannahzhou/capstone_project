@@ -5,13 +5,22 @@ import Post from "../Post/Post";
 
 export default function Home(props) {
   const [posts, setPosts] = useState({});
-
+  const [isFetching, setIsFetching] = useState(true);
   const getFeed = async (e) => {
-    e.preventDefault();
     const { data } = await axios.get("http://localhost:8888/feed");
     console.log(data);
     // setPosts(data.body.tracks.items);
   };
+
+  useEffect(() => {
+    // Makes axios get request to get individual product info
+    async function getFeed() {
+      setIsFetching(true);
+      const allPosts = await axios.get("http://localhost:8888/feed");
+      console.log(allPosts.data);
+    }
+    getFeed();
+  }, []);
 
   return (
     <div className="home">
