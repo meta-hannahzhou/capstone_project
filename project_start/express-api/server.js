@@ -8,32 +8,21 @@
  */
 
 var express = require('express'); // Express web server framework
-// var ParseServer = require('parse-server').ParseServer;
 var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
+
 var access_token ="";
 var userId = "";
-// maybe put this into an app id?
-const { access } = require('fs');
-const { BadRequestError } = require("./utils/errors.js")
 
 // const Post = require('./routes/post.js')
 
 const Parse = require('parse/node');
+// Will later store these as environment variables for much strong security
 Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
-// const TestPost = Parse.Object.extend("TestPost");
-// const testPost = new TestPost();
-// testPost.set("score", 1337);
-
-// import axios from 'axios'
-
-// var client_id = 'e5f5464982df4aa9a5b28e499c1a6863'; // Your client id
-// var client_secret = 'fb03604a76c74e4baa8bdc4cc2a29981'; // Your secret
-// var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
@@ -83,11 +72,8 @@ app.get('/login', function(req, res) {
 // app.use('/post', Post)
 
 app.get('/callback', function(req, res) {
-  console.log(querystring)
-  console.log(access)
   // your application requests refresh and access tokens
   // after checking the state parameter
-
   var code = req.query.code || null;
   var state = req.query.state || null;
   var storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -127,16 +113,8 @@ app.get('/callback', function(req, res) {
 
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
-          console.log(body);
           userId = body.id
         });
-
-        // we can also pass the token to the browser to make requests from there
-        // res.redirect('/#' +
-        //   querystring.stringify({
-        //     access_token: access_token,
-        //     refresh_token: refresh_token
-        //   }));
 
         res.redirect("http://localhost:3000/home")
       } else {
@@ -196,7 +174,6 @@ app.post('/search', async (req, res, next) => {
 app.post('/new-post', async (req, res, next) => {
   try {
     const { selectedSongId, selectedSongUrl, selectedSongName, review, mood, rating } = req.body
-    console.log(selectedSongUrl)
     const Posts = Parse.Object.extend("Posts");
     const post = new Posts();
 
@@ -221,41 +198,93 @@ app.post('/new-post', async (req, res, next) => {
 
 app.post('/new-comment', async (req, res, next) => {
   try {
+ 
     // Adding new comment to Comments database
-    const { postId, comment, selectedSongId} = req.body
-    
+    const { postId, selectedSongId, comment} = req.body
     const Comments = Parse.Object.extend("Comments");
     const currComment = new Comments();
-
     currComment.set({
-      "postId": postId,
       "comment": comment,
       "selectedSongId": selectedSongId,
     })
-
-    currComment.save()
-
+    
     // Updating Posts database and appending comment id to commments field
     const Posts = Parse.Object.extend("Posts");
     const query = new Parse.Query(Posts);
     const post = await query.get(postId)
-    let currPostComments = await post.get("comments")
-    console.log(currComment.objectId)
-    // currPostComments.push()
 
-    res.send({"post for new comment completed": "success"})
+    currComment.set("postId", post)
+    const savedComment = await currComment.save()
+    
+    res.status(200).json(savedComment)
+    
   } catch (err) {
     next(err)
   }
 }) 
 
-  // const getPost = async (query, item) => {
-  //   const currPost = await query.get(item.id)
-  //   console.log(currPost)
-  //   return currPost
-  // }
+app.post('/comments', async (req, res, next) => {
+  const { postId } = req.body
+
+  try {
+    const Comments = Parse.Object.extend("Comments");
+    const commentQuery = new Parse.Query(Comments)
+
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    const post = await postQuery.get(postId)
+
+    commentQuery.equalTo("postId", post)
+    const results = await commentQuery.find()
+    console.log(results)
+    res.status(200).json(results)
+  } catch (err) {
+    next(err)
+  }
+})
+
+app.post('/get-likes', async (req, res, next) => {
+  const { postId } = req.body
+
+  try {
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    const post = await postQuery.get(postId)
+
+    res.status(200).json(post)
+  } catch (err) {
+    next(err)
+  }
+})
+
+app.put('/update-post', async (req, res, next) => {
+  const {postObjectId, commentObjectId} = req.body 
+
+  const Posts = Parse.Object.extend("Posts");
+  const query = new Parse.Query(Posts);
+  const post = await query.get(postObjectId)
+  
+  let currComments = await post.get("comments")
+  currComments.push(commentObjectId)
+  post.set("comments", currComments)
+  post.save()
+  res.status(200).json(currComments)
+})
+
+app.post('/', async (req, res, next) => {
+  const Login = Parse.Object.extend("Login");
+  const login = new Login();
+  login.set("userId", userId)
+  const userLogin = await login.save()
+  res.status(200).json(userLogin)
+})
+
+// app.get('/', async ())
+
 app.get('/feed', async (req, res, next) => {
   try {
+    
+
     const Posts = Parse.Object.extend("Posts");
     const query = new Parse.Query(Posts);
     const response = await query.find()
@@ -263,6 +292,31 @@ app.get('/feed', async (req, res, next) => {
   } catch (err) {
     next(err)
   }
+})
+
+app.put('/like', async (req, res, next) => {
+  const { postId, userObjectId } = req.body
+  console.log(postId)
+
+  const Users = Parse.Object.extend("Login");
+  const userQuery = new Parse.Query(Users);
+  const user = await userQuery.get(userObjectId)
+
+  console.log(user)
+
+  const Posts = Parse.Object.extend("Posts");
+  const postQuery = new Parse.Query(Posts);
+  const post = await postQuery.get(postId)
+  post.increment("likes")
+  console.log(post)
+
+  const relation = user.relation("likes")
+  relation.add(post)
+  console.log(relation)
+  user.save()
+  post.save()
+  console.log(user)
+  res.send({user, post})
 })
 
 app.get('/profile', async (req, res, next) => {
@@ -291,7 +345,6 @@ app.get('/statistics', async (req, res, next) => {
     };
 
     request.get(options, function(error, response, body) {
-      console.log(body)
       res.status(200).json({body})
     });
 

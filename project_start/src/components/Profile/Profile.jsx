@@ -6,11 +6,6 @@ export default function Recent(props) {
   const [isFetching, setIsFetching] = useState(false);
   const [userInfo, setUserInfo] = useState({});
 
-  // const getProfile = async () => {
-  //   const { data } = await axios.get("http://localhost:8888/profile", {});
-  //   props.setUserInfo(data.body);
-  // };
-
   useEffect(() => {
     // Makes axios get request to get individual product info
     async function getProfile() {

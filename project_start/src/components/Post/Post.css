@@ -7,3 +7,13 @@
     background-color: #1db954;
     border-color: #1db954
 }
+
+.like {
+    background-color: #121212;
+    border-radius: 0;
+    border-color: #121212;
+}
+
+.heart {
+    width: 20px;
+}

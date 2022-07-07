@@ -7,14 +7,16 @@ import Recommendations from "../Recommendations/Recommendations";
 export default function Home(props) {
   const [posts, setPosts] = useState({});
   const [isFetching, setIsFetching] = useState(true);
-  const getFeed = async (e) => {
-    const { data } = await axios.get("http://localhost:8888/feed");
-    console.log(data);
-    // setPosts(data.body.tracks.items);
-  };
 
+  const [userId, setUserId] = useState();
   useEffect(() => {
-    // Makes axios get request to get individual product info
+    
+    async function getProfile() {
+      setIsFetching(true);
+      const response = await axios.post("http://localhost:8888/");
+      setUserId(response.data.objectId);
+    }
+
     async function getFeed() {
       setIsFetching(true);
       await axios
@@ -27,8 +29,10 @@ export default function Home(props) {
           <h1>{error}</h1>;
         });
     }
+    getProfile();
     getFeed();
   }, []);
+
   if (isFetching) {
     return (
       <div className="loading">
@@ -42,7 +46,6 @@ export default function Home(props) {
           <div className="col-sm-8">
             <h1 className="home"> Feed</h1>
             <div className="grid">
-              {console.log(posts)}
               {posts.map((currPost) => {
                 return (
                   <Post
@@ -53,9 +56,9 @@ export default function Home(props) {
                     mood={currPost.mood}
                     rating={currPost.rating}
                     userId={currPost.userId}
-                    likes={currPost.likes}
-                    comments={currPost.comments}
                     postId={currPost.objectId}
+                    userObjectId={userId}
+                    key={currPost.objectId}
                   />
                 );
               })}

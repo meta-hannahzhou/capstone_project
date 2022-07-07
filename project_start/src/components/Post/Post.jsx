@@ -1,8 +1,9 @@
 import * as React from "react";
 import "./Post.css";
-import { Link } from "react-router-dom";
-import Pic from "./test_image.png";
+import Heart from "./heart.png";
+
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Post({
   selectedSongId,
@@ -12,19 +13,61 @@ export default function Post({
   mood,
   rating,
   userId,
-  likes,
-  comments,
+  userObjectId,
   postId,
 }) {
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const comment = document.getElementById("comment").value;
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]);
+  const [likes, setLikes] = useState(0);
+  // need to refactor this to just add to url so it can be a get request rather than a post request
+  const getComments = async () => {
+    const response = await axios.post("http://localhost:8888/comments", {
+      postId: postId,
+    });
+    console.log(postId);
+    setComments(response.data);
+    console.log(response.data.length);
+  };
 
-    await axios.post("http://localhost:8888/new-comment", {
+  useEffect(() => {
+    getComments();
+    getLikes();
+  }, []);
+
+  const handleCommentChange = async (e) => {
+    setComment(e.target.value);
+  };
+
+  const handleLike = async () => {
+    await axios.put("http://localhost:8888/like", {
+      postId: postId,
+      userObjectId: userObjectId,
+    });
+    getLikes();
+  };
+
+  const getLikes = async () => {
+    const response = await axios.post("http://localhost:8888/get-likes", {
+      postId: postId,
+    });
+    setLikes(response.data.likes);
+  };
+
+  const handleSubmit = async () => {
+    const savedComment = await axios.post("http://localhost:8888/new-comment", {
       postId: postId,
       selectedSongId: selectedSongId,
       comment: comment,
     });
+    console.log("saved!");
+    await axios.put("http://localhost:8888/update-post", {
+      postObjectId: postId,
+      commentObjectId: savedComment.data.objectId,
+    });
+    console.log("updated!");
+    // console.log(update);
+
+    getComments();
   };
 
   return (
@@ -50,10 +93,22 @@ export default function Post({
                 <div className="d-flex flex-row fs-12">
                   <div className="like p-2 cursor">
                     <i className="fa fa-thumbs-o-up"></i>
-                    <span className="ml-1">Likes: {likes}</span>
+
+                    <span className="ml-1">
+                      <button
+                        className="like"
+                        onClick={(e) => {
+                          handleLike(e);
+                        }}
+                      >
+                        <img src={Heart} className="heart" />
+                      </button>
+                      {likes}
+                    </span>
                   </div>
                   <div className="like p-2 cursor">
                     <i className="fa fa-commenting-o"></i>
+                    {/* <p>{comments}</p> */}
                     <span className="ml-1">Comments: {comments.length}</span>
                   </div>
                 </div>
@@ -68,12 +123,16 @@ export default function Post({
                   <textarea
                     className="form-control ml-1 shadow-none textarea"
                     id="comment"
+                    onChange={handleCommentChange}
                   ></textarea>
                 </div>
                 <div className="mt-2 text-right ">
                   <button
                     className="btn btn-primary btn-sm shadow-none post-comment"
                     type="button"
+                    onClick={(e) => {
+                      handleSubmit(e);
+                    }}
                   >
                     Post comment
                   </button>

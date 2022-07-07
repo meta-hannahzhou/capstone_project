@@ -31,8 +31,7 @@ export default function NewPost() {
     ));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     const review = document.getElementById("review").value;
 
     const moods = Array.prototype.slice.call(

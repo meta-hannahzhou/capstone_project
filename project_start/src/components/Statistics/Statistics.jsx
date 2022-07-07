@@ -18,7 +18,6 @@ export default function Statistics(props) {
       await axios
         .get("http://localhost:8888/statistics")
         .then((response) => {
-          console.log(response);
           setTop(response.data.body.items);
           setIsFetchingStats(false);
         })
@@ -27,7 +26,6 @@ export default function Statistics(props) {
         });
     }
     getTop();
-    console.log(top);
   }, []);
 
   if (isFetchingStats) {
