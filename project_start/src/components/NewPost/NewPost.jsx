@@ -6,6 +6,8 @@ import SearchSong from "../SearchSong/SearchSong";
 export default function NewPost() {
   const [tracks, setTracks] = useState([]);
   const [selectedSongId, setSelectedSongId] = useState("");
+  const [selectedSongUrl, setSelectedSongUrl] = useState("");
+  const [selectedSongName, setSelectedSongName] = useState("");
 
   const searchTracks = async (e) => {
     e.preventDefault();
@@ -22,6 +24,8 @@ export default function NewPost() {
         isActive={selectedSongId == track.id}
         onClick={() => {
           setSelectedSongId(track.id);
+          setSelectedSongUrl(track.album.images[1].url);
+          setSelectedSongName(track.name);
         }}
       />
     ));
@@ -43,6 +47,8 @@ export default function NewPost() {
 
     await axios.post("http://localhost:8888/new-post", {
       selectedSongId: selectedSongId,
+      selectedSongUrl: selectedSongUrl,
+      selectedSongName: selectedSongName,
       review: review,
       mood: mood,
       rating: rating,
@@ -86,7 +92,7 @@ export default function NewPost() {
         <fieldset className="form-group" id="mood">
           <div className="row">
             <legend className="col-form-label col-sm-2 pt-0">Mood</legend>
-            <div className="col-sm-10">
+            <div className="inputs">
               <div className="form-check">
                 <input
                   className="form-check-input"
@@ -130,7 +136,7 @@ export default function NewPost() {
         <fieldset className="form-group-new">
           <div className="row">
             <legend className="col-form-label col-sm-2 pt-0">Rating</legend>
-            <div className="col-sm-10">
+            <div className="inputs">
               <div className="form-check">
                 <input
                   className="form-check-input-rating"

@@ -195,20 +195,55 @@ app.post('/search', async (req, res, next) => {
 
 app.post('/new-post', async (req, res, next) => {
   try {
-    const {  selectedSongId, review, mood, rating } = req.body
+    const { selectedSongId, selectedSongUrl, selectedSongName, review, mood, rating } = req.body
+    console.log(selectedSongUrl)
     const Posts = Parse.Object.extend("Posts");
     const post = new Posts();
 
     post.set({
       "selectedSongId": selectedSongId,
+      "selectedSongUrl": selectedSongUrl,
+      "selectedSongName": selectedSongName,
       "review": review, 
       "mood": mood, 
       "rating": rating,
-      "userId": userId
+      "userId": userId,
+      "likes": 0,
+      "comments": []
     })
 
     post.save()
-    res.send({"post comleted": "success"})
+    res.send({"post completed": "success"})
+  } catch (err) {
+    next(err)
+  }
+}) 
+
+app.post('/new-comment', async (req, res, next) => {
+  try {
+    // Adding new comment to Comments database
+    const { postId, comment, selectedSongId} = req.body
+    
+    const Comments = Parse.Object.extend("Comments");
+    const currComment = new Comments();
+
+    currComment.set({
+      "postId": postId,
+      "comment": comment,
+      "selectedSongId": selectedSongId,
+    })
+
+    currComment.save()
+
+    // Updating Posts database and appending comment id to commments field
+    const Posts = Parse.Object.extend("Posts");
+    const query = new Parse.Query(Posts);
+    const post = await query.get(postId)
+    let currPostComments = await post.get("comments")
+    console.log(currComment.objectId)
+    // currPostComments.push()
+
+    res.send({"post for new comment completed": "success"})
   } catch (err) {
     next(err)
   }

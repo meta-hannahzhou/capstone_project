@@ -1,0 +1,9 @@
+.post-comment {
+    background-color: #1DB954;
+    border-color: #1DB954
+}
+
+.post-comment:hover {
+    background-color: #1db954;
+    border-color: #1db954
+}

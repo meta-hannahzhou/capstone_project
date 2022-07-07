@@ -2,7 +2,6 @@ import './App.css';
 import * as React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./components/Home/Home"
-import SearchGrid from "./components/SearchGrid/SearchGrid"
 import Navbar from "./components/Navbar/Navbar"
 import Profile from "./components/Profile/Profile"
 import NewPost from "./components/NewPost/NewPost"

@@ -38,18 +38,3 @@ export default function Navbar(props) {
     </nav>
   );
 }
-
-// {
-//     <div className="nav-element">
-//       <a className="anchor" href={"#about-us"}>
-//         About Us
-//       </a>
-//       <a className="anchor" href={"#contact-us"}>
-//         Contact Us
-//       </a>
-//       {/* <Link to="/orders" className="orders">
-//         {" "}
-//         Orders
-//       </Link> */}
-//     </div>
-//   }
