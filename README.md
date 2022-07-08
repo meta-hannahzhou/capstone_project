@@ -105,6 +105,19 @@ _One common template for creating a user story is the Who, What, Why template: A
 | userId    | String          | users unique Spotify username                            |
 | likes     | Relation<Posts> | many to many relationship for all posts a user has liked |
 
+#### Songs
+
+| Property       | Type   | Description                                            |
+| -------------- | ------ | ------------------------------------------------------ |
+| objectId       | String | unique id for the user post (default field)            |
+| createdAt      | Date   | (default auto generated field)                         |
+| updatedAt      | Date   | (default auto generated field)                         |
+| selectedSongId | String | unique song id from Spotify                            |
+| likes          | Number | aggregate likes across all reviews for certain song    |
+| comments       | Number | aggregate comments across all reviews for certain song |
+| avgRating      | Number | average rating across all reviews                      |
+| quantity       | Number | number of reviews made for certain song                |
+
 ### Networking
 
 #### List of network requests by screen

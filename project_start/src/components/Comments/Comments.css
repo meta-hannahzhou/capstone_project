@@ -1,0 +1,9 @@
+.indiv-comment {
+    display: flex;
+    margin-left: 10vw;
+
+}
+.comment-header {
+    display: flex;
+    margin-left: 5vw;
+}

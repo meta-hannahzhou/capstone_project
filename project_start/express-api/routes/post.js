@@ -1,31 +1,103 @@
 const express = require('express')
 const router = express.Router()
 
+// const {key} = require('authentication')
 
 const Parse = require('parse/node');
 // Will later store these as environment variables for much strong security
 Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
-router.post("/", async (req, res, next) => {
+const getCurrPost = async (req, res, next) => {
+    const postId = req.params.postId;
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    const post = await postQuery.get(postId);
+    res.post = post;
+    next()
+}
+
+router.post("/new-post", async (req, res, next) => {
     try {
-      const {selectedSongId, review, mood, rating} = req.body
+        const { selectedSongId, selectedSongUrl, selectedSongName, review, mood, rating } = req.body
+        const Posts = Parse.Object.extend("Posts");
+        const post = new Posts();
+    
+        post.set({
+          "selectedSongId": selectedSongId,
+          "selectedSongUrl": selectedSongUrl,
+          "selectedSongName": selectedSongName,
+          "review": review, 
+          "mood": mood, 
+          "rating": rating,
+          "userId": req.app.get('userId'),
+          "likes": 0,
+          "comments": []
+        })
+    
+        post.save()
+        res.send({"post completed": "success"})
+      } catch (err) {
+        next(err)
+      }
+})
 
-
-      // add parse request here
-      res.status(201).json({selectedSongId, review, mood, rating})
+// Get info for specific post from id
+router.get("/:postId", getCurrPost, async (req, res, next) => {
+    try {
+        res.status(200).json(res.post);
+        next();
     } catch (err) {
       next(err)
     }
 })
 
-router.get("/:postObjectId", async (req, res, next) => {
+router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
     try {
-    //   const {selectedSongId, review, mood, rating} = req.body
-    //   res.status(200).json({selectedSongId, review, mood, rating})
-    const review = "this song is great"
-    res.status(200).json({selectedSongId, review, mood, rating})
+        const Comments = Parse.Object.extend("Comments");
+        const commentQuery = new Parse.Query(Comments)
+        
+        commentQuery.equalTo("postId", res.post)
+        const results = await commentQuery.find()
+        res.status(200).json(results)
+        next()
     } catch (err) {
       next(err)
     }
 })
+
+router.put('/:postId/update-post', getCurrPost, async (req, res, next) => {
+    
+    let currComments = await res.post.get("comments")
+    currComments.push(req.body.commentId)
+    res.post.set("comments", currComments)
+    res.post.save()
+    res.status(200).json(currComments)
+  })
+
+  router.post('/:postId/new-comment', getCurrPost, async (req, res, next) => {
+    try {
+        // Adding new comment to Comments database
+        const { selectedSongId, comment} = req.body
+        const Comments = Parse.Object.extend("Comments");
+        const currComment = new Comments();
+        currComment.set({
+          "comment": comment,
+          "selectedSongId": selectedSongId,
+        })
+        
+        // Updating Posts database and appending comment id to commments field
+    
+        currComment.set("postId", res.post)
+        const savedComment = await currComment.save()
+        
+        res.status(200).json(savedComment)
+        
+      } catch (err) {
+        next(err)
+      }
+  })
+
+
+
+module.exports = router;

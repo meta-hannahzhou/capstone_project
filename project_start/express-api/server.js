@@ -16,8 +16,7 @@ var cookieParser = require('cookie-parser');
 var access_token ="";
 var userId = "";
 
-// const Post = require('./routes/post.js')
-
+const Post = require('./routes/post.js')
 const Parse = require('parse/node');
 // Will later store these as environment variables for much strong security
 Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
@@ -28,6 +27,7 @@ var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
+// app.use(() => {})
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -68,8 +68,6 @@ app.get('/login', function(req, res) {
       state: state
     }));
 });
-
-// app.use('/post', Post)
 
 app.get('/callback', function(req, res) {
   // your application requests refresh and access tokens
@@ -114,6 +112,7 @@ app.get('/callback', function(req, res) {
         // use the access token to access the Spotify Web API
         request.get(options, function(error, response, body) {
           userId = body.id
+          app.set('userId', body.id)
         });
 
         res.redirect("http://localhost:3000/home")
@@ -126,6 +125,8 @@ app.get('/callback', function(req, res) {
     });
   }
 });
+
+app.use('/post', Post)
 
 app.get('/refresh_token', function(req, res) {
 
@@ -171,34 +172,9 @@ app.post('/search', async (req, res, next) => {
   }
 })
 
-app.post('/new-post', async (req, res, next) => {
-  try {
-    const { selectedSongId, selectedSongUrl, selectedSongName, review, mood, rating } = req.body
-    const Posts = Parse.Object.extend("Posts");
-    const post = new Posts();
-
-    post.set({
-      "selectedSongId": selectedSongId,
-      "selectedSongUrl": selectedSongUrl,
-      "selectedSongName": selectedSongName,
-      "review": review, 
-      "mood": mood, 
-      "rating": rating,
-      "userId": userId,
-      "likes": 0,
-      "comments": []
-    })
-
-    post.save()
-    res.send({"post completed": "success"})
-  } catch (err) {
-    next(err)
-  }
-}) 
 
 app.post('/new-comment', async (req, res, next) => {
   try {
- 
     // Adding new comment to Comments database
     const { postId, selectedSongId, comment} = req.body
     const Comments = Parse.Object.extend("Comments");
@@ -223,53 +199,6 @@ app.post('/new-comment', async (req, res, next) => {
   }
 }) 
 
-app.post('/comments', async (req, res, next) => {
-  const { postId } = req.body
-
-  try {
-    const Comments = Parse.Object.extend("Comments");
-    const commentQuery = new Parse.Query(Comments)
-
-    const Posts = Parse.Object.extend("Posts");
-    const postQuery = new Parse.Query(Posts);
-    const post = await postQuery.get(postId)
-
-    commentQuery.equalTo("postId", post)
-    const results = await commentQuery.find()
-    console.log(results)
-    res.status(200).json(results)
-  } catch (err) {
-    next(err)
-  }
-})
-
-app.post('/get-likes', async (req, res, next) => {
-  const { postId } = req.body
-
-  try {
-    const Posts = Parse.Object.extend("Posts");
-    const postQuery = new Parse.Query(Posts);
-    const post = await postQuery.get(postId)
-
-    res.status(200).json(post)
-  } catch (err) {
-    next(err)
-  }
-})
-
-app.put('/update-post', async (req, res, next) => {
-  const {postObjectId, commentObjectId} = req.body 
-
-  const Posts = Parse.Object.extend("Posts");
-  const query = new Parse.Query(Posts);
-  const post = await query.get(postObjectId)
-  
-  let currComments = await post.get("comments")
-  currComments.push(commentObjectId)
-  post.set("comments", currComments)
-  post.save()
-  res.status(200).json(currComments)
-})
 
 app.post('/', async (req, res, next) => {
   const Login = Parse.Object.extend("Login");
@@ -279,14 +208,12 @@ app.post('/', async (req, res, next) => {
   res.status(200).json(userLogin)
 })
 
-// app.get('/', async ())
 
 app.get('/feed', async (req, res, next) => {
   try {
-    
-
     const Posts = Parse.Object.extend("Posts");
     const query = new Parse.Query(Posts);
+    query.descending("createdAt")
     const response = await query.find()
     res.status(200).json(response)
   } catch (err) {
@@ -296,26 +223,20 @@ app.get('/feed', async (req, res, next) => {
 
 app.put('/like', async (req, res, next) => {
   const { postId, userObjectId } = req.body
-  console.log(postId)
 
   const Users = Parse.Object.extend("Login");
   const userQuery = new Parse.Query(Users);
-  const user = await userQuery.get(userObjectId)
-
-  console.log(user)
+  const user = await userQuery.get(userObjectId);
 
   const Posts = Parse.Object.extend("Posts");
   const postQuery = new Parse.Query(Posts);
   const post = await postQuery.get(postId)
   post.increment("likes")
-  console.log(post)
 
   const relation = user.relation("likes")
   relation.add(post)
-  console.log(relation)
   user.save()
   post.save()
-  console.log(user)
   res.send({user, post})
 })
 

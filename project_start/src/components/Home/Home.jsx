@@ -10,7 +10,6 @@ export default function Home(props) {
 
   const [userId, setUserId] = useState();
   useEffect(() => {
-    
     async function getProfile() {
       setIsFetching(true);
       const response = await axios.post("http://localhost:8888/");
@@ -58,7 +57,10 @@ export default function Home(props) {
                     userId={currPost.userId}
                     postId={currPost.objectId}
                     userObjectId={userId}
+                    createdAt={currPost.createdAt}
                     key={currPost.objectId}
+                    isFetching={isFetching}
+                    setIsFetching={setIsFetching}
                   />
                 );
               })}
