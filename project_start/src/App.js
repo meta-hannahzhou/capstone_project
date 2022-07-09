@@ -1,6 +1,7 @@
 import './App.css';
 import * as React from "react";
 import { Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Home from "./components/Home/Home"
 import Navbar from "./components/Navbar/Navbar"
 import Profile from "./components/Profile/Profile"
@@ -12,11 +13,13 @@ import Statistics from "./components/Statistics/Statistics"
  */
 function App() {
 
+  const [login, setLogin] = useState(false)
+
   return (
     // make this blank route
     <div className="App">
       
-      <Navbar />
+      <Navbar login={login}/>
 
       <Routes>
         
@@ -40,7 +43,7 @@ function App() {
             path="/home"
             element={
               <>
-                <Home />
+                <Home setLogin={setLogin}/>
               </>
               
             }

@@ -31,7 +31,6 @@ export default function Post({
     );
 
     setComments(response.data);
-    console.log(response.data.length);
   };
 
   useEffect(() => {

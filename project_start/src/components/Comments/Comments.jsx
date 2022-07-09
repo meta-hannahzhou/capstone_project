@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 
 // add fetching here so that comments only render after api calls have finished
 export default function Comments({ comments }) {
-  useEffect(() => {}, []);
-
   return (
     <div className="comments">
       <p className="comment-header">Comments:</p>

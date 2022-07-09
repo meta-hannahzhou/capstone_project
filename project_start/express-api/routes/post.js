@@ -36,6 +36,33 @@ router.post("/new-post", async (req, res, next) => {
         })
     
         post.save()
+
+        const Songs = Parse.Object.extend("Songs");
+        const query = new Parse.Query(Songs)
+        query.equalTo("selectedSongId", selectedSongId)
+        const foundSong = await query.find()
+        console.log(foundSong)
+        if (foundSong.length == 0) {
+            console.log("inside")
+            const song = new Songs();
+            song.set({
+                "selectedSongId": selectedSongId,
+                "likes": 0,
+                "comments": 0,
+                "avgRating": parseInt(rating),
+                "quantity": 1
+            })
+            console.log("here again")
+            song.save()
+        } else {
+            const currSong = foundSong[0]
+            currSong.set("avgRating", (currSong.get("avgRating") * currSong.get("quantity") + parseInt(rating))/(currSong.get("quantity") + 1))
+            currSong.increment("quantity")
+            currSong.save()
+        }
+        // console.log(query.exists(""))
+        
+
         res.send({"post completed": "success"})
       } catch (err) {
         next(err)
@@ -75,28 +102,28 @@ router.put('/:postId/update-post', getCurrPost, async (req, res, next) => {
     res.status(200).json(currComments)
   })
 
-  router.post('/:postId/new-comment', getCurrPost, async (req, res, next) => {
+router.post('/:postId/new-comment', getCurrPost, async (req, res, next) => {
     try {
-        // Adding new comment to Comments database
+    // Adding new comment to Comments database
         const { selectedSongId, comment} = req.body
         const Comments = Parse.Object.extend("Comments");
         const currComment = new Comments();
         currComment.set({
-          "comment": comment,
-          "selectedSongId": selectedSongId,
-        })
+            "comment": comment,
+            "selectedSongId": selectedSongId,
+    })
         
         // Updating Posts database and appending comment id to commments field
-    
+
         currComment.set("postId", res.post)
         const savedComment = await currComment.save()
         
         res.status(200).json(savedComment)
         
-      } catch (err) {
+    } catch (err) {
         next(err)
-      }
-  })
+    }
+})
 
 
 

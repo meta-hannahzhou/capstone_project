@@ -17,6 +17,8 @@ var access_token ="";
 var userId = "";
 
 const Post = require('./routes/post.js')
+const Recommendations = require('./routes/recommendations.js')
+
 const Parse = require('parse/node');
 // Will later store these as environment variables for much strong security
 Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
@@ -100,6 +102,8 @@ app.get('/callback', function(req, res) {
       if (!error && response.statusCode === 200) {
 
         access_token = body.access_token;
+        app.set('access_token', access_token)
+
         // req.session.key = body.access_token
         var refresh_token = body.refresh_token;
 
@@ -127,6 +131,7 @@ app.get('/callback', function(req, res) {
 });
 
 app.use('/post', Post)
+app.use('/recommendations', Recommendations)
 
 app.get('/refresh_token', function(req, res) {
 
@@ -235,10 +240,19 @@ app.put('/like', async (req, res, next) => {
 
   const relation = user.relation("likes")
   relation.add(post)
+
+  const Songs = Parse.Object.extend("Songs");
+  const songQuery = new Parse.Query(Songs);
+  songQuery.equalTo("selectedSongId", post.get("selectedSongId"))
+  const song = await songQuery.find();
+  song[0].increment("likes")
+
+  song[0].save()
   user.save()
   post.save()
   res.send({user, post})
 })
+
 
 app.get('/profile', async (req, res, next) => {
   try {
@@ -248,6 +262,14 @@ app.get('/profile', async (req, res, next) => {
       json: true
     };
 
+    const Users = Parse.Object.extend("Login");
+    const userQuery = new Parse.Query(Users);
+    console.log(userId)
+    const user = await userQuery.get(userId);
+    console.log(user)
+    const relation = user.relation("likes")
+    const result = await relation.query().find()
+    console.log(result)
     request.get(options, function(error, response, body) {
       res.status(200).json({body})
     });
@@ -255,6 +277,14 @@ app.get('/profile', async (req, res, next) => {
   } catch(err) {
     next(err)
   }
+})
+
+app.get('/recent', async (req, res, next) => {
+    const Posts = Parse.Object.extend("Posts");
+    const query = new Parse.Query(Posts);
+    query.equalTo("userId", userId);
+    const results = await query.find()
+    res.status(200).json(results)
 })
 
 app.get('/statistics', async (req, res, next) => {
