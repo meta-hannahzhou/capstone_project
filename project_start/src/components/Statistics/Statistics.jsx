@@ -1,16 +1,20 @@
 import "./Statistics.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { PieChart } from "react-minimal-pie-chart";
+import { VictoryPie } from "victory-pie";
 
 export default function Statistics(props) {
   const [isFetchingStats, setIsFetchingStats] = useState(true);
   const [top, setTop] = useState({});
 
-  // const getProfile = async () => {
-  //   const { data } = await axios.get("http://localhost:8888/profile", {});
-  //   props.setUserInfo(data.body);
-  // };
+  const myData = [
+    { x: "Group A", y: 20 },
+    { x: "Group B", y: 30 },
+    { x: "Group C", y: 50 },
+  ];
 
+  let artistIds = [];
   useEffect(() => {
     // Makes axios get request to get individual product info
     async function getTop() {
@@ -20,6 +24,7 @@ export default function Statistics(props) {
         .then((response) => {
           setTop(response.data.body.items);
           setIsFetchingStats(false);
+          console.log(response.data.body.items);
         })
         .catch((error) => {
           <h1>Bad</h1>;
@@ -38,16 +43,26 @@ export default function Statistics(props) {
     return (
       <div className="statistics">
         <h1> Statistics</h1>
-        <h1> Top Tracks Of All Time</h1>
+        <h3> Top Tracks Of All Time</h3>
         <>
           {
             <ol>
-              {top.map((item) => (
-                <li>{item.name}</li>
-              ))}
+              {top.map((item) => {
+                artistIds.push(item.artists[0].id);
+                return <li>{item.name}</li>;
+              })}
+              {console.log(artistIds)}
             </ol>
           }
         </>
+
+        <div>
+          <VictoryPie
+            data={myData}
+            colorScale={["blue", "yellow", "red"]}
+            radius={100}
+          />
+        </div>
       </div>
     );
   }

@@ -18,6 +18,7 @@ var userId = "";
 
 const Post = require('./routes/post.js')
 const Recommendations = require('./routes/recommendations.js')
+const Statistics = require('./routes/statistics.js')
 
 const Parse = require('parse/node');
 // Will later store these as environment variables for much strong security
@@ -132,6 +133,7 @@ app.get('/callback', function(req, res) {
 
 app.use('/post', Post)
 app.use('/recommendations', Recommendations)
+app.use('/statistics', Statistics)
 
 app.get('/refresh_token', function(req, res) {
 
@@ -207,10 +209,19 @@ app.post('/new-comment', async (req, res, next) => {
 
 app.post('/', async (req, res, next) => {
   const Login = Parse.Object.extend("Login");
-  const login = new Login();
-  login.set("userId", userId)
-  const userLogin = await login.save()
-  res.status(200).json(userLogin)
+  const loginQuery = new Parse.Query(Login)
+  loginQuery.equalTo("userId", userId);
+  const checkSong = await loginQuery.find();
+  
+  if (checkSong.length == 0) {
+    const login = new Login();
+    login.set("userId", userId)
+    const userLogin = await login.save()
+    res.status(200).json(userLogin)
+  } else {
+    res.status(200).json(checkSong[0]);  
+  }
+
 })
 
 
@@ -253,7 +264,6 @@ app.put('/like', async (req, res, next) => {
   res.send({user, post})
 })
 
-
 app.get('/profile', async (req, res, next) => {
   try {
     var options = {
@@ -261,48 +271,65 @@ app.get('/profile', async (req, res, next) => {
       headers: { 'Authorization': 'Bearer ' + access_token},
       json: true
     };
-
-    const Users = Parse.Object.extend("Login");
-    const userQuery = new Parse.Query(Users);
-    console.log(userId)
-    const user = await userQuery.get(userId);
-    console.log(user)
-    const relation = user.relation("likes")
-    const result = await relation.query().find()
-    console.log(result)
     request.get(options, function(error, response, body) {
       res.status(200).json({body})
     });
+  } catch(err) {
+    next(err)
+  }
+}) 
+
+app.get('/profile/liked/:userObjectId', async (req, res, next) => {
+  try {
+   
+    const userObjectId = req.params.userObjectId;
+    
+    const Users = Parse.Object.extend("Login");
+    const userQuery = new Parse.Query(Users);
+    const user = await userQuery.get(userObjectId);
+    
+    const relation = user.relation("likes")
+    const result = await relation.query().find()
+    
+    res.status(200).json({result})
 
   } catch(err) {
     next(err)
   }
 })
 
-app.get('/recent', async (req, res, next) => {
+app.get('/profile/posted', async (req, res, next) => {
+  try {
     const Posts = Parse.Object.extend("Posts");
-    const query = new Parse.Query(Posts);
-    query.equalTo("userId", userId);
-    const results = await query.find()
-    res.status(200).json(results)
+    const postQuery = new Parse.Query(Posts);
+    console.log(userId)
+    postQuery.equalTo("userId", userId);
+    const posted = await postQuery.find();
+    
+    res.status(200).json(posted)
+
+  } catch(err) {
+    next(err)
+  }
 })
 
-app.get('/statistics', async (req, res, next) => {
+app.get('/genre/:artistId', async (req, res, next) => {
+  const artistId = req.params.artistId;
   try {
     var options = {
-      url: `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=20&time_range=long_term`,
+      url: `https://api.spotify.com/v1/artists/${artistId}`,
       headers: { 'Authorization': 'Bearer ' + access_token},
       json: true
     };
 
     request.get(options, function(error, response, body) {
-      res.status(200).json({body})
+      res.status(200).json(body.genres)
     });
+  } catch (err) {
 
-  } catch(err) {
-    next(err)
   }
 })
+
 
 
 console.log('Listening on 8888');

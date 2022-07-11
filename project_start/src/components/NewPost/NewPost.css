@@ -8,3 +8,24 @@
 .form-check {
     padding-right: 5px;
 }
+
+.new-post {
+    padding-left: auto; 
+    padding-right: auto;
+}
+
+.btn-primary {
+    background-color: #1DB954;
+    border-color: #1DB954;
+}
+
+.btn-primary:hover {
+    background-color: #1DB954;
+    border-color: #1DB954;
+}
+/* .my-form {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+} */

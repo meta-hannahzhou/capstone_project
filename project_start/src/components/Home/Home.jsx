@@ -1,19 +1,52 @@
 import "./Home.css";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Post from "../Post/Post";
 import Recommendations from "../Recommendations/Recommendations";
+import ReactLoading from "react-loading";
 
-export default function Home(props) {
+export const useEffectOnce = (effect) => {
+  const destroyFunc = useRef();
+  const effectCalled = useRef(false);
+  const renderAfterCalled = useRef(false);
+  const [val, setVal] = useState(0);
+
+  if (effectCalled.current) {
+    renderAfterCalled.current = true;
+  }
+
+  useEffect(() => {
+    // only execute the effect first time around
+    if (!effectCalled.current) {
+      destroyFunc.current = effect();
+      effectCalled.current = true;
+    }
+
+    // this forces one render after the effect is run
+    setVal((val) => val + 1);
+
+    return () => {
+      // if the comp didn't render since the useEffect was called,
+      // we know it's the dummy React cycle
+      if (!renderAfterCalled.current) {
+        return;
+      }
+      if (destroyFunc.current) {
+        destroyFunc.current();
+      }
+    };
+  }, []);
+};
+
+export default function Home({ setLogin, userObjectId, setUserObjectId }) {
   const [posts, setPosts] = useState({});
   const [isFetching, setIsFetching] = useState(true);
 
-  const [userId, setUserId] = useState();
-  useEffect(() => {
+  useEffectOnce(() => {
     async function getProfile() {
       setIsFetching(true);
       const response = await axios.post("http://localhost:8888/");
-      setUserId(response.data.objectId);
+      setUserObjectId(response.data.objectId);
     }
 
     async function getFeed() {
@@ -28,6 +61,7 @@ export default function Home(props) {
           <h1>{error}</h1>;
         });
     }
+    setLogin(true);
     getProfile();
     getFeed();
   }, []);
@@ -35,7 +69,8 @@ export default function Home(props) {
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading...</h1>
+        <h1>Loading</h1>
+        <ReactLoading type={"bars"} />
       </div>
     );
   } else {
@@ -56,11 +91,12 @@ export default function Home(props) {
                     rating={currPost.rating}
                     userId={currPost.userId}
                     postId={currPost.objectId}
-                    userObjectId={userId}
+                    userObjectId={userObjectId}
                     createdAt={currPost.createdAt}
                     key={currPost.objectId}
                     isFetching={isFetching}
                     setIsFetching={setIsFetching}
+                    isProfile={false}
                   />
                 );
               })}

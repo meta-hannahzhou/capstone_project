@@ -59,12 +59,12 @@ export default function NewPost() {
       <h1> New Post</h1>
 
       {/* <Search searchArtists={searchArtists} setSearch={setSearch} /> */}
-      <form>
+      <form className="my-form">
         <div className="form-group row">
-          <label for="inputEmail3" className="col-sm-2 col-form-label">
+          <label for="song title" className="col-sm-2 col-form-label">
             Song Title
           </label>
-          <div className="col-sm-10">
+          <div className="col-sm-5">
             <input
               type="text"
               className="form-control"
@@ -77,15 +77,18 @@ export default function NewPost() {
 
         {tracks ? <div className="">{displayTracks()}</div> : null}
 
-        <div className="input-group">
-          <div className="input-group-prepend">
-            <span className="input-group-text">Review</span>
+        <div className="form-group row">
+          <label for="review" className="col-sm-2 col-form-label">
+            Review
+          </label>
+          <div className="col-sm-5">
+            <input
+              type="text"
+              className="form-control"
+              id="review"
+              placeholder="Review"
+            />
           </div>
-          <input
-            className="form-control"
-            aria-label="With textarea"
-            id="review"
-          />
         </div>
 
         <fieldset className="form-group" id="mood">
@@ -205,6 +208,7 @@ export default function NewPost() {
             <button
               type="submit"
               className="btn btn-primary"
+              id="submit"
               onClick={(e) => {
                 handleSubmit(e);
               }}

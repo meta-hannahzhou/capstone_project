@@ -95,6 +95,16 @@ _One common template for creating a user story is the Who, What, Why template: A
 | selectedSongId | String  | unique song id from Spotify                 |
 | postId         | Pointer | pointer to unique id for the user post      |
 
+#### Likes
+
+| Property       | Type    | Description                                 |
+| -------------- | ------- | ------------------------------------------- |
+| objectId       | String  | unique id for the user post (default field) |
+| createdAt      | Date    | (default auto generated field)              |
+| updatedAt      | Date    | (default auto generated field)              |
+| selectedSongId | String  | unique song id from Spotify                 |
+| postId         | Pointer | pointer to unique id for the user post      |
+
 #### Login
 
 | Property  | Type            | Description                                              |

@@ -2,26 +2,37 @@ import "./Recommendations.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import RecCard from "../RecCard/RecCard";
+import ReactLoading from "react-loading";
+
 export default function Recommendations() {
   const [isFetching, setIsFetching] = useState(true);
   const [mostLiked, setMostLiked] = useState();
+  const [highestRated, setHighestRated] = useState();
+
+  console.log(isFetching);
 
   useEffect(() => {
-    async function getProfile() {
+    async function getRecs() {
       setIsFetching(true);
       const response = await axios.get(
         "http://localhost:8888/recommendations/most-liked"
       );
       setMostLiked(response.data.body);
+
+      const response2 = await axios.get(
+        "http://localhost:8888/recommendations/highest-rated"
+      );
+      setHighestRated(response2.data.body);
       setIsFetching(false);
     }
-    getProfile();
+    getRecs();
   }, []);
 
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading...</h1>
+        <h1>Loading</h1>
+        <ReactLoading type={"bars"} />
       </div>
     );
   } else {
@@ -44,9 +55,7 @@ export default function Recommendations() {
               <div className="card-body">
                 <h5 className="card-title">Highest Rated</h5>
                 <p className="card-text">
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit
-                  longer.
+                  <RecCard song={highestRated} />
                 </p>
               </div>
             </div>
@@ -55,7 +64,7 @@ export default function Recommendations() {
             <div className="card">
               <img />
               <div className="card-body">
-                <h5 className="card-title">Card title</h5>
+                <h5 className="card-title">Most Commented</h5>
                 <p className="card-text">
                   This is a longer card with supporting text below as a natural
                   lead-in to additional content.

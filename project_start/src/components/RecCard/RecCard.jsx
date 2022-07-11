@@ -13,7 +13,6 @@ export default function RecCard({ song }) {
       <div className="description">
         <div>{song.name}</div>
         <div>{song.artists[0].name}</div>
-        <div>Spotify Popularity Index: {song.popularity}</div>
       </div>
     </div>
   );

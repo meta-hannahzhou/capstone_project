@@ -14,12 +14,11 @@ import Statistics from "./components/Statistics/Statistics"
 function App() {
 
   const [login, setLogin] = useState(false)
-
+  const [userObjectId, setUserObjectId] = useState("")
   return (
     // make this blank route
     <div className="App">
       
-      <Navbar login={login}/>
 
       <Routes>
         
@@ -43,7 +42,10 @@ function App() {
             path="/home"
             element={
               <>
-                <Home setLogin={setLogin}/>
+                <Navbar />
+                <Home setLogin={setLogin} 
+                      userObjectId={userObjectId}
+                      setUserObjectId={setUserObjectId}/>
               </>
               
             }
@@ -53,7 +55,9 @@ function App() {
             path="/profile"
             element={
               <>
-                <Profile />
+                <Navbar />
+                <Profile userObjectId={userObjectId}
+                         setUserObjectId={setUserObjectId}/>
               </>
               
             }
@@ -63,6 +67,7 @@ function App() {
             path="/new-post"
             element={
               <>
+                <Navbar />
                 <NewPost />
               </>
               
@@ -73,6 +78,7 @@ function App() {
             path="/statistics"
             element={
               <>
+                <Navbar />
                 <Statistics />
               </>
               

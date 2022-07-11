@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "canvasjs": "^1.8.3",
+    "react-loading": "^2.0.3",
+    "react-minimal-pie-chart": "^8.3.0"
+  }
+}

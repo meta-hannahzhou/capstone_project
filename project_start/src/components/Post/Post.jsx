@@ -19,6 +19,7 @@ export default function Post({
   createdAt,
   isFetching,
   setIsFetching,
+  isProfile,
 }) {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
@@ -96,7 +97,8 @@ export default function Post({
           <div className="item-rating">Rating: {rating}/5</div>
         </div>
 
-        <Comments comments={comments} />
+        {isProfile ? null : <Comments comments={comments} />}
+
         {/* https://bbbootstrap.com/snippets/bootstrap-like-comment-share-section-comment-box-63008805 */}
         <div className="container mt-5">
           <div className="d-flex justify-content-center row">
@@ -119,38 +121,41 @@ export default function Post({
                         {likes}
                       </span>
                     </div>
+                    {}
                     <div className="like p-2 cursor">
                       <i className="fa fa-commenting-o"></i>
-                      {/* <p>{comments}</p> */}
                       <span className="ml-1">Comments: {comments.length}</span>
                     </div>
                   </div>
                 </div>
-                <div className=" p-2">
-                  <div className="d-flex flex-row align-items-start">
-                    <img
-                      className="rounded-circle"
-                      src="https://i.imgur.com/RpzrMR2.jpg"
-                      width="40"
-                    />
-                    <textarea
-                      className="form-control ml-1 shadow-none textarea"
-                      id="comment"
-                      onChange={handleCommentChange}
-                    ></textarea>
+
+                {isProfile ? null : (
+                  <div className=" p-2">
+                    <div className="d-flex flex-row align-items-start">
+                      <img
+                        className="rounded-circle"
+                        src="https://i.imgur.com/RpzrMR2.jpg"
+                        width="40"
+                      />
+                      <textarea
+                        className="form-control ml-1 shadow-none textarea"
+                        id="comment"
+                        onChange={handleCommentChange}
+                      ></textarea>
+                    </div>
+                    <div className="mt-2 text-right ">
+                      <button
+                        className="btn btn-primary btn-sm shadow-none post-comment"
+                        type="button"
+                        onClick={(e) => {
+                          handleSubmit(e);
+                        }}
+                      >
+                        Post comment
+                      </button>
+                    </div>
                   </div>
-                  <div className="mt-2 text-right ">
-                    <button
-                      className="btn btn-primary btn-sm shadow-none post-comment"
-                      type="button"
-                      onClick={(e) => {
-                        handleSubmit(e);
-                      }}
-                    >
-                      Post comment
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
