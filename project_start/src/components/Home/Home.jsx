@@ -38,7 +38,7 @@ export const useEffectOnce = (effect) => {
   }, []);
 };
 
-export default function Home({ setLogin, userObjectId, setUserObjectId }) {
+export default function Home({ userObjectId, setUserObjectId }) {
   const [posts, setPosts] = useState({});
   const [isFetching, setIsFetching] = useState(true);
 
@@ -61,7 +61,6 @@ export default function Home({ setLogin, userObjectId, setUserObjectId }) {
           <h1>{error}</h1>;
         });
     }
-    setLogin(true);
     getProfile();
     getFeed();
   }, []);
@@ -84,8 +83,6 @@ export default function Home({ setLogin, userObjectId, setUserObjectId }) {
                 return (
                   <Post
                     selectedSongId={currPost.selectedSongId}
-                    selectedSongUrl={currPost.selectedSongUrl}
-                    selectedSongName={currPost.selectedSongName}
                     review={currPost.review}
                     mood={currPost.mood}
                     rating={currPost.rating}

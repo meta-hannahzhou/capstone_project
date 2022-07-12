@@ -8,6 +8,14 @@ export default function Statistics(props) {
   const [isFetchingStats, setIsFetchingStats] = useState(true);
   const [top, setTop] = useState({});
 
+  // const getGenres = async (e) => {
+  //   e.preventDefault();
+  //   const { data } = await axios.post("http://localhost:8888/search", {
+  //     search: e.target.value,
+  //   });
+  //   setTracks(data.body.tracks.items);
+  // };
+
   const myData = [
     { x: "Group A", y: 20 },
     { x: "Group B", y: 30 },
@@ -24,7 +32,6 @@ export default function Statistics(props) {
         .then((response) => {
           setTop(response.data.body.items);
           setIsFetchingStats(false);
-          console.log(response.data.body.items);
         })
         .catch((error) => {
           <h1>Bad</h1>;
@@ -51,7 +58,6 @@ export default function Statistics(props) {
                 artistIds.push(item.artists[0].id);
                 return <li>{item.name}</li>;
               })}
-              {console.log(artistIds)}
             </ol>
           }
         </>

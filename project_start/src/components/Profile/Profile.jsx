@@ -72,8 +72,6 @@ export default function Profile({ userObjectId, setUserObjectId }) {
             return (
               <Post
                 selectedSongId={currPost.selectedSongId}
-                selectedSongUrl={currPost.selectedSongUrl}
-                selectedSongName={currPost.selectedSongName}
                 review={currPost.review}
                 mood={currPost.mood}
                 rating={currPost.rating}

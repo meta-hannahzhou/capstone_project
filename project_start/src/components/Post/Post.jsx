@@ -1,15 +1,16 @@
 import * as React from "react";
 import "./Post.css";
 import Heart from "./heart.png";
+import HeartLiked from "./heart-liked.png";
 import Comments from "../Comments/Comments";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+// TODO: update names of API calls so they use question marks to address complexity rather than confusing urls
+
 // add fetching here so that comments only render after api calls have finished
 export default function Post({
   selectedSongId,
-  selectedSongUrl,
-  selectedSongName,
   review,
   mood,
   rating,
@@ -24,8 +25,21 @@ export default function Post({
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState(0);
+  const [song, setSong] = useState({});
+  const [isLiked, setIsLiked] = useState(false);
+  const [likedObjectId, setLikedObjectId] = useState("");
 
-  // need to refactor this to just add to url so it can be a get request rather than a post request
+  // Get information about the current song being reviewed including selectedSongUrl and selectedSongName
+  const getSongInfo = async () => {
+    const response = await axios.get(`http://localhost:8888/post/${postId}/`);
+    setSong(response.data);
+  };
+
+  /**
+   * COMMENTS
+   */
+
+  // Get all comments for current post
   const getComments = async () => {
     const response = await axios.get(
       `http://localhost:8888/post/${postId}/comments`
@@ -34,47 +48,84 @@ export default function Post({
     setComments(response.data);
   };
 
-  useEffect(() => {
-    setIsFetching(true);
-    getComments();
-    getLikes();
-    setIsFetching(false);
-  }, []);
-
+  // Update value of comment as user changes input
   const handleCommentChange = async (e) => {
     setComment(e.target.value);
   };
 
-  const handleLike = async () => {
-    await axios.put("http://localhost:8888/like", {
-      postId: postId,
-      userObjectId: userObjectId,
-    });
-    getLikes();
-  };
-
-  const getLikes = async () => {
-    const response = await axios.get(`http://localhost:8888/post/${postId}`);
-    setLikes(response.data.likes);
-  };
-
-  const handleSubmit = async () => {
+  // Add comment to database
+  const handleSubmitComment = async () => {
+    // Post to Comments table
     const savedComment = await axios.post(
       `http://localhost:8888/post/${postId}/new-comment`,
       {
         selectedSongId: selectedSongId,
+        userObjectId: userObjectId,
         comment: comment,
       }
     );
-    console.log("saved!");
-    await axios.put(`http://localhost:8888/post/${postId}/update-post`, {
-      commentId: savedComment.data.objectId,
-    });
-    console.log("updated!");
-    // console.log(update);
 
+    // Update Posts datatable by appending to Comments array
+    await axios.put(
+      `http://localhost:8888/post/${postId}/update-post-comment`,
+      {
+        commentId: savedComment.data.objectId,
+      }
+    );
+    // Call get comments to update count displayed on page
     getComments();
   };
+
+  /**
+   * LIKES
+   */
+
+  const getLikes = async () => {
+    const response = await axios.get(
+      `http://localhost:8888/post/${postId}/likes`
+    );
+
+    setLikes(response.data);
+  };
+
+  // Add comment to database
+  const handleLike = async () => {
+    // Post to Likes table
+    setIsLiked(!isLiked);
+
+    if (!isLiked) {
+      // Update Likes Table
+      const savedLike = await axios.post(
+        `http://localhost:8888/post/${postId}/new-like`,
+        {
+          selectedSongId: selectedSongId,
+          userObjectId: userObjectId,
+        }
+      );
+      setLikedObjectId(savedLike.data.objectId);
+      // Update Posts datatable by appending to Likes array
+      await axios.put(`http://localhost:8888/post/${postId}/update-post-like`, {
+        likeId: savedLike.data.objectId,
+      });
+    } else {
+      console.log(likedObjectId);
+      await axios.delete(
+        `http://localhost:8888/post/${postId}/delete-like?likedObjectId=${likedObjectId}`
+      );
+    }
+
+    // Call get likes to update likes displayed on page
+    getLikes();
+  };
+
+  useEffect(() => {
+    setIsFetching(true);
+    getComments();
+    getLikes();
+    getSongInfo();
+    setIsFetching(false);
+  }, []);
+
   if (isFetching) {
     return (
       <div className="loading">
@@ -84,11 +135,11 @@ export default function Post({
   } else {
     return (
       <div className="post">
-        <h3>{selectedSongName}</h3>
+        <h3>{song.selectedSongName}</h3>
         <p>Post By: {userId}</p>
         <p>{createdAt}</p>
         <div className="element-image">
-          <img src={selectedSongUrl} />
+          <img src={song.selectedSongUrl} />
         </div>
 
         <div className="item-wrapper">
@@ -116,9 +167,13 @@ export default function Post({
                             handleLike(e);
                           }}
                         >
-                          <img src={Heart} className="heart" />
+                          {isLiked ? (
+                            <img src={HeartLiked} className="heart" />
+                          ) : (
+                            <img src={Heart} className="heart" />
+                          )}
                         </button>
-                        {likes}
+                        {likes.length}
                       </span>
                     </div>
                     {}
@@ -148,7 +203,7 @@ export default function Post({
                         className="btn btn-primary btn-sm shadow-none post-comment"
                         type="button"
                         onClick={(e) => {
-                          handleSubmit(e);
+                          handleSubmitComment(e);
                         }}
                       >
                         Post comment

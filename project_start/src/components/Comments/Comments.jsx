@@ -11,8 +11,11 @@ export default function Comments({ comments }) {
       <p className="comment-header">Comments:</p>
       <div className="displayComment">
         {comments.map((currComment) => {
-          console.log(currComment);
-          return <div className="indiv-comment">{currComment.comment}</div>;
+          return (
+            <div className="indiv-comment">
+              {currComment.userId}: {currComment.comment}
+            </div>
+          );
         })}
       </div>
     </div>

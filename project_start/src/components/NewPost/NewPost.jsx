@@ -11,9 +11,9 @@ export default function NewPost() {
 
   const searchTracks = async (e) => {
     e.preventDefault();
-    const { data } = await axios.post("http://localhost:8888/search", {
-      search: e.target.value,
-    });
+    const { data } = await axios.get(
+      `http://localhost:8888/post/search/${e.target.value}`
+    );
     setTracks(data.body.tracks.items);
   };
 

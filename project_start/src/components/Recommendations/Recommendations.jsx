@@ -7,22 +7,26 @@ import ReactLoading from "react-loading";
 export default function Recommendations() {
   const [isFetching, setIsFetching] = useState(true);
   const [mostLiked, setMostLiked] = useState();
+  const [mostCommented, setMostCommented] = useState();
   const [highestRated, setHighestRated] = useState();
-
-  console.log(isFetching);
 
   useEffect(() => {
     async function getRecs() {
       setIsFetching(true);
-      const response = await axios.get(
+      const responseLike = await axios.get(
         "http://localhost:8888/recommendations/most-liked"
       );
-      setMostLiked(response.data.body);
+      setMostLiked(responseLike.data.body);
 
-      const response2 = await axios.get(
+      const responseComment = await axios.get(
+        "http://localhost:8888/recommendations/most-commented"
+      );
+      setMostCommented(responseComment.data.body);
+
+      const responseRate = await axios.get(
         "http://localhost:8888/recommendations/highest-rated"
       );
-      setHighestRated(response2.data.body);
+      setHighestRated(responseRate.data.body);
       setIsFetching(false);
     }
     getRecs();
@@ -66,8 +70,7 @@ export default function Recommendations() {
               <div className="card-body">
                 <h5 className="card-title">Most Commented</h5>
                 <p className="card-text">
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content.
+                  <RecCard song={mostCommented} />
                 </p>
               </div>
             </div>
