@@ -214,16 +214,16 @@ router.post('/:postId/new-like', getCurrPost, async (req, res, next) => {
     }
 })
 
-router.delete('/:postId/delete-like?likedObjectId=:likedObjectId', async (req, res, next) => {
+// DELETE: remove like from current post in Likes table
+router.delete('/:postId/delete-like&likedObjectId=:likedObjectId', getCurrPost, async (req, res, next) => {
     try {
-        // const { likedObjectId } = req.body
-        const likedObjectId = req.params.likedObjectId
-        console.log(likedObjectId)
+        const likedObjectId = req.params.likedObjectId;
         const Likes = Parse.Object.extend("Likes");
-        const likeQuery = new Parse.Query(Likes)
-        const currLike = await likeQuery.get(likedObjectId)
-        
-        await currLike.destroy()
+        const likeQuery = new Parse.Query(Likes);
+        const currLike = await likeQuery.get(likedObjectId);
+
+        await currLike.destroy();
+        res.status(200).json(currLike);
 
     } catch (err) {
         next(err)
@@ -231,24 +231,37 @@ router.delete('/:postId/delete-like?likedObjectId=:likedObjectId', async (req, r
 })
 
 
-// PUT: append new like id to likes array in Posts database
-router.put('/:postId/update-post-like', getCurrPost, async (req, res, next) => {
-    let currLikes = await res.post.get("likes")
-    currLikes.push(req.body.likeId)
+// PUT: append or remove new like id to likes array in Posts database
+router.put('/:postId/post-like', getCurrPost, async (req, res, next) => {
+    let currLikes = await res.post.get("likes");
+
+    const Songs = Parse.Object.extend("Songs");
+    const query = new Parse.Query(Songs);
+    query.equalTo("selectedSongId", res.post.get("selectedSongId"));
+    const foundSong = await query.find();
+    let currSongLikes = await foundSong[0].get("likes");
+
+    if (req.body.isLiked) {
+        currLikes.push(req.body.likeId);
+        currSongLikes.push(req.body.likeId);
+    } else {
+        const index = currLikes.indexOf(req.body.likeId);
+        currLikes.splice(index, 1);
+
+        const songIndex = currSongLikes.indexOf(req.body.likeId);
+        currSongLikes.splice(songIndex, 1);
+    }
+    
     res.post.set("likes", currLikes)
     res.post.save()
 
-    const Songs = Parse.Object.extend("Songs");
-    const query = new Parse.Query(Songs)
-    query.equalTo("selectedSongId", res.post.get("selectedSongId"))
-    const foundSong = await query.find()
-    let currSongLikes = await foundSong[0].get("likes")
-    currSongLikes.push(req.body.likeId)
     foundSong[0].set("likes", currSongLikes)
     foundSong[0].save()
 
     res.status(200).json(currLikes)
   })
+
+
 
 
 module.exports = router;

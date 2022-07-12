@@ -84,7 +84,6 @@ export default function Post({
     const response = await axios.get(
       `http://localhost:8888/post/${postId}/likes`
     );
-
     setLikes(response.data);
   };
 
@@ -103,15 +102,20 @@ export default function Post({
         }
       );
       setLikedObjectId(savedLike.data.objectId);
+
       // Update Posts datatable by appending to Likes array
-      await axios.put(`http://localhost:8888/post/${postId}/update-post-like`, {
+      await axios.put(`http://localhost:8888/post/${postId}/post-like`, {
         likeId: savedLike.data.objectId,
+        isLiked: isLiked,
       });
     } else {
-      console.log(likedObjectId);
       await axios.delete(
-        `http://localhost:8888/post/${postId}/delete-like?likedObjectId=${likedObjectId}`
+        `http://localhost:8888/post/${postId}/delete-like&likedObjectId=${likedObjectId}`
       );
+      await axios.put(`http://localhost:8888/post/${postId}/post-like`, {
+        likeId: likedObjectId,
+        isLiked: isLiked,
+      });
     }
 
     // Call get likes to update likes displayed on page
