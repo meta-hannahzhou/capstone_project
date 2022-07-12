@@ -69,31 +69,30 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Posts
 
-| Property         | Type   | Description                                      |
-| ---------------- | ------ | ------------------------------------------------ |
-| objectId         | String | unique id for the user post (default field)      |
-| createdAt        | Date   | (default auto generated field)                   |
-| updatedAt        | Date   | (default auto generated field)                   |
-| selectedSongId   | String | unique song id from Spotify                      |
-| mood             | String | user inputted mood                               |
-| review           | String | user inputted review for the song                |
-| rating           | String | user inputted rating for the song (1-5)          |
-| userId           | String | users unique Spotify username                    |
-| selectedSongUrl  | String | song image URL from api search call              |
-| selectedSongName | String | song title from api search                       |
-| likes            | Number | number of likes for the post                     |
-| comments         | Array  | array of comment objectIds that have been posted |
+| Property       | Type   | Description                                      |
+| -------------- | ------ | ------------------------------------------------ |
+| objectId       | String | unique id for the user post (default field)      |
+| createdAt      | Date   | (default auto generated field)                   |
+| updatedAt      | Date   | (default auto generated field)                   |
+| selectedSongId | String | unique song id from Spotify                      |
+| mood           | String | user inputted mood                               |
+| review         | String | user inputted review for the song                |
+| rating         | String | user inputted rating for the song (1-5)          |
+| userId         | String | users unique Spotify username                    |
+| likes          | Array  | array of like objectIds for the post             |
+| comments       | Array  | array of comment objectIds that have been posted |
 
 #### Comments
 
-| Property       | Type    | Description                                 |
-| -------------- | ------- | ------------------------------------------- |
-| objectId       | String  | unique id for the user post (default field) |
-| createdAt      | Date    | (default auto generated field)              |
-| updatedAt      | Date    | (default auto generated field)              |
-| comment        | String  | user inputted comment for each post         |
-| selectedSongId | String  | unique song id from Spotify                 |
-| postId         | Pointer | pointer to unique id for the user post      |
+| Property       | Type    | Description                                                       |
+| -------------- | ------- | ----------------------------------------------------------------- |
+| objectId       | String  | unique id for the user post (default field)                       |
+| createdAt      | Date    | (default auto generated field)                                    |
+| updatedAt      | Date    | (default auto generated field)                                    |
+| comment        | String  | user inputted comment for each post                               |
+| selectedSongId | String  | unique song id from Spotify                                       |
+| userObjectId   | String  | users unique personal id                                          |
+| postId         | Pointer | pointer to unique id for the post this comment is associated with |
 
 #### Likes
 
@@ -103,46 +102,50 @@ _One common template for creating a user story is the Who, What, Why template: A
 | createdAt      | Date    | (default auto generated field)              |
 | updatedAt      | Date    | (default auto generated field)              |
 | selectedSongId | String  | unique song id from Spotify                 |
+| userObjectId   | String  | users unique personal id                    |
 | postId         | Pointer | pointer to unique id for the user post      |
 
 #### Login
 
-| Property  | Type            | Description                                              |
-| --------- | --------------- | -------------------------------------------------------- |
-| objectId  | String          | unique id for the user post (default field)              |
-| createdAt | Date            | (default auto generated field)                           |
-| updatedAt | Date            | (default auto generated field)                           |
-| userId    | String          | users unique Spotify username                            |
-| likes     | Relation<Posts> | many to many relationship for all posts a user has liked |
+| Property  | Type   | Description                                 |
+| --------- | ------ | ------------------------------------------- |
+| objectId  | String | unique id for the user post (default field) |
+| createdAt | Date   | (default auto generated field)              |
+| updatedAt | Date   | (default auto generated field)              |
+| userId    | String | users unique Spotify username               |
 
 #### Songs
 
-| Property       | Type   | Description                                            |
-| -------------- | ------ | ------------------------------------------------------ |
-| objectId       | String | unique id for the user post (default field)            |
-| createdAt      | Date   | (default auto generated field)                         |
-| updatedAt      | Date   | (default auto generated field)                         |
-| selectedSongId | String | unique song id from Spotify                            |
-| likes          | Number | aggregate likes across all reviews for certain song    |
-| comments       | Number | aggregate comments across all reviews for certain song |
-| avgRating      | Number | average rating across all reviews                      |
-| quantity       | Number | number of reviews made for certain song                |
+| Property         | Type   | Description                                            |
+| ---------------- | ------ | ------------------------------------------------------ |
+| objectId         | String | unique id for the user post (default field)            |
+| createdAt        | Date   | (default auto generated field)                         |
+| updatedAt        | Date   | (default auto generated field)                         |
+| selectedSongId   | String | unique song id from Spotify                            |
+| selectedSongUrl  | String | song image URL from api search call                    |
+| selectedSongName | String | song title from api search                             |
+| likes            | Number | aggregate likes across all reviews for certain song    |
+| comments         | Number | aggregate comments across all reviews for certain song |
+| avgRating        | Number | average rating across all reviews                      |
+| quantity         | Number | number of reviews made for certain song                |
 
 ### Networking
 
-#### List of network requests by screen
+#### List of network requests by route
 
-- Home Feed Screen
+- Post
   - (Read/GET) Query all posts in database (sort/filter by time created, comments, likes, views)
-  - (Create/POST) Create a new like on a post
+  - (Create/POST) Create a new like in Likes
+  - (Update/POST) Update likes array on a Post
   - (Delete) Delete existing like
   - (Create/POST) Create a new comment on a post
+  - (Update/POST) Update comments array on a Post
   - (Delete) Delete existing comment
-  - (Create/POST) Create a new view on a post
-- New Post Screen
+- Profile
   - (Create/POST) Create a new post object
-- Profile Screen
+- Recommendations
   - (Read/GET) Query all posts where user is author
+- Statistics
 
 #### [OPTIONAL:] Existing API Endpoints
 
