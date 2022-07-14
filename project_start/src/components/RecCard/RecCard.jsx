@@ -1,7 +1,11 @@
 import * as React from "react";
 import "./RecCard.css";
 
-// add fetching here so that comments only render after api calls have finished
+/**
+ *
+ * @param {song}
+ * @returns Individual display for each recommended song
+ */
 export default function RecCard({ song }) {
   return (
     <div className="rec-card">

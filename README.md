@@ -128,6 +128,7 @@ _One common template for creating a user story is the Who, What, Why template: A
 | comments         | Array  | array of Comments objectIds for all posts made for selected song |
 | avgRating        | Number | average rating across all reviews                                |
 | quantity         | Number | number of reviews made for certain song                          |
+| genres           | Array  | array of all genres associated with the specific song            |
 
 ### Networking
 

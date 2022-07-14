@@ -30,14 +30,31 @@ router.get('/liked/:userObjectId', async (req, res, next) => {
     try {
         
         const userObjectId = req.params.userObjectId;
-        
         const Likes = Parse.Object.extend("Likes");
         const likeQuery = new Parse.Query(Likes);
         likeQuery.equalTo("userObjectId", userObjectId);
         
         const result = await likeQuery.find();
+        res.status(200).json(result)
+
+    } catch(err) {
+        next(err)
+    }
+})
+
+// GET: get info about all posts a user has commented on
+router.get('/commented/:userObjectId', async (req, res, next) => {
+    try {
         
-        res.status(200).json({result})
+        const userObjectId = req.params.userObjectId;
+        
+        const Comments = Parse.Object.extend("Comments");
+        const commentQuery = new Parse.Query(Comments);
+        commentQuery.equalTo("userObjectId", userObjectId);
+        
+        const result = await commentQuery.find();
+        
+        res.status(200).json(result)
 
     } catch(err) {
         next(err)

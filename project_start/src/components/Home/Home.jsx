@@ -38,7 +38,12 @@ export const useEffectOnce = (effect) => {
   }, []);
 };
 
-export default function Home({ userObjectId, setUserObjectId }) {
+/**
+ *
+ * @param {userObjectId, setUserObjectId, getGenres}
+ * @returns Renders home page and recommendations sidebar asynchronously
+ */
+export default function Home({ userObjectId, setUserObjectId, getGenres }) {
   const [posts, setPosts] = useState({});
   const [isFetching, setIsFetching] = useState(true);
 
@@ -77,7 +82,6 @@ export default function Home({ userObjectId, setUserObjectId }) {
       <div className="home">
         <div className="row">
           <div className="col-sm-8">
-            <h1 className="home"> Feed</h1>
             <div className="grid">
               {posts.map((currPost) => {
                 return (
@@ -99,7 +103,7 @@ export default function Home({ userObjectId, setUserObjectId }) {
               })}
             </div>
           </div>
-          <Recommendations />
+          <Recommendations getGenres={getGenres} userObjectId={userObjectId} />
         </div>
       </div>
     );

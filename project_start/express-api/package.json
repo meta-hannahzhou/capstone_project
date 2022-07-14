@@ -10,9 +10,10 @@
     "mongodb": "^4.7.0",
     "mongodb-runner": "^4.9.0",
     "querystring": "~0.2.0",
-    "request": "~2.83.0"
+    "request": "~2.83.0",
+    "parse": "^3.4.3"
   }, 
   "scripts": {
-    "start": "mongodb-runner start"
+    "start": "node server/server.js"
   }
 }

@@ -15,14 +15,15 @@ Parse.serverURL = "https://parseapi.back4app.com/"
 router.get('/', async (req, res, next) => {
     try {
         var options = {
-        url: `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=20&time_range=long_term`,
+        url: `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term`,
         headers: { 'Authorization': 'Bearer ' + req.app.get('access_token')},
         json: true
         };
 
         request.get(options, function(error, response, body) {
-        res.status(200).json({body})
+            res.status(200).json({body})
         });
+        
 
     } catch(err) {
         next(err)

@@ -8,11 +8,12 @@ const Parse = require('parse/node');
 Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
+
 // GET: search for specific tracks through Spotify API
 router.get('/search/:query', async (req, res, next) => {
     try {
       const query = req.params.query
-  
+    
       var options = {
         url: `https://api.spotify.com/v1/search?q=${query}&type=track&limit=8`,
         headers: { 'Authorization': 'Bearer ' + req.app.get('access_token')},
@@ -28,11 +29,12 @@ router.get('/search/:query', async (req, res, next) => {
     }
   })
 
+
 // POST: allows user to make a new post from form
 // Updates POST table and SONGS table
 router.post("/new-post", async (req, res, next) => {
     try {
-        const { selectedSongId, selectedSongUrl, selectedSongName, review, mood, rating } = req.body
+        const { selectedSongId, selectedSongUrl, selectedSongName, selectedArtistId, review, mood, rating } = req.body
         const Posts = Parse.Object.extend("Posts");
         const post = new Posts();
     
@@ -52,19 +54,32 @@ router.post("/new-post", async (req, res, next) => {
         const query = new Parse.Query(Songs)
         query.equalTo("selectedSongId", selectedSongId)
         const foundSong = await query.find()
-        
+
         if (foundSong.length == 0) {
+            var options = {
+                url: `https://api.spotify.com/v1/artists/${selectedArtistId}`,
+                headers: { 'Authorization': 'Bearer ' + req.app.get('access_token')},
+                json: true
+              };
+        
+        
             const song = new Songs();
-            song.set({
-                "selectedSongId": selectedSongId,
-                "selectedSongUrl": selectedSongUrl,
-                "selectedSongName": selectedSongName,
-                "likes": [],
-                "comments": [],
-                "avgRating": parseInt(rating),
-                "quantity": 1
-            })
-            song.save()
+            request.get(options, function(error, response, body) {
+                song.set({
+                    "selectedSongId": selectedSongId,
+                    "selectedSongUrl": selectedSongUrl,
+                    "selectedSongName": selectedSongName,
+                    "selectedArtistId": selectedArtistId,
+                    "likes": [],
+                    "comments": [],
+                    "avgRating": parseInt(rating),
+                    "quantity": 1,
+                    "genres": body.genres
+                })
+                song.save()
+            res.status(200).json(song)
+            });
+            
         } else {
             const currSong = foundSong[0]
             currSong.set("avgRating", (currSong.get("avgRating") * currSong.get("quantity") + parseInt(rating))/(currSong.get("quantity") + 1))
@@ -78,6 +93,7 @@ router.post("/new-post", async (req, res, next) => {
         next(err)
       }
 })
+
 
 // Middleware for getting the current post to limit redundancy
 const getCurrPost = async (req, res, next) => {
@@ -109,6 +125,7 @@ router.get("/:postId", getCurrPost, async (req, res, next) => {
  * COMMENTS
  */
 
+
 // GET: get all comments on a certain post
 router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
     try {
@@ -123,6 +140,7 @@ router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
       next(err)
     }
 })
+
 
 // POST: add new comment to Comments database
 router.post('/:postId/new-comment', getCurrPost, async (req, res, next) => {
@@ -171,10 +189,10 @@ router.put('/:postId/update-post-comment', getCurrPost, async (req, res, next) =
 
 
 
-
 /**
  * LIKES
  */
+
 
 // GET: get all likes on a certain post
 router.get("/:postId/likes", getCurrPost, async (req, res, next) => {
@@ -185,6 +203,28 @@ router.get("/:postId/likes", getCurrPost, async (req, res, next) => {
         likeQuery.equalTo("postId", res.post)
         const results = await likeQuery.find()
         res.status(200).json(results)
+        next()
+    } catch (err) {
+      next(err)
+    }
+})
+
+
+// GET: check if user has liked specific post
+router.get("/:postId/has-liked&userObjectId=:userObjectId", getCurrPost, async (req, res, next) => {
+    try {
+        const Likes = Parse.Object.extend("Likes");
+        const likeQuery = new Parse.Query(Likes)
+        
+        likeQuery.equalTo("userObjectId", req.params.userObjectId)
+        likeQuery.equalTo("postId", res.post)
+        const results = await likeQuery.find()
+        
+        if (results.length == 0) {
+            res.status(200).json("")
+        } else {
+            res.status(200).json(results[0].id)
+        }
         next()
     } catch (err) {
       next(err)
@@ -214,6 +254,7 @@ router.post('/:postId/new-like', getCurrPost, async (req, res, next) => {
     }
 })
 
+
 // DELETE: remove like from current post in Likes table
 router.delete('/:postId/delete-like&likedObjectId=:likedObjectId', getCurrPost, async (req, res, next) => {
     try {
@@ -231,17 +272,17 @@ router.delete('/:postId/delete-like&likedObjectId=:likedObjectId', getCurrPost, 
 })
 
 
-// PUT: append or remove new like id to likes array in Posts database
+// PUT: append or remove new like id to likes array in Posts and Songs database
 router.put('/:postId/post-like', getCurrPost, async (req, res, next) => {
     let currLikes = await res.post.get("likes");
-
+    
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs);
     query.equalTo("selectedSongId", res.post.get("selectedSongId"));
     const foundSong = await query.find();
     let currSongLikes = await foundSong[0].get("likes");
 
-    if (req.body.isLiked) {
+    if (!req.body.isLiked) {
         currLikes.push(req.body.likeId);
         currSongLikes.push(req.body.likeId);
     } else {
@@ -251,7 +292,6 @@ router.put('/:postId/post-like', getCurrPost, async (req, res, next) => {
         const songIndex = currSongLikes.indexOf(req.body.likeId);
         currSongLikes.splice(songIndex, 1);
     }
-    
     res.post.set("likes", currLikes)
     res.post.save()
 
@@ -260,8 +300,6 @@ router.put('/:postId/post-like', getCurrPost, async (req, res, next) => {
 
     res.status(200).json(currLikes)
   })
-
-
 
 
 module.exports = router;

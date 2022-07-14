@@ -6,9 +6,11 @@ import Comments from "../Comments/Comments";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-// TODO: update names of API calls so they use question marks to address complexity rather than confusing urls
-
-// add fetching here so that comments only render after api calls have finished
+/**
+ *
+ * @param {*}
+ * @returns Individual post display for feed
+ */
 export default function Post({
   selectedSongId,
   review,
@@ -85,13 +87,20 @@ export default function Post({
       `http://localhost:8888/post/${postId}/likes`
     );
     setLikes(response.data);
+    const test = await axios.get(
+      `http://localhost:8888/post/${postId}/has-liked&userObjectId=${userObjectId}`
+    );
+
+    if (test.data.length > 0) {
+      setLikedObjectId(test.data);
+      setIsLiked(true);
+    } else {
+      setIsLiked(false);
+    }
   };
 
-  // Add comment to database
+  // Add like to database
   const handleLike = async () => {
-    // Post to Likes table
-    setIsLiked(!isLiked);
-
     if (!isLiked) {
       // Update Likes Table
       const savedLike = await axios.post(
@@ -101,7 +110,7 @@ export default function Post({
           userObjectId: userObjectId,
         }
       );
-      setLikedObjectId(savedLike.data.objectId);
+      // setLikedObjectId(savedLike.data.objectId);
 
       // Update Posts datatable by appending to Likes array
       await axios.put(`http://localhost:8888/post/${postId}/post-like`, {
@@ -139,15 +148,15 @@ export default function Post({
   } else {
     return (
       <div className="post">
-        <h3>{song.selectedSongName}</h3>
-        <p>Post By: {userId}</p>
-        <p>{createdAt}</p>
+        <h4 className="song-title">{song.selectedSongName}</h4>
         <div className="element-image">
-          <img src={song.selectedSongUrl} />
+          <img className="actual-image" src={song.selectedSongUrl} />
         </div>
 
         <div className="item-wrapper">
-          <div className="item-review">Review: {review}</div>
+          <div className="item-review">
+            <span className="bolded">{userId}</span> {review}
+          </div>
           <div className="item-mood">Mood: {mood}</div>
           <div className="item-rating">Rating: {rating}/5</div>
         </div>

@@ -72,6 +72,38 @@ router.get("/most-commented", async (req, res, next) => {
     }
 })
 
+// GET: most relevant song based on genre and likes
+// weighted average of 0.25 * most commonly liked genre + 0.5 * most commonly posted about genre + 0.25 * most commonly posted about liked genre 
+router.get("/most-relevant/:topGenre", async (req, res, next) => {
+    try {
+        const Songs = Parse.Object.extend("Songs");
+        const query = new Parse.Query(Songs)
+        query.equalTo("genres", req.params.topGenre)
+        const matches = await query.find();
+        let max = -1;
+        let bestId = "";
+        for (let i = 0; i < matches.length; i++) {
+            const currLikes = await matches[i].get("likes").length;
+            if (currLikes > max) {
+                max = currLikes
+                bestId = await matches[i].get("selectedSongId")
+            }
+        }
+
+        var options = {
+            url: `https://api.spotify.com/v1/tracks/${bestId}`,
+            headers: { 'Authorization': 'Bearer ' + req.app.get('access_token')},
+            json: true
+          };
+      
+        request.get(options, function(error, response, body) {
+            res.status(200).json({body})
+        });
+    } catch (err) {
+        next(err)
+    }
+})
+
 // GET: highest rated song on average
 router.get("/highest-rated", async (req, res, next) => {
     try {

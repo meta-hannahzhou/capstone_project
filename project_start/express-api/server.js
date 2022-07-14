@@ -7,11 +7,16 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
+// const path = require('path');
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
+const port = process.env.PORT || 8888;
+
+// const publicPath = path.join(__dirname, '..', 'public');
+
 
 var access_token ="";
 var userId = "";
@@ -51,6 +56,7 @@ var generateRandomString = function(length) {
 var stateKey = 'spotify_auth_state';
 
 var app = express();
+// app.use(express.static(publicPath));
 
 app.use(express.static(__dirname + '/public'))
    .use(cors())
@@ -221,9 +227,28 @@ app.get('/genre/:artistId', async (req, res, next) => {
       res.status(200).json(body.genres)
     });
   } catch (err) {
+    next(err)
+  }
+})
 
+// GET: all genres for a certain song (will be used later for statistics and recommendations)
+app.get('/post-genre/:selectedSongId', async (req, res, next) => {
+  const selectedSongId = req.params.selectedSongId;
+  try {
+    const Songs = Parse.Object.extend("Songs");
+    const songQuery = new Parse.Query(Songs)
+    songQuery.equalTo("selectedSongId", selectedSongId);
+    const response = await songQuery.find();
+    const genres = await response[0].get("genres")
+    res.status(200).json(genres)
+    
+  } catch (err) {
+    next(err)
   }
 })
 
 
-app.listen(8888);
+// app.listen(8888);
+app.listen(port, () => {
+  console.log(`Server is up on port ${port}!`)
+})
