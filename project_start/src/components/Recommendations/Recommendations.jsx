@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import RecCard from "../RecCard/RecCard";
 import ReactLoading from "react-loading";
+import { baseUrl } from "../../../baseUrl";
 
 /**
  *
@@ -38,33 +39,31 @@ export default function Recommendations({ getGenres, userObjectId }) {
 
       // Get most liked post from all users
       const responseLike = await axios.get(
-        "http://localhost:8888/recommendations/most-liked"
+        "${baseUrl}/recommendations/most-liked"
       );
       setMostLiked(responseLike.data.body);
 
       // Get most commented on post from all users
       const responseComment = await axios.get(
-        "http://localhost:8888/recommendations/most-commented"
+        "${baseUrl}/recommendations/most-commented"
       );
       setMostCommented(responseComment.data.body);
 
       // Get highest average rated song from all users
       const responseRate = await axios.get(
-        "http://localhost:8888/recommendations/highest-rated"
+        "${baseUrl}/recommendations/highest-rated"
       );
       setHighestRated(responseRate.data.body);
 
       // Get statistics for relevance recommendation
-      const posts = await axios.get("http://localhost:8888/profile/posted/");
+      const posts = await axios.get("${baseUrl}/profile/posted/");
       const postGenres = await getGenres(posts.data, true);
 
-      const likes = await axios.get(
-        `http://localhost:8888/profile/liked/${userObjectId}`
-      );
+      const likes = await axios.get(`${baseUrl}/profile/liked/${userObjectId}`);
       const likedGenres = await getGenres(likes.data, true);
 
       const comments = await axios.get(
-        `http://localhost:8888/profile/commented/${userObjectId}`
+        `${baseUrl}/profile/commented/${userObjectId}`
       );
       const commentedGenres = await getGenres(comments.data, true);
 
@@ -87,7 +86,7 @@ export default function Recommendations({ getGenres, userObjectId }) {
       )[0];
 
       const responseRelevant = await axios.get(
-        `http://localhost:8888/recommendations/most-relevant/${topGenre}`
+        `${baseUrl}/recommendations/most-relevant/${topGenre}`
       );
       setMostRelevant(responseRelevant.data.body);
 
@@ -106,7 +105,7 @@ export default function Recommendations({ getGenres, userObjectId }) {
   } else {
     return (
       <div className="col-sm-4">
-        <h1>Recommendations!</h1>
+        <h3>Recommendations</h3>
         <div className="row row-cols-1 row-cols-md-2 g-4">
           <div className="col">
             <div className="card">
@@ -122,9 +121,7 @@ export default function Recommendations({ getGenres, userObjectId }) {
               <img />
               <div className="card-body">
                 <h5 className="card-title">Highest Rated</h5>
-                <p className="card-text">
-                  <RecCard song={highestRated} />
-                </p>
+                <RecCard song={highestRated} />
               </div>
             </div>
           </div>
@@ -133,9 +130,7 @@ export default function Recommendations({ getGenres, userObjectId }) {
               <img />
               <div className="card-body">
                 <h5 className="card-title">Most Commented</h5>
-                <p className="card-text">
-                  <RecCard song={mostCommented} />
-                </p>
+                <RecCard song={mostCommented} />
               </div>
             </div>
           </div>
@@ -144,9 +139,7 @@ export default function Recommendations({ getGenres, userObjectId }) {
               <img />
               <div className="card-body">
                 <h5 className="card-title">Most Relevant</h5>
-                <p className="card-text">
-                  <RecCard song={mostRelevant} />
-                </p>
+                <RecCard song={mostRelevant} />
               </div>
             </div>
           </div>

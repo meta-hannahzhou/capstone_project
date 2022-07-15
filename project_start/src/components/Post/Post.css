@@ -34,3 +34,7 @@
     background-color: #201c1c;
 }
 .bolded { font-weight: bold; }
+
+.box {
+    margin-top: -5vh;
+}

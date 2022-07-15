@@ -2,6 +2,7 @@ import "./Profile.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Post from "../Post/Post";
+import { baseUrl } from "../../../baseUrl";
 
 /**
  *
@@ -17,16 +18,16 @@ export default function Profile({ userObjectId }) {
     // Makes axios get request to get individual product info
     async function getProfile() {
       setIsFetching(true);
-      const profile = await axios.get(`http://localhost:8888/profile`);
+      const profile = await axios.get(`${baseUrl}/profile`);
       setUserInfo(profile.data.body);
 
       const likedPosts = await axios.get(
-        `http://localhost:8888/profile/liked/${userObjectId}`
+        `${baseUrl}/profile/liked/${userObjectId}`
       );
 
       setLiked(likedPosts.data);
 
-      const posted = await axios.get(`http://localhost:8888/profile/posted`);
+      const posted = await axios.get(`${baseUrl}/profile/posted`);
       setPosted(posted.data);
 
       setIsFetching(false);

@@ -17,15 +17,21 @@ export default function Statistics({ getGenres }) {
     // Makes axios get request to get individual product info
     async function getTop() {
       setIsFetching(true);
-      const response = await axios.get("http://localhost:8888/statistics");
+      const response = await axios.get("${baseUrl}/statistics");
       const currTop = response.data.body.items;
       setTop(currTop);
       setDisplaySpotify(await getGenres(currTop, false));
 
-      const posts = await axios.get("http://localhost:8888/profile/posted/");
+      const posts = await axios.get("${baseUrl}/profile/posted/");
       setDisplayPost(await getGenres(posts.data, true));
 
       setIsFetching(false);
+
+      setTimeout(() => {
+        // setDisplaySpotify(await getGenres(currTop, false));
+        // setDisplayPost(await getGenres(posts.data, true));
+        setEndAngle(360);
+      }, 100);
     }
 
     getTop();
@@ -41,34 +47,44 @@ export default function Statistics({ getGenres }) {
     return (
       <div className="statistics">
         <h1> Statistics</h1>
-        <h3> Top Tracks Of All Time</h3>
+        <div className="top">
+          <div className="list">
+            <h3> Top Tracks Of All Time</h3>
 
-        {
-          <ol>
-            {top.map((item) => {
-              artistIds.push(item.artists[0].id);
-              return <li>{item.name}</li>;
-            })}
-          </ol>
-        }
+            {
+              <ol>
+                {top.map((item) => {
+                  artistIds.push(item.artists[0].id);
+                  return <li>{item.name}</li>;
+                })}
+              </ol>
+            }
+          </div>
+          <div className="pie-chart">
+            <VictoryPie
+              data={displaySpotify}
+              colorScale="green"
+              radius={100}
+              animate={{
+                duration: 2000,
+              }}
+              style={{ labels: { fill: "white" } }}
+              endAngle={endAngle}
+            />
+          </div>
+        </div>
 
+        <h3>Post Statistics</h3>
         <div className="pie-chart">
-          <h3>Spotify Statistics</h3>
-          <VictoryPie
-            data={displaySpotify}
-            colorScale="green"
-            radius={100}
-            animate={{
-              duration: 2000,
-            }}
-            style={{ labels: { fill: "white" } }}
-          />
-          <h3>Post Statistics</h3>
           <VictoryPie
             data={displayPost}
             colorScale="green"
             radius={100}
             style={{ labels: { fill: "white" } }}
+            animate={{
+              duration: 2000,
+            }}
+            endAngle={endAngle}
           />
         </div>
       </div>

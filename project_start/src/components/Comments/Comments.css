@@ -1,9 +1,19 @@
 .indiv-comment {
     display: flex;
-    margin-left: 10vw;
 
 }
 .comment-header {
     display: flex;
     margin-left: 5vw;
+}
+
+.delete-img {
+    width: 15px;
+    margin-left: 1vw;
+}
+
+.delete {
+    background-color: #121212;
+    border-radius: 0;
+    border-color: #121212;
 }

@@ -6,6 +6,7 @@ import Comments from "../Comments/Comments";
 import axios from "axios";
 import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
+import { baseUrl } from "../../../baseUrl";
 
 /**
  *
@@ -31,11 +32,12 @@ export default function Post({
   const [song, setSong] = useState({});
   const [isLiked, setIsLiked] = useState(false);
   const [likedObjectId, setLikedObjectId] = useState("");
+  const [commentObjectId, setCommentObjectId] = useState("");
   const [embedUrl, setEmbedUrl] = useState("");
 
   // Get information about the current song being reviewed including selectedSongUrl and selectedSongName
   const getSongInfo = async () => {
-    const response = await axios.get(`http://localhost:8888/post/${postId}/`);
+    const response = await axios.get(`${baseUrl}/post/${postId}/`);
     setSong(response.data);
     setEmbedUrl(
       `http://open.spotify.com/track/${response.data.selectedSongId}`
@@ -49,9 +51,7 @@ export default function Post({
 
   // Get all comments for current post
   const getComments = async () => {
-    const response = await axios.get(
-      `http://localhost:8888/post/${postId}/comments`
-    );
+    const response = await axios.get(`${baseUrl}/post/${postId}/comments`);
 
     setComments(response.data);
   };
@@ -65,7 +65,7 @@ export default function Post({
   const handleSubmitComment = async () => {
     // Post to Comments table
     const savedComment = await axios.post(
-      `http://localhost:8888/post/${postId}/new-comment`,
+      `${baseUrl}/post/${postId}/new-comment`,
       {
         selectedSongId: selectedSongId,
         userObjectId: userObjectId,
@@ -74,12 +74,9 @@ export default function Post({
     );
 
     // Update Posts datatable by appending to Comments array
-    await axios.put(
-      `http://localhost:8888/post/${postId}/update-post-comment`,
-      {
-        commentId: savedComment.data.objectId,
-      }
-    );
+    await axios.put(`${baseUrl}/post/${postId}/update-post-comment`, {
+      commentId: savedComment.data.objectId,
+    });
     // Call get comments to update count displayed on page
     getComments();
   };
@@ -89,12 +86,10 @@ export default function Post({
    */
 
   const getLikes = async () => {
-    const response = await axios.get(
-      `http://localhost:8888/post/${postId}/likes`
-    );
+    const response = await axios.get(`${baseUrl}/post/${postId}/likes`);
     setLikes(response.data);
     const test = await axios.get(
-      `http://localhost:8888/post/${postId}/has-liked&userObjectId=${userObjectId}`
+      `${baseUrl}/post/${postId}/has-liked&userObjectId=${userObjectId}`
     );
 
     if (test.data.length > 0) {
@@ -109,25 +104,22 @@ export default function Post({
   const handleLike = async () => {
     if (!isLiked) {
       // Update Likes Table
-      const savedLike = await axios.post(
-        `http://localhost:8888/post/${postId}/new-like`,
-        {
-          selectedSongId: selectedSongId,
-          userObjectId: userObjectId,
-        }
-      );
+      const savedLike = await axios.post(`${baseUrl}/post/${postId}/new-like`, {
+        selectedSongId: selectedSongId,
+        userObjectId: userObjectId,
+      });
       // setLikedObjectId(savedLike.data.objectId);
 
       // Update Posts datatable by appending to Likes array
-      await axios.put(`http://localhost:8888/post/${postId}/post-like`, {
+      await axios.put(`${baseUrl}/post/${postId}/post-like`, {
         likeId: savedLike.data.objectId,
         isLiked: isLiked,
       });
     } else {
       await axios.delete(
-        `http://localhost:8888/post/${postId}/delete-like&likedObjectId=${likedObjectId}`
+        `${baseUrl}/post/${postId}/delete-like&likedObjectId=${likedObjectId}`
       );
-      await axios.put(`http://localhost:8888/post/${postId}/post-like`, {
+      await axios.put(`${baseUrl}/post/${postId}/post-like`, {
         likeId: likedObjectId,
         isLiked: isLiked,
       });
@@ -167,13 +159,13 @@ export default function Post({
           <div className="item-mood">Mood: {mood}</div>
           <div className="item-rating">Rating: {rating}/5</div>
         </div>
-        {isProfile ? null : <Comments comments={comments} />}
+        {isProfile ? null : <Comments comments={comments} postId={postId} />}
         {/* https://bbbootstrap.com/snippets/bootstrap-like-comment-share-section-comment-box-63008805 */}
         <div className="container mt-5">
           <div className="d-flex justify-content-center row">
             <div className="col-md-8">
               <div className="d-flex flex-column comment-section">
-                <div>
+                <div className="box">
                   <div className="d-flex flex-row fs-12">
                     <div className="like p-2 cursor">
                       <i className="fa fa-thumbs-o-up"></i>
@@ -203,7 +195,7 @@ export default function Post({
                 </div>
 
                 {isProfile ? null : (
-                  <div className=" p-2">
+                  <div className="p-2">
                     <div className="d-flex flex-row align-items-start">
                       <img
                         className="rounded-circle"

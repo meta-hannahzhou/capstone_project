@@ -81,16 +81,13 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
   const [isFetching, setIsFetching] = useState(true);
 
   useEffectOnce(() => {
-    async function getProfile() {
-      setIsFetching(true);
-      const response = await axios.post("http://localhost:8888/");
-      setUserObjectId(response.data.objectId);
-    }
-
     async function getFeed() {
       setIsFetching(true);
+      const response = await axios.post("${baseUrl}/");
+      setUserObjectId(response.data.objectId);
+
       await axios
-        .get("http://localhost:8888/feed")
+        .get("${baseUrl}/feed")
         .then((allPosts) => {
           setPosts(allPosts.data);
           setIsFetching(false);
@@ -98,36 +95,11 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
         .catch((error) => {
           <h1>{error}</h1>;
         });
+      setIsFetching(false);
     }
-    getProfile();
+
     getFeed();
   }, []);
-
-  // useEffectOnce(() => {
-  //   const time = setTimeout(() => {
-  //     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-  //       let element = document.getElementById("embed-iframe");
-  //       console.log(element);
-  //       let options = {
-  //         width: "60%",
-  //         height: "200",
-  //         uri: "spotify:episode:7makk4oTQel546B0PZlDM5",
-  //       };
-  //       let callback = (EmbedController) => {
-  //         document
-  //           .querySelectorAll("ul#episodes > li > button")
-  //           .forEach((episode) => {
-  //             episode.addEventListener("click", () => {
-  //               EmbedController.loadUri(episode.dataset.spotifyId);
-  //             });
-  //           });
-  //       };
-  //       IFrameAPI.createController(element, options, callback);
-  //     };
-
-  //     clearTimeout(time);
-  //   }, 5000);
-  // }, []);
 
   if (isFetching) {
     return (
@@ -139,32 +111,6 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
   } else {
     return (
       <div className="home">
-        {/* <div id="embed-iframe">hi</div> */}
-        {/*
-        <script
-          src="https://open.spotify.com/embed-podcast/iframe-api/v1"
-          async
-        ></script>
-        {
-          (window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            let element = document.getElementById("embed-iframe");
-            let options = {
-              width: "60%",
-              height: "200",
-              uri: "spotify:episode:7makk4oTQel546B0PZlDM5",
-            };
-            let callback = (EmbedController) => {
-              document
-                .querySelectorAll("ul#episodes > li > button")
-                .forEach((episode) => {
-                  episode.addEventListener("click", () => {
-                    EmbedController.loadUri(episode.dataset.spotifyId);
-                  });
-                });
-            };
-            IFrameAPI.createController(element, options, callback);
-          })
-        } */}
         <div className="row">
           <div className="col-sm-8">
             <div className="grid">

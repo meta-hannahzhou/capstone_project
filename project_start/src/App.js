@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar/Navbar"
 import Profile from "./components/Profile/Profile"
 import NewPost from "./components/NewPost/NewPost"
 import Statistics from "./components/Statistics/Statistics"
+import { baseUrl } from "../../../baseUrl";
 
 /**
  * Sets up all routes for basic pages that can be navigated to from navbar
@@ -27,12 +28,12 @@ function App() {
     const unresolved = songList.map(async (item) => {
       if (!post) {
         const currGenres = await axios.get(
-          `http://localhost:8888/genre/${item.artists[0].id}`
+          `${baseUrl}/genre/${item.artists[0].id}`
         );
         return currGenres.data;
       } else {
         const currGenres = await axios.get(
-          `http://localhost:8888/post-genre/${item.selectedSongId}`
+          `${baseUrl}/post-genre/${item.selectedSongId}`
         );
         return currGenres.data;
       }
@@ -62,11 +63,12 @@ function App() {
             <header className="App-header">
               <a
                 className="App-link"
-                href="http://localhost:8888/login"
+                href="${baseUrl}/login"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Login to Spotify!
+                <span className="login-text">Login to Spotify</span>
+                
               </a>
             </header>
           }

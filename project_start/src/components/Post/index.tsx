@@ -1,5 +1,6 @@
 import { HTMLAttributes } from 'react';
 
+// https://github.com/ctjlewis/react-spotify-embed#readme
 interface SpotifyProps extends HTMLAttributes<HTMLIFrameElement> {
   [key: string]: any;
 
@@ -22,7 +23,6 @@ const Spotify = ({
   ...props
 }: SpotifyProps) => {
   const url = new URL(link);
-  // https://open.spotify.com/track/1KFxcj3MZrpBGiGA8ZWriv?si=f024c3aa52294aa1
   return (
     <iframe
       title="Spotify Web Player"
@@ -32,7 +32,7 @@ const Spotify = ({
       frameBorder={frameBorder}
       allow={allow}
       style={{
-        borderRadius: 8,
+        borderRadius: 1,
         ...style,
       }}
       {...props}

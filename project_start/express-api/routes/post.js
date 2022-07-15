@@ -30,6 +30,16 @@ router.get('/search/:query', async (req, res, next) => {
   })
 
 
+  // Middleware for getting the current song to limit redundancy
+// const getCurrSong = async (req, res, next) => {
+//     const Songs = Parse.Object.extend("Songs");
+//     const query = new Parse.Query(Songs)
+//     query.equalTo("selectedSongId", selectedSongId)
+//     const foundSong = await query.find()
+//     res.foundSong = foundSong;
+//     next()
+// }
+
 // POST: allows user to make a new post from form
 // Updates POST table and SONGS table
 router.post("/new-post", async (req, res, next) => {
@@ -170,6 +180,26 @@ router.post('/:postId/new-comment', getCurrPost, async (req, res, next) => {
 
 // PUT: append new comment object id to comments array in Posts database
 router.put('/:postId/update-post-comment', getCurrPost, async (req, res, next) => {
+    let currComments = await res.post.get("comments")
+    currComments.push(req.body.commentId)
+    res.post.set("comments", currComments)
+    res.post.save()
+
+    const Songs = Parse.Object.extend("Songs");
+    const query = new Parse.Query(Songs)
+    query.equalTo("selectedSongId", res.post.get("selectedSongId"))
+    const foundSong = await query.find()
+    let currSongComments = await foundSong[0].get("comments")
+    currSongComments.push(req.body.commentId)
+    foundSong[0].set("comments", currSongComments)
+    foundSong[0].save()
+
+    res.status(200).json(currComments)
+})
+
+
+// DELETE: delete comment from Comments table and remove id from Songs and Posts comments array
+router.delete('/:postId/delete-comment&commentObjectId=:commentObjectId', getCurrPost, async (req, res, next) => {
     let currComments = await res.post.get("comments")
     currComments.push(req.body.commentId)
     res.post.set("comments", currComments)

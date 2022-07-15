@@ -35,7 +35,7 @@ Parse.serverURL = "https://parseapi.back4app.com/"
 
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
-var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
+var redirect_uri = '${baseUrl}/callback'; // Your redirect uri
 
 // app.use(() => {})
 /**
