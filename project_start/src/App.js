@@ -9,7 +9,7 @@ import Navbar from "./components/Navbar/Navbar"
 import Profile from "./components/Profile/Profile"
 import NewPost from "./components/NewPost/NewPost"
 import Statistics from "./components/Statistics/Statistics"
-import { baseUrl } from "../../../baseUrl";
+import { baseUrl } from "../../baseUrl";
 
 /**
  * Sets up all routes for basic pages that can be navigated to from navbar
