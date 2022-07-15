@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import RecCard from "../RecCard/RecCard";
 import ReactLoading from "react-loading";
-import { baseUrl } from "../../../baseUrl";
+import { baseUrl } from "../../baseUrl";
 
 /**
  *

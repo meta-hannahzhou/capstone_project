@@ -2,7 +2,7 @@ import "./Profile.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Post from "../Post/Post";
-import { baseUrl } from "../../../baseUrl";
+import { baseUrl } from "../../baseUrl";
 
 /**
  *
