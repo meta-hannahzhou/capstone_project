@@ -17,3 +17,20 @@
 .heart {
     width: 20px;
 }
+
+.actual-image {
+    border-radius: 5px;
+    width: 34vw;
+}
+
+.post {
+    border: 5px solid #201c1c;
+    width: 35vw;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.song-title {
+    background-color: #201c1c;
+}
+.bolded { font-weight: bold; }

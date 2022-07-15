@@ -1,7 +1,9 @@
 import './App.css';
 import * as React from "react";
+// import Spotify from "react-spotify-embed"
 import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 import Home from "./components/Home/Home"
 import Navbar from "./components/Navbar/Navbar"
 import Profile from "./components/Profile/Profile"
@@ -13,8 +15,40 @@ import Statistics from "./components/Statistics/Statistics"
  */
 function App() {
 
-  const [login, setLogin] = useState(false)
   const [userObjectId, setUserObjectId] = useState("")
+
+  /**
+   * 
+   * @param {*} songList 
+   * @param {*} post 
+   * @returns the genres associated with a specific song 
+   */
+  const getGenres = async (songList, post) => {
+    const unresolved = songList.map(async (item) => {
+      if (!post) {
+        const currGenres = await axios.get(
+          `http://localhost:8888/genre/${item.artists[0].id}`
+        );
+        return currGenres.data;
+      } else {
+        const currGenres = await axios.get(
+          `http://localhost:8888/post-genre/${item.selectedSongId}`
+        );
+        return currGenres.data;
+      }
+    });
+    const results = await Promise.all(unresolved);
+
+    const finalGenres = [].concat.apply([], results);
+    const unique = [...new Set(finalGenres)];
+    const myData = unique.map((item) => {
+      return {
+        x: item,
+        y: finalGenres.filter((x) => x === item).length,
+      };
+    });
+    return myData;
+  };
   return (
     // make this blank route
     <div className="App">
@@ -43,9 +77,9 @@ function App() {
             element={
               <>
                 <Navbar />
-                <Home setLogin={setLogin} 
-                      userObjectId={userObjectId}
-                      setUserObjectId={setUserObjectId}/>
+                <Home userObjectId={userObjectId}
+                      setUserObjectId={setUserObjectId}
+                      getGenres={getGenres}/>
               </>
               
             }
@@ -79,7 +113,7 @@ function App() {
             element={
               <>
                 <Navbar />
-                <Statistics />
+                <Statistics getGenres={getGenres}/>
               </>
               
             }

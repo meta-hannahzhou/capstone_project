@@ -4,25 +4,93 @@ import { useEffect, useState } from "react";
 import RecCard from "../RecCard/RecCard";
 import ReactLoading from "react-loading";
 
-export default function Recommendations() {
+/**
+ *
+ * @param {getGenres}
+ * @param {userObjectId}
+ * @returns Overall display for all song recommendations
+ */
+export default function Recommendations({ getGenres, userObjectId }) {
   const [isFetching, setIsFetching] = useState(true);
   const [mostLiked, setMostLiked] = useState();
+  const [mostCommented, setMostCommented] = useState();
+  const [mostRelevant, setMostRelevant] = useState();
   const [highestRated, setHighestRated] = useState();
 
-  console.log(isFetching);
+  const weight = (genres, type) => {
+    let scale = 0;
+    if (type === "post") {
+      scale = 0.5;
+    } else {
+      scale = 0.25;
+    }
+
+    const scaledResult = genres.map((item) => {
+      item.y *= scale;
+      return item;
+    });
+    return scaledResult;
+  };
 
   useEffect(() => {
     async function getRecs() {
       setIsFetching(true);
-      const response = await axios.get(
+
+      // Get most liked post from all users
+      const responseLike = await axios.get(
         "http://localhost:8888/recommendations/most-liked"
       );
-      setMostLiked(response.data.body);
+      setMostLiked(responseLike.data.body);
 
-      const response2 = await axios.get(
+      // Get most commented on post from all users
+      const responseComment = await axios.get(
+        "http://localhost:8888/recommendations/most-commented"
+      );
+      setMostCommented(responseComment.data.body);
+
+      // Get highest average rated song from all users
+      const responseRate = await axios.get(
         "http://localhost:8888/recommendations/highest-rated"
       );
-      setHighestRated(response2.data.body);
+      setHighestRated(responseRate.data.body);
+
+      // Get statistics for relevance recommendation
+      const posts = await axios.get("http://localhost:8888/profile/posted/");
+      const postGenres = await getGenres(posts.data, true);
+
+      const likes = await axios.get(
+        `http://localhost:8888/profile/liked/${userObjectId}`
+      );
+      const likedGenres = await getGenres(likes.data, true);
+
+      const comments = await axios.get(
+        `http://localhost:8888/profile/commented/${userObjectId}`
+      );
+      const commentedGenres = await getGenres(comments.data, true);
+
+      // Calculate a weighted average of the users posts, likes, and comments in relation to genres
+      let scaledResult = weight(postGenres, "post").concat(
+        weight(likedGenres, "like"),
+        weight(commentedGenres, "comment")
+      );
+      const unique = [...new Set(scaledResult)];
+
+      //https://dev.to/devtronic/javascript-map-an-array-of-objects-to-a-dictionary-3f42
+      let dictionary = Object.assign({}, ...unique.map((x) => ({ [x.x]: 0 })));
+
+      scaledResult.map((item) => {
+        dictionary[item.x] += item.y;
+      });
+
+      const topGenre = Object.entries(dictionary).reduce((a, b) =>
+        a[1] > b[1] ? a : b
+      )[0];
+
+      const responseRelevant = await axios.get(
+        `http://localhost:8888/recommendations/most-relevant/${topGenre}`
+      );
+      setMostRelevant(responseRelevant.data.body);
+
       setIsFetching(false);
     }
     getRecs();
@@ -66,8 +134,7 @@ export default function Recommendations() {
               <div className="card-body">
                 <h5 className="card-title">Most Commented</h5>
                 <p className="card-text">
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content.
+                  <RecCard song={mostCommented} />
                 </p>
               </div>
             </div>
@@ -76,11 +143,9 @@ export default function Recommendations() {
             <div className="card">
               <img />
               <div className="card-body">
-                <h5 className="card-title">Card title</h5>
+                <h5 className="card-title">Most Relevant</h5>
                 <p className="card-text">
-                  This is a longer card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit
-                  longer.
+                  <RecCard song={mostRelevant} />
                 </p>
               </div>
             </div>

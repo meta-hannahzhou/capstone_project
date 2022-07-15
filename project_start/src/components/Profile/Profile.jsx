@@ -3,7 +3,12 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Post from "../Post/Post";
 
-export default function Profile({ userObjectId, setUserObjectId }) {
+/**
+ *
+ * @param {userObjectId}
+ * @returns Profile displaying recent posts and basic user info
+ */
+export default function Profile({ userObjectId }) {
   const [isFetching, setIsFetching] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [liked, setLiked] = useState([]);
@@ -12,40 +17,22 @@ export default function Profile({ userObjectId, setUserObjectId }) {
     // Makes axios get request to get individual product info
     async function getProfile() {
       setIsFetching(true);
-      await axios
-        .get(`http://localhost:8888/profile`)
-        .then((response) => {
-          setUserInfo(response.data.body);
-        })
-        .catch((error) => {
-          <h1>Bad</h1>;
-        });
+      const profile = await axios.get(`http://localhost:8888/profile`);
+      setUserInfo(profile.data.body);
+
+      const likedPosts = await axios.get(
+        `http://localhost:8888/profile/liked/${userObjectId}`
+      );
+
+      setLiked(likedPosts.data);
+
+      const posted = await axios.get(`http://localhost:8888/profile/posted`);
+      setPosted(posted.data);
+
+      setIsFetching(false);
     }
-    async function getLiked() {
-      await axios
-        .get(`http://localhost:8888/profile/liked/${userObjectId}`)
-        .then((response) => {
-          setLiked(response.data.result);
-        })
-        .catch((error) => {
-          <h1>Bad</h1>;
-        });
-    }
-    async function getPosted() {
-      setIsFetching(true);
-      await axios
-        .get(`http://localhost:8888/profile/posted`)
-        .then((response) => {
-          setPosted(response.data);
-          setIsFetching(false);
-        })
-        .catch((error) => {
-          <h1>Bad</h1>;
-        });
-    }
+
     getProfile();
-    getLiked();
-    getPosted();
   }, []);
 
   if (isFetching) {
@@ -72,8 +59,6 @@ export default function Profile({ userObjectId, setUserObjectId }) {
             return (
               <Post
                 selectedSongId={currPost.selectedSongId}
-                selectedSongUrl={currPost.selectedSongUrl}
-                selectedSongName={currPost.selectedSongName}
                 review={currPost.review}
                 mood={currPost.mood}
                 rating={currPost.rating}

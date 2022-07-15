@@ -3,7 +3,11 @@ import "./Navbar.css";
 // import { Link, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-export default function Navbar({ login }) {
+/**
+ *
+ * @returns Navigation bar to move around site
+ */
+export default function Navbar() {
   return (
     <nav>
       <div className="navbar-container">
