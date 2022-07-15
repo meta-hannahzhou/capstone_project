@@ -132,7 +132,8 @@ app.get('/callback', function(req, res) {
           userId = body.id
           app.set('userId', body.id)
         });
-
+        res.send(`${baseRedirectUrl}/home`)
+        // console.log(baseRedirectUrl)
         res.redirect(`${baseRedirectUrl}/home`)
       } else {
         res.redirect('/#' +
