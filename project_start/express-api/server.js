@@ -34,11 +34,11 @@ Parse.serverURL = "https://parseapi.back4app.com/"
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://whispering-castle-13172.herokuapp.com" : "http://localhost:8888";
 const baseRedirectUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_URL : "http://localhost:3000";
-
+console.log(process.env.NODE_ENV);
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
-// app.use(() => {})
+
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -73,7 +73,7 @@ app.get('/login', function(req, res) {
 
   // your application requests authorization
   var scope = 'user-read-private user-read-email user-top-read user-read-recently-played';
-  res.send(redirect_uri)
+  // res.send(redirect_uri)
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -132,8 +132,8 @@ app.get('/callback', function(req, res) {
           userId = body.id
           app.set('userId', body.id)
         });
-        res.send(`${baseRedirectUrl}/home`)
-        // res.redirect(`${baseRedirectUrl}/home`)
+        // res.send(`${baseRedirectUrl}/home`)
+        res.redirect(`${baseRedirectUrl}/home`)
       } else {
         res.redirect('/#' +
           querystring.stringify({
