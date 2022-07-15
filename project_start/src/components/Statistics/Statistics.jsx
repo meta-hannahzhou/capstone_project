@@ -1,7 +1,6 @@
 import "./Statistics.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { PieChart } from "react-minimal-pie-chart";
 import { VictoryPie } from "victory-pie";
 
 export default function Statistics({ getGenres }) {
