@@ -39,24 +39,24 @@ export default function Recommendations({ getGenres, userObjectId }) {
 
       // Get most liked post from all users
       const responseLike = await axios.get(
-        "${baseUrl}/recommendations/most-liked"
+        `${baseUrl}/recommendations/most-liked`
       );
       setMostLiked(responseLike.data.body);
 
       // Get most commented on post from all users
       const responseComment = await axios.get(
-        "${baseUrl}/recommendations/most-commented"
+        `${baseUrl}/recommendations/most-commented`
       );
       setMostCommented(responseComment.data.body);
 
       // Get highest average rated song from all users
       const responseRate = await axios.get(
-        "${baseUrl}/recommendations/highest-rated"
+        `${baseUrl}/recommendations/highest-rated`
       );
       setHighestRated(responseRate.data.body);
 
       // Get statistics for relevance recommendation
-      const posts = await axios.get("${baseUrl}/profile/posted/");
+      const posts = await axios.get(`${baseUrl}/profile/posted/`);
       const postGenres = await getGenres(posts.data, true);
 
       const likes = await axios.get(`${baseUrl}/profile/liked/${userObjectId}`);

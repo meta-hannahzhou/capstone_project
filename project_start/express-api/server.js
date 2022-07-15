@@ -32,10 +32,11 @@ const Parse = require('parse/node');
 Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
+const baseUrl = process.env.NODE_ENV === "production" ? "https://whispering-castle-13172.herokuapp.com" : "http://localhost:8888";
 
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
-var redirect_uri = '${baseUrl}/callback'; // Your redirect uri
+var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
 
 // app.use(() => {})
 /**

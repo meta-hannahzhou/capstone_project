@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useLayoutEffect } from "react";
 import Post from "../Post/Post";
 import Recommendations from "../Recommendations/Recommendations";
 import ReactLoading from "react-loading";
+import { baseUrl } from "../../baseUrl";
 
 export const useEffectOnce = (effect) => {
   const destroyFunc = useRef();
@@ -83,11 +84,11 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
   useEffectOnce(() => {
     async function getFeed() {
       setIsFetching(true);
-      const response = await axios.post("${baseUrl}/");
+      const response = await axios.post(`${baseUrl}/`);
       setUserObjectId(response.data.objectId);
 
       await axios
-        .get("${baseUrl}/feed")
+        .get(`${baseUrl}/feed`)
         .then((allPosts) => {
           setPosts(allPosts.data);
           setIsFetching(false);

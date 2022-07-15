@@ -6,7 +6,7 @@ import Comments from "../Comments/Comments";
 import axios from "axios";
 import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
-import { baseUrl } from "../../../baseUrl";
+import { baseUrl } from "../../baseUrl";
 
 /**
  *

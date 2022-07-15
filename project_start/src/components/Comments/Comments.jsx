@@ -2,7 +2,7 @@ import * as React from "react";
 import "./Comments.css";
 import Bin from "./bin.png";
 import axios from "axios";
-import { baseUrl } from "../../../baseUrl";
+import { baseUrl } from "../../baseUrl";
 
 /**
  *

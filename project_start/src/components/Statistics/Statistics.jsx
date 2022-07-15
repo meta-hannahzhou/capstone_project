@@ -2,6 +2,7 @@ import "./Statistics.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { VictoryPie } from "victory-pie";
+import { baseUrl } from "../../baseUrl";
 
 export default function Statistics({ getGenres }) {
   const [isFetching, setIsFetching] = useState(true);
@@ -16,12 +17,12 @@ export default function Statistics({ getGenres }) {
     // Makes axios get request to get individual product info
     async function getTop() {
       setIsFetching(true);
-      const response = await axios.get("${baseUrl}/statistics");
+      const response = await axios.get(`${baseUrl}/statistics`);
       const currTop = response.data.body.items;
       setTop(currTop);
       setDisplaySpotify(await getGenres(currTop, false));
 
-      const posts = await axios.get("${baseUrl}/profile/posted/");
+      const posts = await axios.get(`${baseUrl}/profile/posted/`);
       setDisplayPost(await getGenres(posts.data, true));
 
       setIsFetching(false);
