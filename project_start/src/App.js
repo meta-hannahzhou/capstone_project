@@ -4,11 +4,12 @@ import * as React from "react";
 import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Home from "./components/Home/Home"
-import Navbar from "./components/Navbar/Navbar"
-import Profile from "./components/Profile/Profile"
-import NewPost from "./components/NewPost/NewPost"
-import Statistics from "./components/Statistics/Statistics"
+import Home from "./components/Home/Home.jsx"
+import Navbar from "./components/Navbar/Navbar.jsx"
+import Profile from "./components/Profile/Profile.jsx"
+import NewPost from "./components/NewPost/NewPost.jsx"
+import Statistics from "./components/Statistics/Statistics.jsx"
+import { baseUrl } from './baseUrl.js';
 
 /**
  * Sets up all routes for basic pages that can be navigated to from navbar
@@ -27,12 +28,12 @@ function App() {
     const unresolved = songList.map(async (item) => {
       if (!post) {
         const currGenres = await axios.get(
-          `http://localhost:8888/genre/${item.artists[0].id}`
+          `${baseUrl}/genre/${item.artists[0].id}`
         );
         return currGenres.data;
       } else {
         const currGenres = await axios.get(
-          `http://localhost:8888/post-genre/${item.selectedSongId}`
+          `${baseUrl}/post-genre/${item.selectedSongId}`
         );
         return currGenres.data;
       }
@@ -49,6 +50,7 @@ function App() {
     });
     return myData;
   };
+  const link = `${baseUrl}/login`
   return (
     // make this blank route
     <div className="App">
@@ -62,11 +64,12 @@ function App() {
             <header className="App-header">
               <a
                 className="App-link"
-                href="http://localhost:8888/login"
+                href={link}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Login to Spotify!
+                <span className="login-text">Login to Spotify</span>
+                
               </a>
             </header>
           }

@@ -2,6 +2,7 @@ import "./NewPost.css";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import SearchSong from "../SearchSong/SearchSong";
+import { baseUrl } from "../../baseUrl";
 
 /**
  *
@@ -20,7 +21,7 @@ export default function NewPost() {
       setTracks([]);
     } else {
       const { data } = await axios.get(
-        `http://localhost:8888/post/search/${e.target.value}`
+        `${baseUrl}/post/search/${e.target.value}`
       );
       setTracks(data.body.tracks.items);
     }
@@ -54,7 +55,7 @@ export default function NewPost() {
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
-    await axios.post("http://localhost:8888/post/new-post", {
+    await axios.post(`${baseUrl}/post/new-post`, {
       selectedSongId: selectedSongId,
       selectedSongUrl: selectedSongUrl,
       selectedSongName: selectedSongName,

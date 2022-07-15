@@ -1,6 +1,25 @@
 .pie-chart {
     width: 500px;
+    position: relative;
+    top: -8vh;
+    margin-left: 1vw;
 }
 tspan {
     fill: white;
 } 
+
+.list {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    text-align: left;
+    margin-left: 5vw;
+    position: relative;
+    margin-top: 2vh;
+}
+
+.top {
+    display: flex;
+    flex-direction: row;
+}

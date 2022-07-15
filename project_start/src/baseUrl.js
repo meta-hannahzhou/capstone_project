@@ -1,0 +1,1 @@
+export const baseUrl = process.env.NODE_ENV === "production" ? "https://whispering-castle-13172.herokuapp.com" : "http://localhost:8888"
