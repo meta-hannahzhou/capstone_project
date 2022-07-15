@@ -38,7 +38,6 @@ const baseRedirectUrl = process.env.NODE_ENV === "production" ? process.env.VERC
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
-console.log(redirect_uri)
 // app.use(() => {})
 /**
  * Generates a random string containing numbers and letters
@@ -132,8 +131,8 @@ app.get('/callback', function(req, res) {
           userId = body.id
           app.set('userId', body.id)
         });
-
-        res.redirect(`${baseRedirectUrl}/home`)
+        res.send(`${baseRedirectUrl}/home`)
+        // res.redirect(`${baseRedirectUrl}/home`)
       } else {
         res.redirect('/#' +
           querystring.stringify({
