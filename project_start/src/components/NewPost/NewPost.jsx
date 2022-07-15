@@ -13,6 +13,7 @@ export default function NewPost() {
   const [selectedSongUrl, setSelectedSongUrl] = useState("");
   const [selectedSongName, setSelectedSongName] = useState("");
   const [selectedArtistId, setSelectedArtistId] = useState("");
+  const [selectedSongUri, setSelectedSongUri] = useState("");
   const searchTracks = async (e) => {
     e.preventDefault();
     if (e.target.value.length == 0) {

@@ -4,6 +4,7 @@ import Heart from "./heart.png";
 import HeartLiked from "./heart-liked.png";
 import Comments from "../Comments/Comments";
 import axios from "axios";
+import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
 
 /**
@@ -30,11 +31,16 @@ export default function Post({
   const [song, setSong] = useState({});
   const [isLiked, setIsLiked] = useState(false);
   const [likedObjectId, setLikedObjectId] = useState("");
+  const [embedUrl, setEmbedUrl] = useState("");
 
   // Get information about the current song being reviewed including selectedSongUrl and selectedSongName
   const getSongInfo = async () => {
     const response = await axios.get(`http://localhost:8888/post/${postId}/`);
     setSong(response.data);
+    setEmbedUrl(
+      `http://open.spotify.com/track/${response.data.selectedSongId}`
+    );
+    setIsFetching(false);
   };
 
   /**
@@ -152,6 +158,7 @@ export default function Post({
         <div className="element-image">
           <img className="actual-image" src={song.selectedSongUrl} />
         </div>
+        {embedUrl ? <Spotify wide link={embedUrl} /> : null}
 
         <div className="item-wrapper">
           <div className="item-review">
@@ -160,9 +167,7 @@ export default function Post({
           <div className="item-mood">Mood: {mood}</div>
           <div className="item-rating">Rating: {rating}/5</div>
         </div>
-
         {isProfile ? null : <Comments comments={comments} />}
-
         {/* https://bbbootstrap.com/snippets/bootstrap-like-comment-share-section-comment-box-63008805 */}
         <div className="container mt-5">
           <div className="d-flex justify-content-center row">
