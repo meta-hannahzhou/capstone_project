@@ -155,11 +155,11 @@ app.get('/callback', function(req, res) {
         // res.send(`${baseRedirectUrl}/home`)
         
         // if (process.env.NODE_ENV === "production") {
-        //   res.redirect(`${req.app.get('baseRedirectUrl')}/home`)
+          res.redirect(`${baseRedirectUrlReal}home`)
         // } else {
-        //   res.redirect(`http://localhost:3000/home`)
+        //   res.redirect(`${baseRedirectUrlReal}/`);
         // }
-        res.redirect(`${baseRedirectUrlReal}/callback`);
+        
         
       } else {
         res.redirect('/#' +

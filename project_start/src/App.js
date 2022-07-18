@@ -52,19 +52,19 @@ function App() {
   };
 
   const sendUrl = async () => {
-    console.log(process.env.VERCEL_URL)
+    console.log(window.location.href)
     await axios.post(`${baseUrl}/base`, {
-      baseRedirectUrl: process.env.VERCEL_URL});
+      baseRedirectUrl: window.location.href});
   }
 
   
   useEffect(() => {
-    if (process.env.NODE_ENV === "production") {
+    // if (process.env.NODE_ENV === "production") {
       // console.log()
       
       // console.log("being called?!")
       sendUrl()
-    }
+    // }
   }, []);
 
   const link = `${baseUrl}/login`
