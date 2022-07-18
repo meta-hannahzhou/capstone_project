@@ -33,7 +33,11 @@ Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqK
 Parse.serverURL = "https://parseapi.back4app.com/"
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://calm-mesa-23172.herokuapp.com" : "http://localhost:8888";
-const baseRedirectUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_URL : "http://localhost:3000";
+// const baseRedirectUrl = process.env.NODE_ENV === "production" ? window.location.href : "http://localhost:3000";
+// let baseRedirectUrl = "http://localhost:3000";
+
+// const [baseRedirectUrl, setBaseRedirectUrl] = useState("http://localhost:3000");
+
 console.log(process.env.NODE_ENV);
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
@@ -89,6 +93,12 @@ app.get('/login', function(req, res) {
     }));
 });
 
+app.post('/baseUrl', function (req, res) {
+  const { baseRedirectUrl } = req.body
+  app.set('baseRedirectUrl', baseRedirectUrl);
+  // setBaseRedirectUrl(baseRedirectUrl)
+  res.send("success")
+})
 // Login to page and redirect to home/feed page of website
 app.get('/callback', function(req, res) {
   // your application requests refresh and access tokens
@@ -138,7 +148,13 @@ app.get('/callback', function(req, res) {
           app.set('userId', body.id)
         });
         // res.send(`${baseRedirectUrl}/home`)
-        res.redirect(`${baseRedirectUrl}/home`)
+        
+        if (process.env.NODE_ENV === "production") {
+          res.redirect(`${req.app.get('userId')}/home`)
+        } else {
+          res.redirect(`http://localhost:3000/home`)
+        }
+        
       } else {
         res.redirect('/#' +
           querystring.stringify({
