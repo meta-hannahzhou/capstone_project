@@ -21,7 +21,6 @@ export default function Comments({ comments, postId }) {
       <p className="comment-header">Comments:</p>
       <div className="displayComment">
         {comments.map((currComment) => {
-          console.log(currComment);
           return (
             <div className="indiv-comment">
               <div className="comment-text">

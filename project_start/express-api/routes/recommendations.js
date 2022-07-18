@@ -13,7 +13,6 @@ router.get("/most-liked", async (req, res, next) => {
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs)
     const result = await query.find()
-    console.log(result)
     let max = -1;
     let maxId = "";
     result.map((currSong) => {

@@ -43,7 +43,6 @@ export default function Recommendations({ getGenres, userObjectId }) {
         `${baseUrl}/recommendations/most-liked`
       );
       setMostLiked(responseLike.data);
-      console.log(responseLike.data);
       if (responseLike.data === "invalid id") {
         setOtherDisplay(true);
         setIsFetching(false);
