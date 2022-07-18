@@ -15,8 +15,6 @@ var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 const port = process.env.PORT || 8888;
 
-// const publicPath = path.join(__dirname, '..', 'public');
-
 
 var access_token ="";
 var userId = "";
@@ -27,18 +25,22 @@ const Statistics = require('./routes/statistics.js')
 const Profile = require('./routes/profile.js')
 
 const Parse = require('parse/node');
+// const { renderIntoDocument } = require('react-dom/test-utils/index.js');
 // Will later store these as environment variables for much strong security
 // Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
-Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
+// Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
+Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
-const baseUrl = process.env.NODE_ENV === "production" ? "https://whispering-castle-13172.herokuapp.com" : "http://localhost:8888";
+const baseUrl = process.env.NODE_ENV === "production" ? "https://calm-mesa-23172.herokuapp.com" : "http://localhost:8888";
 const baseRedirectUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_URL : "http://localhost:3000";
 console.log(process.env.NODE_ENV);
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
 
+console.log(process.env.NODE_ENV);
+console.log(redirect_uri);
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -64,10 +66,13 @@ app.use(express.static(__dirname + '/public'))
    .use(cookieParser())
    .use(express.json());
 
+app.get('/', function (req, res) {
+  res.send(process.env.NODE_ENV);
+})
 
 // Generate API key for login and redirect to Spotify authorization page
 app.get('/login', function(req, res) {
-
+  // res.send(redirect_uri)
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
