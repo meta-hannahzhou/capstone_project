@@ -33,7 +33,7 @@ function App() {
         return currGenres.data;
       } else {
         const currGenres = await axios.get(
-          `${baseUrl}/post-genre/${item.selectedSongId}`
+          `${baseUrl}/post-genre/${item.songId}`
         );
         return currGenres.data;
       }
@@ -52,19 +52,13 @@ function App() {
   };
 
   const sendUrl = async () => {
-    console.log(window.location.href)
-    await axios.post(`${baseUrl}/base`, {
+    await axios.post(`${baseUrl}/frontend-url`, {
       baseRedirectUrl: window.location.href});
   }
 
   
   useEffect(() => {
-    // if (process.env.NODE_ENV === "production") {
-      // console.log()
-      
-      // console.log("being called?!")
       sendUrl()
-    // }
   }, []);
 
   const link = `${baseUrl}/login`

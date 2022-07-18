@@ -59,7 +59,7 @@ export default function Profile({ userObjectId }) {
           {posted.map((currPost) => {
             return (
               <Post
-                selectedSongId={currPost.selectedSongId}
+                songId={currPost.songId}
                 review={currPost.review}
                 mood={currPost.mood}
                 rating={currPost.rating}

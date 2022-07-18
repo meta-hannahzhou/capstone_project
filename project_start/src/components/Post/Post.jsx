@@ -14,7 +14,7 @@ import { baseUrl } from "../../baseUrl";
  * @returns Individual post display for feed
  */
 export default function Post({
-  selectedSongId,
+  songId,
   review,
   mood,
   rating,
@@ -39,9 +39,7 @@ export default function Post({
   const getSongInfo = async () => {
     const response = await axios.get(`${baseUrl}/post/${postId}/`);
     setSong(response.data);
-    setEmbedUrl(
-      `http://open.spotify.com/track/${response.data.selectedSongId}`
-    );
+    setEmbedUrl(`http://open.spotify.com/track/${response.data.songId}`);
     setIsFetching(false);
   };
 
@@ -67,7 +65,7 @@ export default function Post({
     const savedComment = await axios.post(
       `${baseUrl}/post/${postId}/new-comment`,
       {
-        selectedSongId: selectedSongId,
+        songId: songId,
         userObjectId: userObjectId,
         comment: comment,
       }
@@ -105,10 +103,9 @@ export default function Post({
     if (!isLiked) {
       // Update Likes Table
       const savedLike = await axios.post(`${baseUrl}/post/${postId}/new-like`, {
-        selectedSongId: selectedSongId,
+        songId: songId,
         userObjectId: userObjectId,
       });
-      // setLikedObjectId(savedLike.data.objectId);
 
       // Update Posts datatable by appending to Likes array
       await axios.put(`${baseUrl}/post/${postId}/post-like`, {

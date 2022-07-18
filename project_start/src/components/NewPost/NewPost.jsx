@@ -10,11 +10,11 @@ import { baseUrl } from "../../baseUrl";
  */
 export default function NewPost() {
   const [tracks, setTracks] = useState([]);
-  const [selectedSongId, setSelectedSongId] = useState("");
+  const [songId, setSongId] = useState("");
   const [selectedSongUrl, setSelectedSongUrl] = useState("");
   const [selectedSongName, setSelectedSongName] = useState("");
   const [selectedArtistId, setSelectedArtistId] = useState("");
-  const [selectedSongUri, setSelectedSongUri] = useState("");
+
   const searchTracks = async (e) => {
     e.preventDefault();
     if (e.target.value.length == 0) {
@@ -31,9 +31,9 @@ export default function NewPost() {
     return tracks.map((track) => (
       <SearchSong
         track={track}
-        isActive={selectedSongId == track.id}
+        isActive={songId == track.id}
         onClick={() => {
-          setSelectedSongId(track.id);
+          setSongId(track.id);
           setSelectedSongUrl(track.album.images[1].url);
           setSelectedSongName(track.name);
           setSelectedArtistId(track.artists[0].id);
@@ -56,7 +56,7 @@ export default function NewPost() {
     const rating = ratings.find((rating) => rating.checked).value;
 
     await axios.post(`${baseUrl}/post/new-post`, {
-      selectedSongId: selectedSongId,
+      songId: songId,
       selectedSongUrl: selectedSongUrl,
       selectedSongName: selectedSongName,
       selectedArtistId: selectedArtistId,

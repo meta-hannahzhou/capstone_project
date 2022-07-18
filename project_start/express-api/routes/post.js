@@ -3,9 +3,6 @@ const router = express.Router()
 var request = require('request');
 
 const Parse = require('parse/node');
-// Will later store these as environment variables for much strong security
-// Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
-// Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
 Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
@@ -30,27 +27,16 @@ router.get('/search/:query', async (req, res, next) => {
     }
   })
 
-
-  // Middleware for getting the current song to limit redundancy
-// const getCurrSong = async (req, res, next) => {
-//     const Songs = Parse.Object.extend("Songs");
-//     const query = new Parse.Query(Songs)
-//     query.equalTo("selectedSongId", selectedSongId)
-//     const foundSong = await query.find()
-//     res.foundSong = foundSong;
-//     next()
-// }
-
 // POST: allows user to make a new post from form
 // Updates POST table and SONGS table
 router.post("/new-post", async (req, res, next) => {
     try {
-        const { selectedSongId, selectedSongUrl, selectedSongName, selectedArtistId, review, mood, rating } = req.body
+        const { songId, selectedSongUrl, selectedSongName, selectedArtistId, review, mood, rating } = req.body
         const Posts = Parse.Object.extend("Posts");
         const post = new Posts();
     
         post.set({
-          "selectedSongId": selectedSongId,
+          "songId": songId,
           "review": review, 
           "mood": mood, 
           "rating": rating,
@@ -63,7 +49,7 @@ router.post("/new-post", async (req, res, next) => {
 
         const Songs = Parse.Object.extend("Songs");
         const query = new Parse.Query(Songs)
-        query.equalTo("selectedSongId", selectedSongId)
+        query.equalTo("songId", songId)
         const foundSong = await query.find()
 
         if (foundSong.length == 0) {
@@ -77,7 +63,7 @@ router.post("/new-post", async (req, res, next) => {
             const song = new Songs();
             request.get(options, function(error, response, body) {
                 song.set({
-                    "selectedSongId": selectedSongId,
+                    "songId": songId,
                     "selectedSongUrl": selectedSongUrl,
                     "selectedSongName": selectedSongName,
                     "selectedArtistId": selectedArtistId,
@@ -96,10 +82,10 @@ router.post("/new-post", async (req, res, next) => {
             currSong.set("avgRating", (currSong.get("avgRating") * currSong.get("quantity") + parseInt(rating))/(currSong.get("quantity") + 1))
             currSong.increment("quantity")
             currSong.save()
+            res.send({"post completed": "success"})
         }
-        
-
-        res.send({"post completed": "success"})
+    
+       
       } catch (err) {
         next(err)
       }
@@ -122,7 +108,7 @@ router.get("/:postId", getCurrPost, async (req, res, next) => {
     try {
         const Songs = Parse.Object.extend("Songs");
         const query = new Parse.Query(Songs)
-        query.equalTo("selectedSongId", res.post.get("selectedSongId"))
+        query.equalTo("songId", res.post.get("songId"))
         const foundSong = await query.find()
 
         res.status(200).json(foundSong[0]);
@@ -157,12 +143,12 @@ router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
 router.post('/:postId/new-comment', getCurrPost, async (req, res, next) => {
     try {
     // Adding new comment to Comments database
-        const { selectedSongId, userObjectId, comment} = req.body
+        const { songId, userObjectId, comment} = req.body
         const Comments = Parse.Object.extend("Comments");
         const currComment = new Comments();
         currComment.set({
             "comment": comment,
-            "selectedSongId": selectedSongId,
+            "songId": songId,
             "postId": res.post,
             "userObjectId": userObjectId,
             "userId": req.app.get('userId')
@@ -188,7 +174,7 @@ router.put('/:postId/update-post-comment', getCurrPost, async (req, res, next) =
 
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs)
-    query.equalTo("selectedSongId", res.post.get("selectedSongId"))
+    query.equalTo("songId", res.post.get("songId"))
     const foundSong = await query.find()
     let currSongComments = await foundSong[0].get("comments")
     currSongComments.push(req.body.commentId)
@@ -208,7 +194,7 @@ router.delete('/:postId/delete-comment&commentObjectId=:commentObjectId', getCur
 
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs)
-    query.equalTo("selectedSongId", res.post.get("selectedSongId"))
+    query.equalTo("songId", res.post.get("songId"))
     const foundSong = await query.find()
     let currSongComments = await foundSong[0].get("comments")
     currSongComments.push(req.body.commentId)
@@ -223,7 +209,6 @@ router.delete('/:postId/delete-comment&commentObjectId=:commentObjectId', getCur
 /**
  * LIKES
  */
-
 
 // GET: get all likes on a certain post
 router.get("/:postId/likes", getCurrPost, async (req, res, next) => {
@@ -267,11 +252,11 @@ router.get("/:postId/has-liked&userObjectId=:userObjectId", getCurrPost, async (
 router.post('/:postId/new-like', getCurrPost, async (req, res, next) => {
     try {
         // Adding new comment to Comments database
-        const { selectedSongId, userObjectId } = req.body
+        const { songId, userObjectId } = req.body
         const Likes = Parse.Object.extend("Likes");
         const currLike = new Likes();
         currLike.set({
-            "selectedSongId": selectedSongId,
+            "songId": songId,
             "userObjectId": userObjectId,
             "postId": res.post
         })
@@ -309,7 +294,7 @@ router.put('/:postId/post-like', getCurrPost, async (req, res, next) => {
     
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs);
-    query.equalTo("selectedSongId", res.post.get("selectedSongId"));
+    query.equalTo("songId", res.post.get("songId"));
     const foundSong = await query.find();
     let currSongLikes = await foundSong[0].get("likes");
 

@@ -7,14 +7,12 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-// const path = require('path');
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 const port = process.env.PORT || 8888;
-
 
 var access_token ="";
 var userId = "";
@@ -25,26 +23,17 @@ const Statistics = require('./routes/statistics.js')
 const Profile = require('./routes/profile.js')
 
 const Parse = require('parse/node');
-// const { renderIntoDocument } = require('react-dom/test-utils/index.js');
-// Will later store these as environment variables for much strong security
-// Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
-// Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
+
 Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://calm-mesa-23172.herokuapp.com" : "http://localhost:8888";
-// const baseRedirectUrl = process.env.NODE_ENV === "production" ? window.location.href : "http://localhost:3000";
-let baseRedirectUrlReal = "http://localhost:3002";
+let baseRedirectUrlReal = "";
 
-// const [baseRedirectUrl, setBaseRedirectUrl] = useState("http://localhost:3000");
-
-// console.log(process.env.NODE_ENV);
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
 
-// console.log(process.env.NODE_ENV);
-// console.log(redirect_uri);
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -63,7 +52,6 @@ var generateRandomString = function(length) {
 var stateKey = 'spotify_auth_state';
 
 var app = express();
-// app.use(express.static(publicPath));
 
 app.use(express.static(__dirname + '/public'))
    .use(cors())
@@ -76,7 +64,6 @@ app.get('/', function (req, res) {
 
 // Generate API key for login and redirect to Spotify authorization page
 app.get('/login', function(req, res) {
-  // res.send(redirect_uri)
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
@@ -93,21 +80,16 @@ app.get('/login', function(req, res) {
     }));
 });
 
-app.post('/base', function (req, res) {
-  console.log("test")
+app.post('/frontend-url', function (req, res) {
   const { baseRedirectUrl } = req.body
-  console.log(baseRedirectUrl)
-  // app.set('baseRedirectUrl', baseRedirectUrl);
   baseRedirectUrlReal = baseRedirectUrl;
-  // setBaseRedirectUrl(baseRedirectUrl)
-  res.send(baseRedirectUrlReal)
+  res.send("Succesfully posted frontend url")
 })
 
 
 // Login to page and redirect to home/feed page of website
 app.get('/callback', function(req, res) {
-  // your application requests refresh and access tokens
-  // after checking the state parameter
+  
   var code = req.query.code || null;
   var state = req.query.state || null;
   var storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -152,13 +134,8 @@ app.get('/callback', function(req, res) {
           userId = body.id
           app.set('userId', body.id)
         });
-        // res.send(`${baseRedirectUrl}/home`)
         
-        // if (process.env.NODE_ENV === "production") {
-          res.redirect(`${baseRedirectUrlReal}home`)
-        // } else {
-        //   res.redirect(`${baseRedirectUrlReal}/`);
-        // }
+        res.redirect(`${baseRedirectUrlReal}home`)
         
         
       } else {
@@ -261,12 +238,12 @@ app.get('/genre/:artistId', async (req, res, next) => {
 })
 
 // GET: all genres for a certain song (will be used later for statistics and recommendations)
-app.get('/post-genre/:selectedSongId', async (req, res, next) => {
-  const selectedSongId = req.params.selectedSongId;
+app.get('/post-genre/:songId', async (req, res, next) => {
+  const songId = req.params.songId;
   try {
     const Songs = Parse.Object.extend("Songs");
     const songQuery = new Parse.Query(Songs)
-    songQuery.equalTo("selectedSongId", selectedSongId);
+    songQuery.equalTo("songId", songId);
     const response = await songQuery.find();
     const genres = await response[0].get("genres")
     res.status(200).json(genres)
@@ -277,7 +254,6 @@ app.get('/post-genre/:selectedSongId', async (req, res, next) => {
 })
 
 
-// app.listen(8888);
 app.listen(port, () => {
   console.log(`Server is up on port ${port}!`)
 })

@@ -52,6 +52,7 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
     async function getFeed() {
       setIsFetching(true);
       const response = await axios.post(`${baseUrl}/`);
+
       setUserObjectId(response.data.objectId);
 
       await axios
@@ -85,7 +86,7 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
               {posts.map((currPost) => {
                 return (
                   <Post
-                    selectedSongId={currPost.selectedSongId}
+                    songId={currPost.songId}
                     review={currPost.review}
                     mood={currPost.mood}
                     rating={currPost.rating}
