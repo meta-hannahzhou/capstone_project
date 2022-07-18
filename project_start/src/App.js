@@ -52,6 +52,7 @@ function App() {
   };
 
   const sendUrl = async () => {
+    console.log(process.env.VERCEL_URL)
     await axios.post(`${baseUrl}/base`, {
       baseRedirectUrl: process.env.VERCEL_URL});
   }

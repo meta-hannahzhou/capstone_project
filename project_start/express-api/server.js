@@ -100,7 +100,7 @@ app.post('/base', function (req, res) {
   // app.set('baseRedirectUrl', baseRedirectUrl);
   baseRedirectUrlReal = baseRedirectUrl;
   // setBaseRedirectUrl(baseRedirectUrl)
-  res.send("success")
+  res.send(baseRedirectUrlReal)
 })
 
 
