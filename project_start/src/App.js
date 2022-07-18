@@ -52,16 +52,21 @@ function App() {
   };
 
   const sendUrl = async () => {
-    await axios.post("/baseUrl", {
+    await axios.post(`${baseUrl}/base`, {
       baseRedirectUrl: process.env.VERCEL_URL});
   }
 
-  const link = `${baseUrl}/login`
+  
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
+      // console.log()
+      
+      // console.log("being called?!")
       sendUrl()
     }
   }, []);
+
+  const link = `${baseUrl}/login`
   return (
     // make this blank route
     <div className="App">

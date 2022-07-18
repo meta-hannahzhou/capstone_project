@@ -34,17 +34,17 @@ Parse.serverURL = "https://parseapi.back4app.com/"
 
 const baseUrl = process.env.NODE_ENV === "production" ? "https://calm-mesa-23172.herokuapp.com" : "http://localhost:8888";
 // const baseRedirectUrl = process.env.NODE_ENV === "production" ? window.location.href : "http://localhost:3000";
-// let baseRedirectUrl = "http://localhost:3000";
+let baseRedirectUrlReal = "http://localhost:3002";
 
 // const [baseRedirectUrl, setBaseRedirectUrl] = useState("http://localhost:3000");
 
-console.log(process.env.NODE_ENV);
+// console.log(process.env.NODE_ENV);
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
 
-console.log(process.env.NODE_ENV);
-console.log(redirect_uri);
+// console.log(process.env.NODE_ENV);
+// console.log(redirect_uri);
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
@@ -93,12 +93,17 @@ app.get('/login', function(req, res) {
     }));
 });
 
-app.post('/baseUrl', function (req, res) {
+app.post('/base', function (req, res) {
+  console.log("test")
   const { baseRedirectUrl } = req.body
-  app.set('baseRedirectUrl', baseRedirectUrl);
+  console.log(baseRedirectUrl)
+  // app.set('baseRedirectUrl', baseRedirectUrl);
+  baseRedirectUrlReal = baseRedirectUrl;
   // setBaseRedirectUrl(baseRedirectUrl)
   res.send("success")
 })
+
+
 // Login to page and redirect to home/feed page of website
 app.get('/callback', function(req, res) {
   // your application requests refresh and access tokens
@@ -149,11 +154,12 @@ app.get('/callback', function(req, res) {
         });
         // res.send(`${baseRedirectUrl}/home`)
         
-        if (process.env.NODE_ENV === "production") {
-          res.redirect(`${req.app.get('userId')}/home`)
-        } else {
-          res.redirect(`http://localhost:3000/home`)
-        }
+        // if (process.env.NODE_ENV === "production") {
+        //   res.redirect(`${req.app.get('baseRedirectUrl')}/home`)
+        // } else {
+        //   res.redirect(`http://localhost:3000/home`)
+        // }
+        res.redirect(`${baseRedirectUrlReal}/callback`);
         
       } else {
         res.redirect('/#' +
