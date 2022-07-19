@@ -42,6 +42,16 @@ export default function NewPost() {
     ));
   };
 
+  const mapMood = (mood) => {
+    if (mood === "sad") {
+      return -1;
+    } else if (mood == "neutral") {
+      return 0;
+    } else {
+      return 1;
+    }
+  };
+
   const handleSubmit = async () => {
     const review = document.getElementById("review").value;
 
@@ -61,7 +71,7 @@ export default function NewPost() {
       selectedSongName: selectedSongName,
       selectedArtistId: selectedArtistId,
       review: review,
-      mood: mood,
+      mood: mapMood(mood),
       rating: rating,
     });
   };
@@ -137,10 +147,10 @@ export default function NewPost() {
                     type="radio"
                     name="gridRadios"
                     id="gridRadios3"
-                    value="angry"
+                    value="neutral"
                   />
                   <label className="form-check-label" for="gridRadios3">
-                    Angry
+                    Neutral
                   </label>
                 </div>
               </div>

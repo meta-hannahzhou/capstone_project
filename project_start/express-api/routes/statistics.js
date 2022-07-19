@@ -8,10 +8,11 @@ Parse.serverURL = "https://parseapi.back4app.com/"
 
 
 // GET: top 20 tracks user has listened to across all time having Spotify using Spotify API
-router.get('/', async (req, res, next) => {
+router.get('/:time', async (req, res, next) => {
     try {
+        const time = req.params.time;
         var options = {
-        url: `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term`,
+        url: `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=${time}`,
         headers: { 'Authorization': 'Bearer ' + req.app.get('access_token')},
         json: true
         };
@@ -25,5 +26,6 @@ router.get('/', async (req, res, next) => {
         next(err)
     }
 })
+
 
 module.exports = router;

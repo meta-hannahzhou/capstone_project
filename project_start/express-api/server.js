@@ -120,7 +120,7 @@ app.get('/callback', function(req, res) {
         access_token = body.access_token;
         app.set('access_token', access_token)
 
-        // req.session.key = body.access_token
+        req.session.key = body.access_token
         var refresh_token = body.refresh_token;
 
         var options = {
@@ -198,8 +198,6 @@ app.post('/', async (req, res, next) => {
   } catch(err) {
     next(err)
   }
-  
-
 })
 
 
@@ -216,7 +214,6 @@ app.get('/feed', async (req, res, next) => {
     next(err)
   }
 })
-
 
 
 // GET: all genres for a certain song (will be used later for statistics and recommendations)
