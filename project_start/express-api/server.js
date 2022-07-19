@@ -120,7 +120,6 @@ app.get('/callback', function(req, res) {
         access_token = body.access_token;
         app.set('access_token', access_token)
 
-        req.session.key = body.access_token
         var refresh_token = body.refresh_token;
 
         var options = {
