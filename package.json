@@ -4,6 +4,7 @@
     "react-loading": "^2.0.3",
     "react-minimal-pie-chart": "^8.3.0",
     "react-spotify-embed": "^0.2.3",
-    "victory-box-plot": "^36.5.3"
+    "victory-box-plot": "^36.5.3",
+    "victory-chart": "^36.5.3"
   }
 }

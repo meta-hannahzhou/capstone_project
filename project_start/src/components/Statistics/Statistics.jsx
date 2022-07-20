@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { VictoryPie } from "victory-pie";
 import { VictoryBoxPlot } from "victory-box-plot";
+import { VictoryChart } from "victory-chart";
 import { baseUrl } from "../../baseUrl";
 import ReactLoading from "react-loading";
 
@@ -15,14 +16,16 @@ export default function Statistics({ getGenres }) {
   const [time, setTime] = useState("long_term");
   const [isChanging, setIsChanging] = useState(false);
   const [title, setTitle] = useState("All Time");
+  const [moods, setMoods] = useState([]);
+  const [allMoods, setAllMoods] = useState([]);
 
   let artistIds = [];
   const handleTime = async (e) => {
     setIsChanging(true);
     setTime(e.currentTarget.id);
-    if (e.currentTarget.id == "short_term") {
+    if (e.currentTarget.id === "short_term") {
       setTitle("Last Month");
-    } else if (e.currentTarget.id == "medium_term") {
+    } else if (e.currentTarget.id === "medium_term") {
       setTitle("Last 6 Months");
     } else {
       setTitle("All Time");
@@ -47,6 +50,11 @@ export default function Statistics({ getGenres }) {
 
       const posts = await axios.get(`${baseUrl}/profile/posted/`);
       setDisplayPost(await getGenres(posts.data, true));
+
+      const result = await axios.get(`${baseUrl}/statistics/moods`);
+
+      setMoods(result.data.moods);
+      setAllMoods(result.data.allMoods);
 
       setIsFetching(false);
 
@@ -155,10 +163,28 @@ export default function Statistics({ getGenres }) {
           />
         </div>
         <h3>Mood</h3>
+
+        <h4>You:</h4>
         <VictoryBoxPlot
           horizontal
-          data={[{ x: 1, y: [1, 2, 3, 5] }]}
-          height={100}
+          data={[{ x: 1, y: moods }]}
+          height={80}
+          labels
+          style={{
+            min: { stroke: "#1db954" },
+            max: { stroke: "white" },
+            q1: { fill: "#1db954" },
+            q3: { fill: "white" },
+            median: { stroke: "white", strokeWidth: 2 },
+            minLabels: { fill: "#1db954" },
+            maxLabels: { fill: "white" },
+          }}
+        />
+        <h4>The World:</h4>
+        <VictoryBoxPlot
+          horizontal
+          data={[{ x: 1, y: allMoods }]}
+          height={80}
           labels
           style={{
             min: { stroke: "#1db954" },
