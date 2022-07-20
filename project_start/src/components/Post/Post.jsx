@@ -7,6 +7,7 @@ import axios from "axios";
 import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../baseUrl";
+import { useQuery } from "@tanstack/react-query";
 
 /**
  *
@@ -39,11 +40,6 @@ export default function Post({
   const getSongInfo = async () => {
     const response = await axios.get(`${baseUrl}/post/${postId}/`);
     setSong(response.data);
-    console.log(response.data.createdAt);
-    let currentTime = new Date();
-    let postTime = new Date(response.data.createdAt);
-    let test = currentTime - postTime;
-    console.log(test);
     setEmbedUrl(`http://open.spotify.com/track/${response.data.songId}`);
     setIsFetching(false);
   };
@@ -55,7 +51,6 @@ export default function Post({
   // Get all comments for current post
   const getComments = async () => {
     const response = await axios.get(`${baseUrl}/post/${postId}/comments`);
-
     setComments(response.data);
   };
 
@@ -101,6 +96,8 @@ export default function Post({
     } else {
       setIsLiked(false);
     }
+    // Update score
+    await axios.put(`${baseUrl}/post/${postId}/score`);
   };
 
   // Add like to database
@@ -126,9 +123,8 @@ export default function Post({
         isLiked: isLiked,
       });
     }
-
     // Call get likes to update likes displayed on page
-    getLikes();
+    await getLikes();
   };
 
   useEffect(() => {

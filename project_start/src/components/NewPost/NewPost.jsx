@@ -65,7 +65,7 @@ export default function NewPost() {
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
-    await axios.post(`${baseUrl}/post/new-post`, {
+    const song = await axios.post(`${baseUrl}/post/new-post`, {
       songId: songId,
       selectedSongUrl: selectedSongUrl,
       selectedSongName: selectedSongName,

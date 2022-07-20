@@ -205,7 +205,7 @@ app.get('/feed', async (req, res, next) => {
   try {
     const Posts = Parse.Object.extend("Posts");
     const query = new Parse.Query(Posts);
-    query.descending("createdAt")
+    query.descending("score")
     query.limit(10)
     const response = await query.find()
     res.status(200).json(response)

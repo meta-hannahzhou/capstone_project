@@ -6,6 +6,7 @@ const Parse = require('parse/node');
 Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
+const baseTime = new Date("2022-07-19T20:36:06.609Z");
 
 // GET: search for specific tracks through Spotify API
 router.get('/search/:query', async (req, res, next) => {
@@ -42,7 +43,8 @@ router.post("/new-post", async (req, res, next) => {
           "rating": rating,
           "userId": req.app.get('userId'),
           "likes": [],
-          "comments": []
+          "comments": [],
+          score: 0
         })
     
         post.save()
@@ -103,7 +105,7 @@ const getCurrPost = async (req, res, next) => {
 }
 
 
-// GET: get info for specific post from post object id
+// GET: get info for specific song from post from post object id
 router.get("/:postId", getCurrPost, async (req, res, next) => {
     try {
         const Songs = Parse.Object.extend("Songs");
@@ -118,6 +120,23 @@ router.get("/:postId", getCurrPost, async (req, res, next) => {
     }
 })
 
+
+// PUT: update score for certain post
+// Score calculated based on Hacker NewsRank Algorithm
+router.put("/:postId/score", getCurrPost, async (req, res, next) => {
+    try {
+        const likes = await res.post.get("likes")
+        let currentTime = new Date();
+        let difference = (((currentTime - baseTime)/1000)/60);
+        const score = ((likes.length)^0.8)/((difference+120)^1.8)
+        await res.post.set("score", score*1000);
+        await res.post.save();
+        res.send("success");
+    } catch (err) {
+        next(err);
+    }
+})
+
 /**
  * COMMENTS
  */
@@ -128,7 +147,6 @@ router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
     try {
         const Comments = Parse.Object.extend("Comments");
         const commentQuery = new Parse.Query(Comments)
-        
         commentQuery.equalTo("postId", res.post)
         const results = await commentQuery.find()
         res.status(200).json(results)
