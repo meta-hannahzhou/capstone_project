@@ -3,11 +3,26 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { VictoryPie } from "victory-pie";
 import { VictoryBoxPlot } from "victory-box-plot";
-import { VictoryChart } from "victory-chart";
+import {
+  VictoryChart,
+  VictoryZoomContainer,
+  VictoryLine,
+  VictoryBrushContainer,
+  VictoryAxis,
+} from "victory";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+
 import { baseUrl } from "../../baseUrl";
+
 import ReactLoading from "react-loading";
 
-export default function Statistics({ getGenres }) {
+export default function Statistics({ getGenres, graphData, setGraphData }) {
   const [isFetching, setIsFetching] = useState(true);
   const [displaySpotify, setDisplaySpotify] = useState([]);
   const [displayPost, setDisplayPost] = useState([]);
@@ -18,6 +33,24 @@ export default function Statistics({ getGenres }) {
   const [title, setTitle] = useState("All Time");
   const [moods, setMoods] = useState([]);
   const [allMoods, setAllMoods] = useState([]);
+
+  const [zoomDomain, setZoomDomain] = useState({
+    x: [new Date(2022, 5, 1), new Date(2022, 12, 1)],
+  });
+
+  const handleZoom = (domain) => {
+    setZoomDomain(domain);
+  };
+
+  const chartTheme = {
+    axis: {
+      style: {
+        tickLabels: {
+          fill: "white",
+        },
+      },
+    },
+  };
 
   let artistIds = [];
   const handleTime = async (e) => {
@@ -69,7 +102,8 @@ export default function Statistics({ getGenres }) {
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading...</h1>
+        <h1>Loading</h1>
+        <ReactLoading type={"bars"} />
       </div>
     );
   } else {
@@ -149,8 +183,8 @@ export default function Statistics({ getGenres }) {
           </>
         </div>
 
-        <h3>Post Statistics</h3>
         <div className="pie-chart">
+          <h3>Post Genres</h3>
           <VictoryPie
             data={displayPost}
             colorScale="green"
@@ -162,6 +196,60 @@ export default function Statistics({ getGenres }) {
             endAngle={endAngle}
           />
         </div>
+
+        <div className="line-graph">
+          <h3>Posts Over Time</h3>
+          <VictoryChart
+            width={1000}
+            height={350}
+            scale={{ x: "time" }}
+            theme={chartTheme}
+            style={{
+              data: { stroke: "#1db954" },
+            }}
+            containerComponent={
+              <VictoryZoomContainer
+                zoomDimension="x"
+                zoomDomain={zoomDomain}
+                onZoomDomainChange={handleZoom.bind(zoomDomain)}
+              />
+            }
+          >
+            <VictoryLine
+              style={{
+                data: { stroke: "#1db954" },
+              }}
+              data={graphData}
+              x="key"
+              y="b"
+            />
+          </VictoryChart>
+          <VictoryChart
+            padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
+            width={500}
+            height={100}
+            scale={{ x: "time" }}
+            theme={chartTheme}
+            containerComponent={
+              <VictoryBrushContainer
+                brushDimension="x"
+                brushDomain={zoomDomain}
+                onBrushDomainChange={handleZoom.bind(zoomDomain)}
+              />
+            }
+          >
+            <VictoryAxis tickFormat={(x) => new Date(x).toDateString()} />
+            <VictoryLine
+              style={{
+                data: { stroke: "#1db954" },
+              }}
+              data={graphData}
+              x="key"
+              y="b"
+            />
+          </VictoryChart>
+        </div>
+
         <h3>Mood</h3>
 
         <h4>You:</h4>

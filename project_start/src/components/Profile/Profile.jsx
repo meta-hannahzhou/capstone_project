@@ -40,7 +40,7 @@ export default function Profile({ userObjectId }) {
   if (isFetching) {
     return (
       <div className="loading">
-        <h3>Loading</h3>
+        <h1>Loading</h1>
         <ReactLoading type={"bars"} />
       </div>
     );

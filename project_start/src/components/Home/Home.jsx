@@ -1,6 +1,6 @@
 import "./Home.css";
 import axios from "axios";
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import Post from "../Post/Post";
 import Recommendations from "../Recommendations/Recommendations";
 import ReactLoading from "react-loading";

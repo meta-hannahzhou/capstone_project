@@ -41,3 +41,12 @@ tspan {
     z-index: 100;
     
 }
+
+.line-graph {
+    margin-bottom: 100px;
+}
+
+.loading {
+    display: flex; 
+    justify-content: center;
+}
