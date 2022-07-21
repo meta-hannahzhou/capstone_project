@@ -20,12 +20,12 @@
 
 .actual-image {
     border-radius: 5px;
-    width: 34vw;
+    width: 24vw;
 }
 
 .post {
     border: 5px solid #201c1c;
-    width: 35vw;
+    width: 25vw;
     border-radius: 5px;
     margin-top: 20px;
 }

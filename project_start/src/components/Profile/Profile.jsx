@@ -1,8 +1,8 @@
 import "./Profile.css";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import Post from "../Post/Post";
 import { baseUrl } from "../../baseUrl";
+import { useEffect, useState } from "react";
 import ReactLoading from "react-loading";
 
 /**
@@ -30,7 +30,6 @@ export default function Profile({ userObjectId }) {
 
       const posted = await axios.get(`${baseUrl}/profile/posted`);
       setPosted(posted.data);
-
       setIsFetching(false);
     }
 
@@ -47,17 +46,27 @@ export default function Profile({ userObjectId }) {
   } else {
     return (
       <div className="recent">
-        <h1> Recent</h1>
         <>
           {userInfo ? (
             <div className="profile">
-              <p>Id: {userInfo.id}</p>
-              <p>Email: {userInfo.email}</p>
-              <p>Number of Liked Posts: {liked.length}</p>
+              <div className="prof-wrapper">
+                <img
+                  src={userInfo.images && userInfo.images[0].url}
+                  className="prof-pic"
+                />
+              </div>
+              <div className="prof-text">
+                <h3>{userInfo.id}</h3>
+                <p>{userInfo.email}</p>
+                <p>
+                  {" "}
+                  Liked Posts: {liked.length} Commented Posts: {liked.length}
+                </p>
+              </div>
             </div>
           ) : null}
         </>
-        <div className="grid">
+        <div className="grid-profile">
           {posted.map((currPost) => {
             return (
               <Post

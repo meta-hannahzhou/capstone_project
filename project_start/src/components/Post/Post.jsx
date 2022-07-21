@@ -164,7 +164,14 @@ export default function Post({
           <div className="item-mood">Mood: {mood}</div>
           <div className="item-rating">Rating: {rating}/5</div>
         </div>
-        {isProfile ? null : <Comments comments={comments} postId={postId} />}
+        {isProfile ? null : (
+          <Comments
+            comments={comments}
+            postId={postId}
+            getComments={getComments}
+            songId={songId}
+          />
+        )}
         {/* https://bbbootstrap.com/snippets/bootstrap-like-comment-share-section-comment-box-63008805 */}
         <div className="container mt-5">
           <div className="d-flex justify-content-center row">

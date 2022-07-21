@@ -39,7 +39,7 @@ export default function NewPost({
         isActive={songId === track.id}
         onClick={() => {
           setSongId(track.id);
-          setSelectedSongUrl(track.album.images[1].url);
+          setSelectedSongUrl(track.album.images[0].url);
           setSelectedSongName(track.name);
           setSelectedArtistId(track.artists[0].id);
         }}
