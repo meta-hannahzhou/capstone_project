@@ -88,9 +88,7 @@ router.post("/new-post", async (req, res, next) => {
           (song) => {
             res.status(200).json(song);
           },
-          (error) => {
-            console.log(error.message);
-          }
+          (error) => {}
         );
       });
     } else {
