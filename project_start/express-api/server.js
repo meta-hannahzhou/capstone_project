@@ -7,16 +7,12 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-// const path = require('path');
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
 var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 const port = process.env.PORT || 8888;
-
-// const publicPath = path.join(__dirname, '..', 'public');
-
 
 var access_token ="";
 var userId = "";
@@ -27,14 +23,13 @@ const Statistics = require('./routes/statistics.js')
 const Profile = require('./routes/profile.js')
 
 const Parse = require('parse/node');
-// Will later store these as environment variables for much strong security
-// Parse.initialize("01pRqpOPIL2CPOmyCXOdjQM81JoDXgHXyEYvC8xa", "OBHnma2duz3UjloQLiuD9dIMi4qLKeEMdurNgQ58")
-Parse.initialize("jf8fBQCKtSE8fxxzMlARZZYxGgbMwLA2l9tAfwSU", "z25hAbCBiOVPkYzHIJt8PXLjZxKTDhsuvhMaVtuM")
+
+Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
 Parse.serverURL = "https://parseapi.back4app.com/"
 
-const baseUrl = process.env.NODE_ENV === "production" ? "https://whispering-castle-13172.herokuapp.com" : "http://localhost:8888";
-const baseRedirectUrl = process.env.NODE_ENV === "production" ? process.env.VERCEL_URL : "http://localhost:3000";
-console.log(process.env.NODE_ENV);
+const baseUrl = process.env.NODE_ENV === "production" ? "https://calm-mesa-23172.herokuapp.com" : "http://localhost:8888";
+let baseRedirectUrlReal = "";
+
 var client_id = 'dde109facc9446bd95991893064d1a5c'; // Your client id
 var client_secret = 'bcdd6a7acf314244abb9063240a8599e'; // Your secret
 var redirect_uri = `${baseUrl}/callback`; // Your redirect uri
@@ -57,17 +52,18 @@ var generateRandomString = function(length) {
 var stateKey = 'spotify_auth_state';
 
 var app = express();
-// app.use(express.static(publicPath));
 
 app.use(express.static(__dirname + '/public'))
    .use(cors())
    .use(cookieParser())
    .use(express.json());
 
+app.get('/', function (req, res) {
+  res.send(process.env.NODE_ENV);
+})
 
 // Generate API key for login and redirect to Spotify authorization page
 app.get('/login', function(req, res) {
-
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
@@ -84,10 +80,16 @@ app.get('/login', function(req, res) {
     }));
 });
 
+app.post('/frontend-url', function (req, res) {
+  const { baseRedirectUrl } = req.body
+  baseRedirectUrlReal = baseRedirectUrl;
+  res.send("Succesfully posted frontend url")
+})
+
+
 // Login to page and redirect to home/feed page of website
 app.get('/callback', function(req, res) {
-  // your application requests refresh and access tokens
-  // after checking the state parameter
+  
   var code = req.query.code || null;
   var state = req.query.state || null;
   var storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -118,7 +120,6 @@ app.get('/callback', function(req, res) {
         access_token = body.access_token;
         app.set('access_token', access_token)
 
-        // req.session.key = body.access_token
         var refresh_token = body.refresh_token;
 
         var options = {
@@ -132,8 +133,10 @@ app.get('/callback', function(req, res) {
           userId = body.id
           app.set('userId', body.id)
         });
-        // res.send(`${baseRedirectUrl}/home`)
-        res.redirect(`${baseRedirectUrl}/home`)
+        
+        res.redirect(`${baseRedirectUrlReal}home`)
+        
+        
       } else {
         res.redirect('/#' +
           querystring.stringify({
@@ -194,8 +197,6 @@ app.post('/', async (req, res, next) => {
   } catch(err) {
     next(err)
   }
-  
-
 })
 
 
@@ -204,7 +205,7 @@ app.get('/feed', async (req, res, next) => {
   try {
     const Posts = Parse.Object.extend("Posts");
     const query = new Parse.Query(Posts);
-    query.descending("createdAt")
+    query.descending("score")
     query.limit(10)
     const response = await query.find()
     res.status(200).json(response)
@@ -212,7 +213,6 @@ app.get('/feed', async (req, res, next) => {
     next(err)
   }
 })
-
 
 
 // GET: all genres for a certain song (will be used later for statistics and recommendations)
@@ -234,12 +234,12 @@ app.get('/genre/:artistId', async (req, res, next) => {
 })
 
 // GET: all genres for a certain song (will be used later for statistics and recommendations)
-app.get('/post-genre/:selectedSongId', async (req, res, next) => {
-  const selectedSongId = req.params.selectedSongId;
+app.get('/post-genre/:songId', async (req, res, next) => {
+  const songId = req.params.songId;
   try {
     const Songs = Parse.Object.extend("Songs");
     const songQuery = new Parse.Query(Songs)
-    songQuery.equalTo("selectedSongId", selectedSongId);
+    songQuery.equalTo("songId", songId);
     const response = await songQuery.find();
     const genres = await response[0].get("genres")
     res.status(200).json(genres)
@@ -250,7 +250,6 @@ app.get('/post-genre/:selectedSongId', async (req, res, next) => {
 })
 
 
-// app.listen(8888);
 app.listen(port, () => {
   console.log(`Server is up on port ${port}!`)
 })

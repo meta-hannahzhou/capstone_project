@@ -23,3 +23,30 @@ tspan {
     display: flex;
     flex-direction: row;
 }
+
+.time-select {
+    background-color: #1DB954;
+    border-radius: 5px;
+    color: white;
+    border: 0px;
+    z-index: 100;
+    font-size: 2vw;
+}
+
+.stat-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    z-index: 100;
+    
+}
+
+.line-graph {
+    margin-bottom: 100px;
+}
+
+.loading {
+    display: flex; 
+    justify-content: center;
+}

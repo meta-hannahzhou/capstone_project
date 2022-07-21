@@ -7,6 +7,13 @@ import axios from "axios";
 import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../baseUrl";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 
 /**
  *
@@ -14,7 +21,7 @@ import { baseUrl } from "../../baseUrl";
  * @returns Individual post display for feed
  */
 export default function Post({
-  selectedSongId,
+  songId,
   review,
   mood,
   rating,
@@ -26,22 +33,21 @@ export default function Post({
   setIsFetching,
   isProfile,
 }) {
+  const queryClient = useQueryClient();
+
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState(0);
   const [song, setSong] = useState({});
   const [isLiked, setIsLiked] = useState(false);
   const [likedObjectId, setLikedObjectId] = useState("");
-  const [commentObjectId, setCommentObjectId] = useState("");
   const [embedUrl, setEmbedUrl] = useState("");
 
   // Get information about the current song being reviewed including selectedSongUrl and selectedSongName
   const getSongInfo = async () => {
     const response = await axios.get(`${baseUrl}/post/${postId}/`);
     setSong(response.data);
-    setEmbedUrl(
-      `http://open.spotify.com/track/${response.data.selectedSongId}`
-    );
+    setEmbedUrl(`http://open.spotify.com/track/${response.data.songId}`);
     setIsFetching(false);
   };
 
@@ -52,7 +58,6 @@ export default function Post({
   // Get all comments for current post
   const getComments = async () => {
     const response = await axios.get(`${baseUrl}/post/${postId}/comments`);
-
     setComments(response.data);
   };
 
@@ -67,7 +72,7 @@ export default function Post({
     const savedComment = await axios.post(
       `${baseUrl}/post/${postId}/new-comment`,
       {
-        selectedSongId: selectedSongId,
+        songId: songId,
         userObjectId: userObjectId,
         comment: comment,
       }
@@ -98,6 +103,8 @@ export default function Post({
     } else {
       setIsLiked(false);
     }
+    // Update score
+    await axios.put(`${baseUrl}/post/${postId}/score`);
   };
 
   // Add like to database
@@ -105,10 +112,9 @@ export default function Post({
     if (!isLiked) {
       // Update Likes Table
       const savedLike = await axios.post(`${baseUrl}/post/${postId}/new-like`, {
-        selectedSongId: selectedSongId,
+        songId: songId,
         userObjectId: userObjectId,
       });
-      // setLikedObjectId(savedLike.data.objectId);
 
       // Update Posts datatable by appending to Likes array
       await axios.put(`${baseUrl}/post/${postId}/post-like`, {
@@ -124,9 +130,8 @@ export default function Post({
         isLiked: isLiked,
       });
     }
-
     // Call get likes to update likes displayed on page
-    getLikes();
+    await getLikes();
   };
 
   useEffect(() => {

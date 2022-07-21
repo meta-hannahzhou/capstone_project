@@ -8,16 +8,21 @@ import { baseUrl } from "../../baseUrl";
  *
  * @returns Renders form for users to submit new post
  */
-export default function NewPost() {
+export default function NewPost({
+  graphData,
+  setGraphData,
+  uniqueDates,
+  setUniqueDates,
+}) {
   const [tracks, setTracks] = useState([]);
-  const [selectedSongId, setSelectedSongId] = useState("");
+  const [songId, setSongId] = useState("");
   const [selectedSongUrl, setSelectedSongUrl] = useState("");
   const [selectedSongName, setSelectedSongName] = useState("");
   const [selectedArtistId, setSelectedArtistId] = useState("");
-  const [selectedSongUri, setSelectedSongUri] = useState("");
+
   const searchTracks = async (e) => {
     e.preventDefault();
-    if (e.target.value.length == 0) {
+    if (e.target.value.length === 0) {
       setTracks([]);
     } else {
       const { data } = await axios.get(
@@ -31,15 +36,25 @@ export default function NewPost() {
     return tracks.map((track) => (
       <SearchSong
         track={track}
-        isActive={selectedSongId == track.id}
+        isActive={songId === track.id}
         onClick={() => {
-          setSelectedSongId(track.id);
+          setSongId(track.id);
           setSelectedSongUrl(track.album.images[1].url);
           setSelectedSongName(track.name);
           setSelectedArtistId(track.artists[0].id);
         }}
       />
     ));
+  };
+
+  const mapMood = (mood) => {
+    if (mood === "sad") {
+      return -1;
+    } else if (mood === "neutral") {
+      return 0;
+    } else {
+      return 1;
+    }
   };
 
   const handleSubmit = async () => {
@@ -55,15 +70,37 @@ export default function NewPost() {
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
-    await axios.post(`${baseUrl}/post/new-post`, {
-      selectedSongId: selectedSongId,
+    const song = await axios.post(`${baseUrl}/post/new-post`, {
+      songId: songId,
       selectedSongUrl: selectedSongUrl,
       selectedSongName: selectedSongName,
       selectedArtistId: selectedArtistId,
       review: review,
-      mood: mood,
+      mood: mapMood(mood),
       rating: rating,
     });
+
+    // Add date to be displayed on statistics page
+    const newDate = new Date(song.createdAt).toDateString();
+    const graphDataCopy = [...graphData];
+
+    // Check if date is already in list, if it is add to dictionary
+    if (uniqueDates.includes(newDate)) {
+      for (let i = 0; i < graphDataCopy.length; i++) {
+        if (graphDataCopy[i]["key"] === new Date(newDate)) {
+          graphDataCopy[i]["b"] += 1;
+          break;
+        }
+      }
+      setGraphData(graphDataCopy);
+      // Otherwise add date to list and initialize new entry in dictionary
+    } else {
+      const uniqueDatesCopy = [...uniqueDates];
+      uniqueDatesCopy.push(newDate);
+      setUniqueDates(uniqueDatesCopy);
+      graphDataCopy.push({ key: newDate, b: 1 });
+      setGraphData(graphDataCopy);
+    }
   };
 
   return (
@@ -137,10 +174,10 @@ export default function NewPost() {
                     type="radio"
                     name="gridRadios"
                     id="gridRadios3"
-                    value="angry"
+                    value="neutral"
                   />
                   <label className="form-check-label" for="gridRadios3">
-                    Angry
+                    Neutral
                   </label>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 import "./Home.css";
 import axios from "axios";
-import { useEffect, useState, useRef, useLayoutEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import Post from "../Post/Post";
 import Recommendations from "../Recommendations/Recommendations";
 import ReactLoading from "react-loading";
@@ -39,39 +39,6 @@ export const useEffectOnce = (effect) => {
   }, []);
 };
 
-export const useEffectOnceLayout = (effect) => {
-  const destroyFunc = useRef();
-  const effectCalled = useRef(false);
-  const renderAfterCalled = useRef(false);
-  const [val, setVal] = useState(0);
-
-  if (effectCalled.current) {
-    renderAfterCalled.current = true;
-  }
-
-  useLayoutEffect(() => {
-    // only execute the effect first time around
-    if (!effectCalled.current) {
-      destroyFunc.current = effect();
-      effectCalled.current = true;
-    }
-
-    // this forces one render after the effect is run
-    setVal((val) => val + 1);
-
-    return () => {
-      // if the comp didn't render since the useEffect was called,
-      // we know it's the dummy React cycle
-      if (!renderAfterCalled.current) {
-        return;
-      }
-      if (destroyFunc.current) {
-        destroyFunc.current();
-      }
-    };
-  }, []);
-};
-
 /**
  *
  * @param {userObjectId, setUserObjectId, getGenres}
@@ -85,6 +52,7 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
     async function getFeed() {
       setIsFetching(true);
       const response = await axios.post(`${baseUrl}/`);
+
       setUserObjectId(response.data.objectId);
 
       await axios
@@ -118,7 +86,7 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
               {posts.map((currPost) => {
                 return (
                   <Post
-                    selectedSongId={currPost.selectedSongId}
+                    songId={currPost.songId}
                     review={currPost.review}
                     mood={currPost.mood}
                     rating={currPost.rating}

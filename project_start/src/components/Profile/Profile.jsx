@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Post from "../Post/Post";
 import { baseUrl } from "../../baseUrl";
+import ReactLoading from "react-loading";
 
 /**
  *
@@ -39,7 +40,8 @@ export default function Profile({ userObjectId }) {
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading...</h1>
+        <h1>Loading</h1>
+        <ReactLoading type={"bars"} />
       </div>
     );
   } else {
@@ -59,7 +61,7 @@ export default function Profile({ userObjectId }) {
           {posted.map((currPost) => {
             return (
               <Post
-                selectedSongId={currPost.selectedSongId}
+                songId={currPost.songId}
                 review={currPost.review}
                 mood={currPost.mood}
                 rating={currPost.rating}
