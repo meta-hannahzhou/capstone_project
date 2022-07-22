@@ -47,6 +47,7 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
       style: {
         tickLabels: {
           fill: "white",
+          fontSize: 10,
         },
       },
     },
@@ -110,40 +111,6 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
     return (
       <div className="statistics">
         <h1> Statistics</h1>
-        <div className="stat-buttons">
-          <button
-            className="time-select"
-            type="button"
-            id="long_term"
-            onClick={(e) => {
-              handleTime(e);
-            }}
-          >
-            All Time
-          </button>
-
-          <button
-            className="time-select"
-            type="button"
-            id="medium_term"
-            onClick={(e) => {
-              handleTime(e);
-            }}
-          >
-            Last 6 Months
-          </button>
-
-          <button
-            className="time-select"
-            type="button"
-            id="short_term"
-            onClick={(e) => {
-              handleTime(e);
-            }}
-          >
-            Last Month
-          </button>
-        </div>
 
         <div className="top">
           <>
@@ -155,7 +122,53 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
             ) : (
               <>
                 <div className="list">
-                  <h3> Top Tracks Of {title}</h3>
+                  <div className="top-list">
+                    <h4>Top Tracks Of {title}</h4>
+                    <div class="dropdown">
+                      <button
+                        class="btn btn-secondary dropdown-toggle"
+                        type="button"
+                        id="dropdownMenuButton"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        Time Frame
+                      </button>
+                      <div
+                        className="dropdown-menu"
+                        aria-labelledby="dropdownMenuButton"
+                      >
+                        <a
+                          className="dropdown-item"
+                          id="long_term"
+                          onClick={(e) => {
+                            handleTime(e);
+                          }}
+                        >
+                          All Time
+                        </a>
+                        <a
+                          className="dropdown-item"
+                          id="medium_term"
+                          onClick={(e) => {
+                            handleTime(e);
+                          }}
+                        >
+                          Last 6 Months
+                        </a>
+                        <a
+                          className="dropdown-item"
+                          id="short_term"
+                          onClick={(e) => {
+                            handleTime(e);
+                          }}
+                        >
+                          Last Month
+                        </a>
+                      </div>
+                    </div>
+                  </div>
 
                   {
                     <ol>
@@ -238,7 +251,10 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
               />
             }
           >
-            <VictoryAxis tickFormat={(x) => new Date(x).toDateString()} />
+            <VictoryAxis
+              theme={chartTheme}
+              tickFormat={(x) => new Date(x).toDateString()}
+            />
             <VictoryLine
               style={{
                 data: { stroke: "#1db954" },

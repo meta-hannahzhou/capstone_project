@@ -3,7 +3,6 @@ import { HTMLAttributes } from 'react';
 // https://github.com/ctjlewis/react-spotify-embed#readme
 interface SpotifyProps extends HTMLAttributes<HTMLIFrameElement> {
   [key: string]: any;
-
   link: string;
   wide?: boolean;
   width?: number | string;

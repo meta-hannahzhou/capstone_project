@@ -69,42 +69,42 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Posts
 
-| Property       | Type   | Description                                        |
-| -------------- | ------ | -------------------------------------------------- |
-| objectId       | String | unique id for the user post (default field)        |
-| createdAt      | Date   | (default auto generated field)                     |
-| updatedAt      | Date   | (default auto generated field)                     |
-| selectedSongId | String | unique song id from Spotify                        |
-| mood           | String | user inputted mood                                 |
-| review         | String | user inputted review for the song                  |
-| rating         | String | user inputted rating for the song (1-5)            |
-| userId         | String | users unique Spotify username                      |
-| likes          | Array  | array of Like objectIds that have been posted      |
-| comments       | Array  | array of Comment objectIds that have been posted   |
-| score          | Number | score for feed ranking based on HackerNews Ranking |
+| Property  | Type   | Description                                        |
+| --------- | ------ | -------------------------------------------------- |
+| objectId  | String | unique id for the user post (default field)        |
+| createdAt | Date   | (default auto generated field)                     |
+| updatedAt | Date   | (default auto generated field)                     |
+| songId    | String | unique song id from Spotify                        |
+| mood      | String | user inputted mood                                 |
+| review    | String | user inputted review for the song                  |
+| rating    | String | user inputted rating for the song (1-5)            |
+| userId    | String | users unique Spotify username                      |
+| likes     | Array  | array of Like objectIds that have been posted      |
+| comments  | Array  | array of Comment objectIds that have been posted   |
+| score     | Number | score for feed ranking based on HackerNews Ranking |
 
 #### Comments
 
-| Property       | Type    | Description                                  |
-| -------------- | ------- | -------------------------------------------- |
-| objectId       | String  | unique id for the user post (default field)  |
-| createdAt      | Date    | (default auto generated field)               |
-| updatedAt      | Date    | (default auto generated field)               |
-| comment        | String  | user inputted comment for each post          |
-| selectedSongId | String  | unique song id from Spotify                  |
-| postId         | Pointer | pointer to unique id for the user post       |
-| userObjectId   | String  | object id for user who commented on the post |
+| Property     | Type    | Description                                  |
+| ------------ | ------- | -------------------------------------------- |
+| objectId     | String  | unique id for the user post (default field)  |
+| createdAt    | Date    | (default auto generated field)               |
+| updatedAt    | Date    | (default auto generated field)               |
+| comment      | String  | user inputted comment for each post          |
+| songId       | String  | unique song id from Spotify                  |
+| postId       | Pointer | pointer to unique id for the user post       |
+| userObjectId | String  | object id for user who commented on the post |
 
 #### Likes
 
-| Property       | Type    | Description                                 |
-| -------------- | ------- | ------------------------------------------- |
-| objectId       | String  | unique id for the user post (default field) |
-| createdAt      | Date    | (default auto generated field)              |
-| updatedAt      | Date    | (default auto generated field)              |
-| selectedSongId | String  | unique song id from Spotify                 |
-| postId         | Pointer | pointer to unique id for the user post      |
-| userObjectId   | String  | object id for user who liked the post       |
+| Property     | Type    | Description                                 |
+| ------------ | ------- | ------------------------------------------- |
+| objectId     | String  | unique id for the user post (default field) |
+| createdAt    | Date    | (default auto generated field)              |
+| updatedAt    | Date    | (default auto generated field)              |
+| songId       | String  | unique song id from Spotify                 |
+| postId       | Pointer | pointer to unique id for the user post      |
+| userObjectId | String  | object id for user who liked the post       |
 
 #### Login
 
@@ -122,7 +122,7 @@ _One common template for creating a user story is the Who, What, Why template: A
 | objectId         | String | unique id for the user post (default field)                      |
 | createdAt        | Date   | (default auto generated field)                                   |
 | updatedAt        | Date   | (default auto generated field)                                   |
-| selectedSongId   | String | unique song id from Spotify                                      |
+| songId           | String | unique song id from Spotify                                      |
 | selectedSongUrl  | String | song image URL from api search call                              |
 | selectedSongName | String | song title from api search                                       |
 | likes            | Array  | array of Likes objectIds for all posts made for selected song    |

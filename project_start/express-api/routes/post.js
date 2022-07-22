@@ -138,9 +138,10 @@ router.get("/:postId", getCurrPost, async (req, res, next) => {
 router.put("/:postId/score", getCurrPost, async (req, res, next) => {
   try {
     const likes = await res.post.get("likes");
-    let currentTime = new Date();
+    let currentTime = new Date(res.post.updatedAt);
     let difference = (currentTime - baseTime) / 1000 / 60;
     const score = (likes.length ^ 0.8) / ((difference + 120) ^ 1.8);
+    // number of likes in a certain period of time
     await res.post.set("score", score * 1000);
     await res.post.save();
     res.send("success");
@@ -154,11 +155,11 @@ router.put("/:postId/score", getCurrPost, async (req, res, next) => {
  */
 
 // GET: get all comments on a certain post
-router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
+router.get("/:postId/comments", async (req, res, next) => {
   try {
     const Comments = Parse.Object.extend("Comments");
     const commentQuery = new Parse.Query(Comments);
-    commentQuery.equalTo("postId", res.post);
+    commentQuery.equalTo("postId", req.params.postId);
     const results = await commentQuery.find();
     res.status(200).json(results);
     next();
@@ -168,7 +169,7 @@ router.get("/:postId/comments", getCurrPost, async (req, res, next) => {
 });
 
 // POST: add new comment to Comments database
-router.post("/:postId/new-comment", getCurrPost, async (req, res, next) => {
+router.post("/:postId/new-comment", async (req, res, next) => {
   try {
     // Adding new comment to Comments database
     const { songId, userObjectId, comment } = req.body;
@@ -177,7 +178,7 @@ router.post("/:postId/new-comment", getCurrPost, async (req, res, next) => {
     currComment.set({
       comment: comment,
       songId: songId,
-      postId: res.post,
+      postId: req.params.postId,
       userObjectId: userObjectId,
       userId: req.app.get("userId"),
     });
@@ -216,24 +217,40 @@ router.put(
 
 // DELETE: delete comment from Comments table and remove id from Songs and Posts comments array
 router.delete(
-  "/:postId/delete-comment&commentObjectId=:commentObjectId",
+  "/:postId/delete-comment&commentId=:commentId&songId=:songId",
   getCurrPost,
   async (req, res, next) => {
-    let currComments = await res.post.get("comments");
-    currComments.push(req.body.commentId);
-    res.post.set("comments", currComments);
-    res.post.save();
+    try {
+      let currComments = await res.post.get("comments");
 
-    const Songs = Parse.Object.extend("Songs");
-    const query = new Parse.Query(Songs);
-    query.equalTo("songId", res.post.get("songId"));
-    const foundSong = await query.find();
-    let currSongComments = await foundSong[0].get("comments");
-    currSongComments.push(req.body.commentId);
-    foundSong[0].set("comments", currSongComments);
-    foundSong[0].save();
+      const commentId = req.params.commentId;
+      const Comments = Parse.Object.extend("Comments");
+      const commentQuery = new Parse.Query(Comments);
+      const currComment = await commentQuery.get(commentId);
 
-    res.status(200).json(currComments);
+      const Songs = Parse.Object.extend("Songs");
+      const query = new Parse.Query(Songs);
+      query.equalTo("songId", req.params.songId);
+      const foundSong = await query.first();
+      let currSongComments = await foundSong.get("comments");
+
+      await currComment.destroy();
+      const index = currComments.indexOf(req.body.commentId);
+      currComments.splice(index, 1);
+
+      const songIndex = currSongComments.indexOf(req.body.commentId);
+      currSongComments.splice(songIndex, 1);
+
+      res.post.set("comments", currComments);
+      await res.post.save();
+
+      foundSong.set("comments", currSongComments);
+      await foundSong.save();
+
+      res.send("success!");
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
@@ -242,12 +259,12 @@ router.delete(
  */
 
 // GET: get all likes on a certain post
-router.get("/:postId/likes", getCurrPost, async (req, res, next) => {
+router.get("/:postId/likes", async (req, res, next) => {
   try {
     const Likes = Parse.Object.extend("Likes");
     const likeQuery = new Parse.Query(Likes);
 
-    likeQuery.equalTo("postId", res.post);
+    likeQuery.equalTo("postId", req.params.postId);
     const results = await likeQuery.find();
     res.status(200).json(results);
     next();
@@ -259,14 +276,13 @@ router.get("/:postId/likes", getCurrPost, async (req, res, next) => {
 // GET: check if user has liked specific post
 router.get(
   "/:postId/has-liked&userObjectId=:userObjectId",
-  getCurrPost,
   async (req, res, next) => {
     try {
       const Likes = Parse.Object.extend("Likes");
       const likeQuery = new Parse.Query(Likes);
 
       likeQuery.equalTo("userObjectId", req.params.userObjectId);
-      likeQuery.equalTo("postId", res.post);
+      likeQuery.equalTo("postId", req.params.postId);
       const results = await likeQuery.find();
 
       if (results.length == 0) {
@@ -282,7 +298,7 @@ router.get(
 );
 
 // POST: add new like to Likes table
-router.post("/:postId/new-like", getCurrPost, async (req, res, next) => {
+router.post("/:postId/new-like", async (req, res, next) => {
   try {
     // Adding new comment to Comments database
     const { songId, userObjectId } = req.body;
@@ -291,7 +307,7 @@ router.post("/:postId/new-like", getCurrPost, async (req, res, next) => {
     currLike.set({
       songId: songId,
       userObjectId: userObjectId,
-      postId: res.post,
+      postId: req.params.postId,
     });
 
     const savedLike = await currLike.save();
@@ -301,25 +317,6 @@ router.post("/:postId/new-like", getCurrPost, async (req, res, next) => {
     next(err);
   }
 });
-
-// DELETE: remove like from current post in Likes table
-router.delete(
-  "/:postId/delete-like&likedObjectId=:likedObjectId",
-  getCurrPost,
-  async (req, res, next) => {
-    try {
-      const likedObjectId = req.params.likedObjectId;
-      const Likes = Parse.Object.extend("Likes");
-      const likeQuery = new Parse.Query(Likes);
-      const currLike = await likeQuery.get(likedObjectId);
-
-      await currLike.destroy();
-      res.status(200).json(currLike);
-    } catch (err) {
-      next(err);
-    }
-  }
-);
 
 // PUT: append or remove new like id to likes array in Posts and Songs database
 router.put("/:postId/post-like", getCurrPost, async (req, res, next) => {
@@ -349,5 +346,24 @@ router.put("/:postId/post-like", getCurrPost, async (req, res, next) => {
 
   res.status(200).json(currLikes);
 });
+
+// DELETE: remove like from current post in Likes table
+router.delete(
+  "/:postId/delete-like&likedObjectId=:likedObjectId",
+  getCurrPost,
+  async (req, res, next) => {
+    try {
+      const likedObjectId = req.params.likedObjectId;
+      const Likes = Parse.Object.extend("Likes");
+      const likeQuery = new Parse.Query(Likes);
+      const currLike = await likeQuery.get(likedObjectId);
+
+      await currLike.destroy();
+      res.status(200).json(currLike);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = router;

@@ -12,6 +12,7 @@
     background-color: #121212;
     border-radius: 0;
     border-color: #121212;
+    border: solid 2px #121212;
 }
 
 .heart {
@@ -19,22 +20,85 @@
 }
 
 .actual-image {
-    border-radius: 5px;
-    width: 34vw;
+    width: 25vw;
 }
 
 .post {
-    border: 5px solid #201c1c;
-    width: 35vw;
-    border-radius: 5px;
+    border: 1px solid #201c1c;
+    width: 25.2vw;
+    border-radius: 2px;
     margin-top: 20px;
 }
 
-.song-title {
-    background-color: #201c1c;
+
+.rating {
+    margin-left: 3px;
+}
+.star-img {
+    width: 20px;
+    margin-left: 3px;
+    margin-bottom: 2px;
 }
 .bolded { font-weight: bold; }
 
-.box {
-    margin-top: -5vh;
+.comment {
+    width: 20px;
+    margin-left: -10px;
 }
+
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comment-text {
+    margin-left: 5px;
+}
+
+.item-wrapper {
+    text-align: left;
+    margin-left: 10px;
+}
+
+.submit-comment {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-button {
+    height: 20px;
+}
+
+.form-control {
+    width: 25vw;
+    height: 35px;
+    border-radius: 0px;
+    border: 0px;
+    font-size: 12px;
+}
+
+.post-comment {
+    background-color: white;
+    color: #1DB954;
+    margin-left: -6vw;
+    margin-top: 2px;
+}
+
+.btn-primary {
+    background-color: white;
+    border-color: white;
+}
+
+.btn-primary:hover {
+    background-color: white;
+    border-color: white;
+    color: #1DB954;
+}
+
+.textarea {
+    display: flex;
+}
+

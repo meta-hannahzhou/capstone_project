@@ -1,8 +1,11 @@
 import * as React from "react";
 import "./Post.css";
 import Heart from "./heart.png";
+import Star from "./star.png";
+import CommentBubble from "./comment-bubble.png";
 import HeartLiked from "./heart-liked.png";
 import Comments from "../Comments/Comments";
+import Mood from "../Mood/Mood";
 import axios from "axios";
 import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
@@ -58,6 +61,7 @@ export default function Post({
   // Get all comments for current post
   const getComments = async () => {
     const response = await axios.get(`${baseUrl}/post/${postId}/comments`);
+
     setComments(response.data);
   };
 
@@ -67,7 +71,7 @@ export default function Post({
   };
 
   // Add comment to database
-  const handleSubmitComment = async () => {
+  const handleSubmitComment = async (e) => {
     // Post to Comments table
     const savedComment = await axios.post(
       `${baseUrl}/post/${postId}/new-comment`,
@@ -84,6 +88,13 @@ export default function Post({
     });
     // Call get comments to update count displayed on page
     getComments();
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    await axios.delete(
+      `${baseUrl}/post/${postId}/delete-comment&commentId=${commentId}&songId=${songId}`
+    );
+    await getComments();
   };
 
   /**
@@ -151,85 +162,89 @@ export default function Post({
   } else {
     return (
       <div className="post">
-        <h4 className="song-title">{song.selectedSongName}</h4>
+        <p className="song-title">{song.selectedSongName}</p>
         <div className="element-image">
           <img className="actual-image" src={song.selectedSongUrl} />
         </div>
-        {embedUrl ? <Spotify wide link={embedUrl} /> : null}
+        <div>{embedUrl ? <Spotify wide link={embedUrl} /> : null}</div>
+
+        <div className="box">
+          <div className="like p-2 cursor">
+            <i className="fa fa-thumbs-o-up"></i>
+
+            <span className="ml-1">
+              <button
+                className="like"
+                onClick={(e) => {
+                  handleLike(e);
+                }}
+              >
+                {isLiked ? (
+                  <img src={HeartLiked} className="heart" />
+                ) : (
+                  <img src={Heart} className="heart" />
+                )}
+              </button>
+              {likes.length}
+            </span>
+          </div>
+          {}
+          <div className="like p-2 cursor">
+            <i className="fa fa-commenting-o"></i>
+            <span className="ml-1">
+              <img src={CommentBubble} className="comment" />
+              <span className="comment-text">{comments.length}</span>
+            </span>
+          </div>
+          <div className="star">
+            <img src={Star} className="star-img" />
+            <span className="rating">{rating}</span>
+          </div>
+
+          <Mood mood={mood} />
+        </div>
 
         <div className="item-wrapper">
           <div className="item-review">
             <span className="bolded">{userId}</span> {review}
           </div>
-          <div className="item-mood">Mood: {mood}</div>
-          <div className="item-rating">Rating: {rating}/5</div>
         </div>
-        {isProfile ? null : <Comments comments={comments} postId={postId} />}
+        {isProfile ? null : (
+          <Comments
+            comments={comments}
+            handleDeleteComment={handleDeleteComment}
+          />
+        )}
         {/* https://bbbootstrap.com/snippets/bootstrap-like-comment-share-section-comment-box-63008805 */}
-        <div className="container mt-5">
-          <div className="d-flex justify-content-center row">
-            <div className="col-md-8">
-              <div className="d-flex flex-column comment-section">
-                <div className="box">
-                  <div className="d-flex flex-row fs-12">
-                    <div className="like p-2 cursor">
-                      <i className="fa fa-thumbs-o-up"></i>
 
-                      <span className="ml-1">
-                        <button
-                          className="like"
-                          onClick={(e) => {
-                            handleLike(e);
-                          }}
-                        >
-                          {isLiked ? (
-                            <img src={HeartLiked} className="heart" />
-                          ) : (
-                            <img src={Heart} className="heart" />
-                          )}
-                        </button>
-                        {likes.length}
-                      </span>
-                    </div>
-                    {}
-                    <div className="like p-2 cursor">
-                      <i className="fa fa-commenting-o"></i>
-                      <span className="ml-1">Comments: {comments.length}</span>
-                    </div>
+        {isProfile ? null : (
+          <>
+            <div className="submit-comment">
+              <div className="form-group">
+                <div className="textarea">
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="comment"
+                    placeholder="Add a comment..."
+                    onChange={handleCommentChange}
+                  />
+                  <div className="submit-button ">
+                    <button
+                      className="btn btn-primary btn-sm post-comment"
+                      type="button"
+                      onClick={(e) => {
+                        handleSubmitComment(e);
+                      }}
+                    >
+                      Post
+                    </button>
                   </div>
                 </div>
-
-                {isProfile ? null : (
-                  <div className="p-2">
-                    <div className="d-flex flex-row align-items-start">
-                      <img
-                        className="rounded-circle"
-                        src="https://i.imgur.com/RpzrMR2.jpg"
-                        width="40"
-                      />
-                      <textarea
-                        className="form-control ml-1 shadow-none textarea"
-                        id="comment"
-                        onChange={handleCommentChange}
-                      ></textarea>
-                    </div>
-                    <div className="mt-2 text-right ">
-                      <button
-                        className="btn btn-primary btn-sm shadow-none post-comment"
-                        type="button"
-                        onClick={(e) => {
-                          handleSubmitComment(e);
-                        }}
-                      >
-                        Post comment
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
     );
   }
