@@ -138,9 +138,10 @@ router.get("/:postId", getCurrPost, async (req, res, next) => {
 router.put("/:postId/score", getCurrPost, async (req, res, next) => {
   try {
     const likes = await res.post.get("likes");
-    let currentTime = new Date();
+    let currentTime = new Date(res.post.updatedAt);
     let difference = (currentTime - baseTime) / 1000 / 60;
     const score = (likes.length ^ 0.8) / ((difference + 120) ^ 1.8);
+    // number of likes in a certain period of time
     await res.post.set("score", score * 1000);
     await res.post.save();
     res.send("success");
