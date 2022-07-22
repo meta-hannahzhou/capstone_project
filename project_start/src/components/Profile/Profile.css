@@ -25,6 +25,8 @@
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
     gap: 10px;
+    margin-left: 40px;
+    justify-content: center;
 }
 
 @media screen and (min-width:501px) and (max-width: 800px) {

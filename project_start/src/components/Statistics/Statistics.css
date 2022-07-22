@@ -50,3 +50,27 @@ tspan {
     display: flex; 
     justify-content: center;
 }
+
+.top-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.dropdown {
+    margin-left: 10px;
+}
+
+.btn-secondary {
+    background-color: #1DB954;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #1DB954;
+    border: none;
+}
+.show>.btn-secondary.dropdown-toggle {
+    background-color: #1DB954;
+    border: none;
+}

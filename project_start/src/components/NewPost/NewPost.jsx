@@ -1,6 +1,6 @@
 import "./NewPost.css";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SearchSong from "../SearchSong/SearchSong";
 import { baseUrl } from "../../baseUrl";
 
@@ -256,7 +256,7 @@ export default function NewPost({
             <div className="col-sm-10">
               <button
                 type="submit"
-                className="btn btn-primary"
+                className="btn-submit"
                 id="submit"
                 onClick={(e) => {
                   handleSubmit(e);

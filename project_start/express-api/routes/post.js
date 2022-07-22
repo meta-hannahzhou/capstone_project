@@ -245,6 +245,8 @@ router.delete(
 
       foundSong.set("comments", currSongComments);
       await foundSong.save();
+
+      res.send("success!");
     } catch (err) {
       next(err);
     }

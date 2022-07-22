@@ -1,0 +1,11 @@
+.mood-grid {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    margin-left: auto;
+    grid-gap: 10px;
+    margin-right: 1vw;
+}
+.face {
+    width: 20px;
+}

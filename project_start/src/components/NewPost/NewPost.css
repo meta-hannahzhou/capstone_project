@@ -14,23 +14,16 @@
     padding-right: auto;
 }
 
-.btn-primary {
+.btn-submit {
     background-color: #1DB954;
     border-color: #1DB954;
+    color: white;
+    border: none;
+    border-radius: 2px;
 }
 
-.btn-primary:hover {
+.btn-submit:hover {
     background-color: #1DB954;
     border-color: #1DB954;
+    color: white;
 }
-/* .my-form {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-} */
-
-/* .all-form {
-    display: flex; 
-    justify-content: center;
-} */

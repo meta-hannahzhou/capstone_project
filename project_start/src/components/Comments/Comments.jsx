@@ -9,24 +9,16 @@ import { baseUrl } from "../../baseUrl";
  * @param {comments}
  * @returns All comments under each post
  */
-export default function Comments({ comments, postId, getComments, songId }) {
-  const handleDeleteComment = async (commentId) => {
-    await axios.delete(
-      `${baseUrl}/post/${postId}/delete-comment&commentId=${commentId}&songId=${songId}`
-    );
-
-    await getComments();
-  };
-
+export default function Comments({ comments, handleDeleteComment }) {
   return (
     <div className="comments">
-      <p className="comment-header">Comments:</p>
       <div className="displayComment">
         {comments.map((currComment) => {
           return (
             <div className="indiv-comment">
               <div className="comment-text">
-                {currComment.userId}: {currComment.comment}{" "}
+                <span className="bolded">{currComment.userId} </span>{" "}
+                {currComment.comment}
               </div>
               <button
                 className="delete"
