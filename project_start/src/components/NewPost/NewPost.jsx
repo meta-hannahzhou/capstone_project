@@ -84,29 +84,32 @@ export default function NewPost({
       ratings[i].checked = false;
     }
 
-    const song = await axios.post(`${baseUrl}/post/new-post`, {
-      songId: songId,
-      selectedSongUrl: selectedSongUrl,
-      selectedSongName: selectedSongName,
-      selectedArtistId: selectedArtistId,
-      review: review,
-      mood: mapMood(mood),
-      rating: rating,
-    });
-
-    await axios.post(`${baseUrl}/update-genre`, {
-      updateType: "post",
-      song: song,
-    });
+    await axios
+      .post(`${baseUrl}/post/new-post`, {
+        songId: songId,
+        selectedSongUrl: selectedSongUrl,
+        selectedSongName: selectedSongName,
+        selectedArtistId: selectedArtistId,
+        review: review,
+        mood: mapMood(mood),
+        rating: rating,
+      })
+      .then((song) => {
+        axios.post(`${baseUrl}/update-genre`, {
+          updateType: "post",
+          song: song,
+        });
+      });
 
     // Add date to be displayed on statistics page
-    const newDate = new Date(song.createdAt).toDateString();
+    const newDate = new Date().toDateString();
     const graphDataCopy = [...graphData];
 
+    // Look Aside Cache (updating local storage while API call being made)
     // Check if date is already in list, if it is add to dictionary
     if (uniqueDates.includes(newDate)) {
       for (let i = 0; i < graphDataCopy.length; i++) {
-        if (graphDataCopy[i]["key"] === new Date(newDate)) {
+        if (graphDataCopy[i]["key"].toDateString() === newDate) {
           graphDataCopy[i]["b"] += 1;
           break;
         }
@@ -117,7 +120,7 @@ export default function NewPost({
       const uniqueDatesCopy = [...uniqueDates];
       uniqueDatesCopy.push(newDate);
       setUniqueDates(uniqueDatesCopy);
-      graphDataCopy.push({ key: newDate, b: 1 });
+      graphDataCopy.push({ key: new Date(newDate), b: 1 });
       setGraphData(graphDataCopy);
     }
   };

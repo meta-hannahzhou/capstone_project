@@ -10,13 +10,6 @@ import {
   VictoryBrushContainer,
   VictoryAxis,
 } from "victory";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
 
 import { baseUrl } from "../../baseUrl";
 
