@@ -138,7 +138,7 @@ function App() {
               <Navbar />
               <NewPost
                 graphData={graphData}
-                setGraphdata={setGraphData}
+                setGraphData={setGraphData}
                 uniqueDates={uniqueDates}
                 setUniqueDates={setUniqueDates}
               />

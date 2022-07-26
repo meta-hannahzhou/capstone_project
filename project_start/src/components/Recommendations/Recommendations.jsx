@@ -1,6 +1,6 @@
 import "./Recommendations.css";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import RecCard from "../RecCard/RecCard";
 import ReactLoading from "react-loading";
 import { baseUrl } from "../../baseUrl";
@@ -11,104 +11,96 @@ import { baseUrl } from "../../baseUrl";
  * @param {userObjectId}
  * @returns Overall display for all song recommendations
  */
-export default function Recommendations({ getGenres, userObjectId }) {
-  const [isFetching, setIsFetching] = useState(true);
-  const [mostLiked, setMostLiked] = useState();
-  const [mostCommented, setMostCommented] = useState();
-  const [mostRelevant, setMostRelevant] = useState();
-  const [highestRated, setHighestRated] = useState();
-  const [otherDisplay, setOtherDisplay] = useState(false);
+export const useEffectOnce = (effect) => {
+  const destroyFunc = useRef();
+  const effectCalled = useRef(false);
+  const renderAfterCalled = useRef(false);
+  const [val, setVal] = useState(0);
 
-  const weight = (genres, type) => {
-    let scale = 0;
-    if (type === "post") {
-      scale = 0.5;
-    } else {
-      scale = 0.25;
-    }
-
-    const scaledResult = genres.map((item) => {
-      item.y *= scale;
-      return item;
-    });
-    return scaledResult;
-  };
+  if (effectCalled.current) {
+    renderAfterCalled.current = true;
+  }
 
   useEffect(() => {
+    // only execute the effect first time around
+    if (!effectCalled.current) {
+      destroyFunc.current = effect();
+      effectCalled.current = true;
+    }
+
+    // this forces one render after the effect is run
+    setVal((val) => val + 1);
+
+    return () => {
+      // if the comp didn't render since the useEffect was called,
+      // we know it's the dummy React cycle
+      if (!renderAfterCalled.current) {
+        return;
+      }
+      if (destroyFunc.current) {
+        destroyFunc.current();
+      }
+    };
+  }, []);
+};
+
+export default function Recommendations({ getGenres, userObjectId }) {
+  const [isFetching, setIsFetching] = useState(true);
+  const [mostLiked, setMostLiked] = useState("");
+  const [mostCommented, setMostCommented] = useState("");
+  const [mostRelevant, setMostRelevant] = useState("");
+  const [mostGenre, setMostGenre] = useState("");
+  const [highestRated, setHighestRated] = useState("");
+
+  useEffectOnce(() => {
     async function getRecs() {
       setIsFetching(true);
 
       // Get most liked post from all users
-      const responseLike = await axios.get(
-        `${baseUrl}/recommendations/most-liked`
-      );
-      setMostLiked(responseLike.data);
-      if (responseLike.data === "invalid id") {
-        setOtherDisplay(true);
-        setIsFetching(false);
-      } else if (responseLike.data === "Invalid access token") {
-        setOtherDisplay(true);
-        setIsFetching(false);
-      } else {
-        // Get most commented on post from all users
-        const responseComment = await axios.get(
-          `${baseUrl}/recommendations/most-commented`
-        );
-        setMostCommented(responseComment.data.body);
-
-        // Get highest average rated song from all users
-        const responseRate = await axios.get(
-          `${baseUrl}/recommendations/highest-rated`
-        );
-        setHighestRated(responseRate.data.body);
-
-        // Get statistics for relevance recommendation
-        const posts = await axios.get(`${baseUrl}/profile/posted/`);
-        const postGenres = await getGenres(posts.data, true);
-
-        const likes = await axios.get(
-          `${baseUrl}/profile/liked/${userObjectId}`
-        );
-        const likedGenres = await getGenres(likes.data, true);
-
-        const comments = await axios.get(
-          `${baseUrl}/profile/commented/${userObjectId}`
-        );
-        const commentedGenres = await getGenres(comments.data, true);
-
-        // Calculate a weighted average of the users posts, likes, and comments in relation to genres
-        let scaledResult = weight(postGenres, "post").concat(
-          weight(likedGenres, "like"),
-          weight(commentedGenres, "comment")
-        );
-        const unique = [...new Set(scaledResult)];
-
-        //https://dev.to/devtronic/javascript-map-an-array-of-objects-to-a-dictionary-3f42
-        let dictionary = Object.assign(
-          {},
-          ...unique.map((x) => ({ [x.x]: 0 }))
-        );
-
-        scaledResult.map((item) => {
-          dictionary[item.x] += item.y;
+      axios
+        .get(`${baseUrl}/recommendations/most-liked`)
+        .then((responseLike) => {
+          setMostLiked(responseLike.data);
         });
 
-        const topGenre = Object.entries(dictionary).reduce((a, b) =>
-          a[1] > b[1] ? a : b
-        )[0];
+      // Get most commented on post from all users
+      axios
+        .get(`${baseUrl}/recommendations/most-commented`)
+        .then((responseComment) => {
+          setMostCommented(responseComment.data.body);
+        });
 
-        const responseRelevant = await axios.get(
-          `${baseUrl}/recommendations/most-relevant/${topGenre}`
-        );
-        setMostRelevant(responseRelevant.data.body);
+      // Get highest average rated song from all users
+      axios
+        .get(`${baseUrl}/recommendations/highest-rated`)
+        .then((responseRate) => {
+          setHighestRated(responseRate.data.body);
+        });
 
-        setIsFetching(false);
-      }
+      // Get most popular song within a certain genre
+      const topGenre = await axios.get(`${baseUrl}/recommendations/top-genre`);
+      axios
+        .get(`${baseUrl}/recommendations/most-genre/${topGenre.data}`)
+        .then((responseGenre) => {
+          setMostGenre(responseGenre.data.body);
+        });
+
+      axios
+        .get(`${baseUrl}/recommendations/most-relevant`)
+        .then((responseRelevance) => {
+          setMostRelevant(responseRelevance.data.body);
+        });
     }
     getRecs();
   }, []);
 
-  if (isFetching) {
+  if (
+    mostLiked == "" ||
+    mostCommented == "" ||
+    highestRated === "" ||
+    mostRelevant === "" ||
+    mostGenre === ""
+  ) {
     return (
       <div className="loading">
         <h1>Loading</h1>
@@ -118,51 +110,56 @@ export default function Recommendations({ getGenres, userObjectId }) {
   } else {
     return (
       <>
-        {otherDisplay ? (
-          <p>error!</p>
-        ) : (
-          <div className="col-sm-4">
-            <h3>Recommendations</h3>
-            <div className="row row-cols-1 row-cols-md-2 g-4">
-              <div className="col">
-                <div className="card">
-                  <img />
-                  <div className="card-body">
-                    <h5 className="card-title">Most Liked</h5>
-                    <RecCard song={mostLiked} />
-                  </div>
+        <div className="col-sm-4">
+          <h3>Recommendations</h3>
+          <div className="row row-cols-1 row-cols-md-2 g-4">
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">Most Liked</h5>
+                  <RecCard song={mostLiked} />
                 </div>
               </div>
-              <div className="col">
-                <div className="card">
-                  <img />
-                  <div className="card-body">
-                    <h5 className="card-title">Highest Rated</h5>
-                    <RecCard song={highestRated} />
-                  </div>
+            </div>
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">Highest Rated</h5>
+                  <RecCard song={highestRated} />
                 </div>
               </div>
-              <div className="col">
-                <div className="card">
-                  <img />
-                  <div className="card-body">
-                    <h5 className="card-title">Most Commented</h5>
-                    <RecCard song={mostCommented} />
-                  </div>
+            </div>
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">Most Commented</h5>
+                  <RecCard song={mostCommented} />
                 </div>
               </div>
-              <div className="col">
-                <div className="card">
-                  <img />
-                  <div className="card-body">
-                    <h5 className="card-title">Most Relevant</h5>
-                    <RecCard song={mostRelevant} />
-                  </div>
+            </div>
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">Genre Specific</h5>
+                  <RecCard song={mostGenre} />
+                </div>
+              </div>
+            </div>
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">General Relevance</h5>
+                  <RecCard song={mostRelevant} />
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </>
     );
   }

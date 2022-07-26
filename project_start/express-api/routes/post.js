@@ -3,10 +3,17 @@ const router = express.Router();
 var request = require("request");
 
 const Parse = require("parse/node");
+const { default: axios } = require("axios");
+// Parse.initialize(
+//   "z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj",
+//   "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5"
+// );
+
 Parse.initialize(
-  "z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj",
-  "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5"
+  "YmpmeHLzpiEt1IiupexyPzd9vCgETDvaeW2rWh0U",
+  "8xOR0nDLQMijBppInKvJFsLXcDDfl7RwQ1d2QnNS"
 );
+
 Parse.serverURL = "https://parseapi.back4app.com/";
 
 const baseTime = new Date("2022-07-19T20:36:06.609Z");
@@ -57,7 +64,7 @@ router.post("/new-post", async (req, res, next) => {
       score: 0,
     });
 
-    post.save();
+    await post.save();
 
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs);
@@ -65,32 +72,29 @@ router.post("/new-post", async (req, res, next) => {
     const foundSong = await query.find();
 
     if (foundSong.length == 0) {
-      var options = {
-        url: `https://api.spotify.com/v1/artists/${selectedArtistId}`,
-        headers: { Authorization: "Bearer " + req.app.get("access_token") },
-        json: true,
-      };
-
       const song = new Songs();
-      request.get(options, function (error, response, body) {
-        song.set({
-          songId: songId,
-          selectedSongUrl: selectedSongUrl,
-          selectedSongName: selectedSongName,
-          selectedArtistId: selectedArtistId,
-          likes: [],
-          comments: [],
-          avgRating: parseInt(rating),
-          quantity: 1,
-          genres: body.genres,
-        });
-        song.save().then(
-          (song) => {
-            res.status(200).json(song);
-          },
-          (error) => {}
-        );
+      const response = await axios.get(
+        `https://api.spotify.com/v1/artists/${selectedArtistId}`,
+        {
+          headers: { Authorization: "Bearer " + req.app.get("access_token") },
+          json: true,
+        }
+      );
+      song.set({
+        songId: songId,
+        selectedSongUrl: selectedSongUrl,
+        selectedSongName: selectedSongName,
+        selectedArtistId: selectedArtistId,
+        likes: [],
+        comments: [],
+        avgRating: parseInt(rating),
+        quantity: 1,
+        genres: response.data.genres,
+        score: 0,
       });
+
+      await song.save();
+      res.status(200).json(song);
     } else {
       const currSong = foundSong[0];
       currSong.set(
@@ -100,8 +104,14 @@ router.post("/new-post", async (req, res, next) => {
           (currSong.get("quantity") + 1)
       );
       currSong.increment("quantity");
-      currSong.save();
-      res.send({ "post completed": "success" });
+      currSong.set(
+        "score",
+        currSong.get("avgRating") * Math.log(currSong.get("quantity")) +
+          currSong.get("likes").length / 50 +
+          currSong.get("comments").length / 50
+      );
+      await currSong.save();
+      res.status(200).json(currSong);
     }
   } catch (err) {
     next(err);
@@ -207,8 +217,10 @@ router.put(
     query.equalTo("songId", res.post.get("songId"));
     const foundSong = await query.find();
     let currSongComments = await foundSong[0].get("comments");
+    let currSongScore = await foundSong[0].get("score");
     currSongComments.push(req.body.commentId);
     foundSong[0].set("comments", currSongComments);
+    foundSong[0].set("score", currSongScore);
     foundSong[0].save();
 
     res.status(200).json(currComments);
@@ -233,7 +245,8 @@ router.delete(
       query.equalTo("songId", req.params.songId);
       const foundSong = await query.first();
       let currSongComments = await foundSong.get("comments");
-
+      let currSongScore = await foundSong.get("score");
+      currSongScore -= 1 / 50;
       await currComment.destroy();
       const index = currComments.indexOf(req.body.commentId);
       currComments.splice(index, 1);
@@ -245,6 +258,7 @@ router.delete(
       await res.post.save();
 
       foundSong.set("comments", currSongComments);
+      foundSong.set("score", currSongScore);
       await foundSong.save();
 
       res.send("success!");
@@ -327,21 +341,25 @@ router.put("/:postId/post-like", getCurrPost, async (req, res, next) => {
   query.equalTo("songId", res.post.get("songId"));
   const foundSong = await query.find();
   let currSongLikes = await foundSong[0].get("likes");
+  let currSongScore = await foundSong[0].get("score");
 
   if (!req.body.isLiked) {
     currLikes.push(req.body.likeId);
     currSongLikes.push(req.body.likeId);
+    currSongScore += 1 / 50;
   } else {
     const index = currLikes.indexOf(req.body.likeId);
     currLikes.splice(index, 1);
 
     const songIndex = currSongLikes.indexOf(req.body.likeId);
     currSongLikes.splice(songIndex, 1);
+    currSongScore -= 1 / 50;
   }
   res.post.set("likes", currLikes);
   res.post.save();
 
   foundSong[0].set("likes", currSongLikes);
+  foundSong[0].set("score", currSongScore);
   foundSong[0].save();
 
   res.status(200).json(currLikes);

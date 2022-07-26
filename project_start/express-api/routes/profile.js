@@ -1,78 +1,76 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-var request = require('request');
+var request = require("request");
 
-const Parse = require('parse/node');
-Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
+const Parse = require("parse/node");
+// Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
+Parse.initialize(
+  "YmpmeHLzpiEt1IiupexyPzd9vCgETDvaeW2rWh0U",
+  "8xOR0nDLQMijBppInKvJFsLXcDDfl7RwQ1d2QnNS"
+);
 Parse.serverURL = "https://parseapi.back4app.com/";
 
-
 // GET: get basic profile information from Spotify API
-router.get('/', async (req, res, next) => {
-    try {
-      var options = {
-        url: `https://api.spotify.com/v1/me`,
-        headers: { 'Authorization': 'Bearer ' + req.app.get('access_token')},
-        json: true
-      };
-      request.get(options, function(error, response, body) {
-        res.status(200).json({body})
-      });
-    } catch(err) {
-      next(err);
-    }
-  }) 
+router.get("/", async (req, res, next) => {
+  try {
+    var options = {
+      url: `https://api.spotify.com/v1/me`,
+      headers: { Authorization: "Bearer " + req.app.get("access_token") },
+      json: true,
+    };
+    request.get(options, function (error, response, body) {
+      res.status(200).json({ body });
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET: get info about all posts a user has liked
-router.get('/liked/:userObjectId', async (req, res, next) => {
-    try {
-        
-        const userObjectId = req.params.userObjectId;
-        const Likes = Parse.Object.extend("Likes");
-        const likeQuery = new Parse.Query(Likes);
-        likeQuery.equalTo("userObjectId", userObjectId);
-        
-        const result = await likeQuery.find();
-        res.status(200).json(result)
+router.get("/liked/:userObjectId", async (req, res, next) => {
+  try {
+    const userObjectId = req.params.userObjectId;
+    const Likes = Parse.Object.extend("Likes");
+    const likeQuery = new Parse.Query(Likes);
+    likeQuery.equalTo("userObjectId", userObjectId);
 
-    } catch(err) {
-        next(err)
-    }
-})
+    const result = await likeQuery.find();
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET: get info about all posts a user has commented on
-router.get('/commented/:userObjectId', async (req, res, next) => {
-    try {
-        
-        const userObjectId = req.params.userObjectId;
-        
-        const Comments = Parse.Object.extend("Comments");
-        const commentQuery = new Parse.Query(Comments);
-        commentQuery.equalTo("userObjectId", userObjectId);
-        
-        const result = await commentQuery.find();
-        
-        res.status(200).json(result)
+router.get("/commented/:userObjectId", async (req, res, next) => {
+  try {
+    const userObjectId = req.params.userObjectId;
 
-    } catch(err) {
-        next(err)
-    }
-})
-  
+    const Comments = Parse.Object.extend("Comments");
+    const commentQuery = new Parse.Query(Comments);
+    commentQuery.equalTo("userObjectId", userObjectId);
+
+    const result = await commentQuery.find();
+
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET: get all the posts user has made
-router.get('/posted', async (req, res, next) => {
-    try {
-        const Posts = Parse.Object.extend("Posts");
-        const postQuery = new Parse.Query(Posts);
-        postQuery.descending("createdAt")
-        postQuery.equalTo("userId", req.app.get('userId'));
-        const posted = await postQuery.find();
-        
-        res.status(200).json(posted)
+router.get("/posted", async (req, res, next) => {
+  try {
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    postQuery.descending("createdAt");
+    postQuery.equalTo("userId", req.app.get("userId"));
+    const posted = await postQuery.find();
 
-    } catch(err) {
-        next(err)
-    }
-})
+    res.status(200).json(posted);
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;
