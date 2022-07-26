@@ -238,7 +238,7 @@ app.get("/feed", async (req, res, next) => {
   }
 });
 
-// Updates genre aggregate table
+// Updates genre aggregate table (Rec)
 app.post("/update-genre", async (req, res, next) => {
   try {
     let currGenres = [];

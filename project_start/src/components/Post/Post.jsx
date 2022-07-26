@@ -133,10 +133,7 @@ export default function Post({
           updateType: "like",
           songId: songId,
         })
-        .then((value) => {
-          console.log(value.data);
-        });
-      console.log("Example of actual async call");
+        .then((value) => {});
 
       // Update Likes Table
       const savedLike = await axios.post(`${baseUrl}/post/${postId}/new-like`, {

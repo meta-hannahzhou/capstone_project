@@ -117,37 +117,63 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Songs
 
-| Property         | Type   | Description                                                      |
-| ---------------- | ------ | ---------------------------------------------------------------- |
-| objectId         | String | unique id for the user post (default field)                      |
-| createdAt        | Date   | (default auto generated field)                                   |
-| updatedAt        | Date   | (default auto generated field)                                   |
-| songId           | String | unique song id from Spotify                                      |
-| selectedSongUrl  | String | song image URL from api search call                              |
-| selectedSongName | String | song title from api search                                       |
-| likes            | Array  | array of Likes objectIds for all posts made for selected song    |
-| comments         | Array  | array of Comments objectIds for all posts made for selected song |
-| avgRating        | Number | average rating across all reviews                                |
-| quantity         | Number | number of reviews made for certain song                          |
-| genres           | Array  | array of all genres associated with the specific song            |
+| Property         | Type   | Description                                                                          |
+| ---------------- | ------ | ------------------------------------------------------------------------------------ |
+| objectId         | String | unique id for the user post (default field)                                          |
+| createdAt        | Date   | (default auto generated field)                                                       |
+| updatedAt        | Date   | (default auto generated field)                                                       |
+| songId           | String | unique song id from Spotify                                                          |
+| selectedSongUrl  | String | song image URL from api search call                                                  |
+| selectedSongName | String | song title from api search                                                           |
+| likes            | Array  | array of Likes objectIds for all posts made for selected song                        |
+| comments         | Array  | array of Comments objectIds for all posts made for selected song                     |
+| avgRating        | Number | average rating across all reviews                                                    |
+| quantity         | Number | number of reviews made for certain song                                              |
+| genres           | Array  | array of all genres associated with the specific song                                |
+| score            | Number | score that accounts for quantity, avgRating, number of likes, and number of comments |
+
+#### Rec
+
+| Property        | Type   | Description                                                                                   |
+| --------------- | ------ | --------------------------------------------------------------------------------------------- |
+| objectId        | String | unique id for the user post (default field)                                                   |
+| createdAt       | Date   | (default auto generated field)                                                                |
+| updatedAt       | Date   | (default auto generated field)                                                                |
+| userId          | String | users unique Spotify username                                                                 |
+| postedGenres    | Object | dictionary with the quantity of each genre user posted about                                  |
+| commentedGenres | Object | dictionary with the quantity of each genre user commented on                                  |
+| likedGenres     | Object | dictionary with the quantity of each genre user liked                                         |
+| topGenres       | Object | dictionary with scaled aggregation of posted (0.5), commented (0.25), and liked (0.25) genres |
 
 ### Networking
 
 #### List of network requests by screen
 
-- Home Feed Screen
+- Post
   - (Read/GET) Query all posts in database (sort/filter by time created, comments, likes, views)
-  - (Create/POST) Create a new like on a post
+  - (Read/GET) Query specific post by id
+  - (Create/POST) Create a new like in Likes
+  - (Update/PUT) Update likes array on a Post and in Songs
   - (Delete) Delete existing like
-  - (Create/POST) Create a new comment on a post
+  - (Create/POST) Create a new comment in Comments
+  - (Update/PUT) Update comments array on a Post and in Songs
   - (Delete) Delete existing comment
-  - (Create/POST) Create a new view on a post
-- New Post Screen
-  - (Create/POST) Create a new post object
-- Profile Screen
+  - (Create/POST) Create a new post to add to Posts and check if song has been posted about already, post to Songs accordingly
+  - (Update/PUT) Update score for feed ranking
+- Profile
   - (Read/GET) Query all posts user has liked
-  - (Read/GET) Query all posts where user is author
+  - (Read/GET) Query all posts user has commented on
+  - (Read/GET) Query all posts user has made
   - (Read/GET) Query basic profile information about user (Spotify API)
+- Recommendations
+  - (Read/GET) Query for most liked song across all posts
+  - (Read/GET) Query for most commented on song across all posts
+  - (Read/GET) Query for highest rated song across all posts
+  - (Read/GET) Query for user's top genre based on Rec table
+  - (Read/GET) Query for most relevant song based on aggregate score from Songs
+- Statistics
+  - (Read/GET) Query moods of songs from specific user and all users
+  - (Read/GET) Spotify API (/top/tracks)
 
 #### [OPTIONAL:] Existing API Endpoints
 

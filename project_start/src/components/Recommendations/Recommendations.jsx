@@ -61,27 +61,21 @@ export default function Recommendations({ getGenres, userObjectId }) {
         .get(`${baseUrl}/recommendations/most-liked`)
         .then((responseLike) => {
           setMostLiked(responseLike.data);
-          console.log("inside like");
         });
-      console.log("1");
 
       // Get most commented on post from all users
       axios
         .get(`${baseUrl}/recommendations/most-commented`)
         .then((responseComment) => {
           setMostCommented(responseComment.data.body);
-          console.log("inside comment");
         });
-      console.log("2");
 
       // Get highest average rated song from all users
       axios
         .get(`${baseUrl}/recommendations/highest-rated`)
         .then((responseRate) => {
           setHighestRated(responseRate.data.body);
-          console.log("inside rating");
         });
-      console.log("3");
 
       // Get most popular song within a certain genre
       const topGenre = await axios.get(`${baseUrl}/recommendations/top-genre`);
@@ -89,16 +83,12 @@ export default function Recommendations({ getGenres, userObjectId }) {
         .get(`${baseUrl}/recommendations/most-genre/${topGenre.data}`)
         .then((responseGenre) => {
           setMostGenre(responseGenre.data.body);
-          console.log("inside genre");
         });
-
-      console.log("4");
 
       axios
         .get(`${baseUrl}/recommendations/most-relevant`)
         .then((responseRelevance) => {
           setMostRelevant(responseRelevance.data.body);
-          console.log("inside relevance");
         });
     }
     getRecs();

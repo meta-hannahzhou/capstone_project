@@ -72,9 +72,7 @@ router.get(`/top-genre`, async (req, res, next) => {
   const Rec = Parse.Object.extend("Rec");
   const query = new Parse.Query(Rec);
   query.equalTo("userId", req.app.get("userId"));
-  console.log(req.app.get("userId"));
   const currRec = await query.first();
-  console.log(currRec);
   const allGenres = await currRec.get("topGenres");
 
   let max = 0;
