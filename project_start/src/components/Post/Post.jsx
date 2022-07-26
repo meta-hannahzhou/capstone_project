@@ -73,6 +73,13 @@ export default function Post({
   // Add comment to database
   const handleSubmitComment = async (e) => {
     // Post to Comments table
+    axios
+      .post(`${baseUrl}/update-genre`, {
+        updateType: "comment",
+        songId: songId,
+      })
+      .then((value) => {});
+
     const savedComment = await axios.post(
       `${baseUrl}/post/${postId}/new-comment`,
       {
@@ -121,13 +128,23 @@ export default function Post({
   // Add like to database
   const handleLike = async () => {
     if (!isLiked) {
+      axios
+        .post(`${baseUrl}/update-genre`, {
+          updateType: "like",
+          songId: songId,
+        })
+        .then((value) => {
+          console.log(value.data);
+        });
+      console.log("Example of actual async call");
+
       // Update Likes Table
       const savedLike = await axios.post(`${baseUrl}/post/${postId}/new-like`, {
         songId: songId,
         userObjectId: userObjectId,
       });
 
-      // Update Posts datatable by appending to Likes array
+      // Update Posts and Song table by appending to Likes array
       await axios.put(`${baseUrl}/post/${postId}/post-like`, {
         likeId: savedLike.data.objectId,
         isLiked: isLiked,
@@ -142,6 +159,7 @@ export default function Post({
       });
     }
     // Call get likes to update likes displayed on page
+
     await getLikes();
   };
 

@@ -57,7 +57,9 @@ export default function NewPost({
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     const review = document.getElementById("review").value;
 
     const moods = Array.prototype.slice.call(
@@ -70,6 +72,18 @@ export default function NewPost({
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
+    // Reset values
+    setTracks([]);
+    document.getElementById("review").value = "";
+    document.getElementById("song-title").value = "";
+    for (var i = 0; i < moods.length; i++) {
+      moods[i].checked = false;
+    }
+
+    for (var i = 0; i < ratings.length; i++) {
+      ratings[i].checked = false;
+    }
+
     const song = await axios.post(`${baseUrl}/post/new-post`, {
       songId: songId,
       selectedSongUrl: selectedSongUrl,
@@ -78,6 +92,11 @@ export default function NewPost({
       review: review,
       mood: mapMood(mood),
       rating: rating,
+    });
+
+    await axios.post(`${baseUrl}/update-genre`, {
+      updateType: "post",
+      song: song,
     });
 
     // Add date to be displayed on statistics page
@@ -117,7 +136,7 @@ export default function NewPost({
               <input
                 type="text"
                 className="form-control"
-                id="inputEmail3"
+                id="song-title"
                 placeholder="Song Title"
                 onChange={(e) => searchTracks(e)}
               />
