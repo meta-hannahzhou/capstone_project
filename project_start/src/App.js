@@ -21,6 +21,9 @@ function App() {
   const [userObjectId, setUserObjectId] = useState("");
   const [graphData, setGraphData] = useState({});
   const [uniqueDates, setUniqueDates] = useState([]);
+  const [topSongs, setTopSongs] = useState({ dance: [], acoust: [], live: [] });
+  const [topFeatures, setTopFeatures] = useState({});
+  const [combinedSongs, setCombinedSongs] = useState({});
   /**
    *
    * @param {*} songList
@@ -79,6 +82,13 @@ function App() {
       await sendUrl();
       const posts = await axios.get(`${baseUrl}/profile/posted/`);
       setGraphData(mapDates(posts.data.reverse()));
+      const results = await axios.get(`${baseUrl}/post/top-songs/`);
+      const allDict = {
+        dance: results.data[0],
+        acoust: results.data[1],
+        live: results.data[2],
+      };
+      setTopSongs(allDict);
     }
     startApp();
   }, []);
@@ -113,6 +123,8 @@ function App() {
                 userObjectId={userObjectId}
                 setUserObjectId={setUserObjectId}
                 getGenres={getGenres}
+                topSongs={topSongs}
+                topFeatures={topFeatures}
               />
             </>
           }
@@ -141,6 +153,12 @@ function App() {
                 setGraphData={setGraphData}
                 uniqueDates={uniqueDates}
                 setUniqueDates={setUniqueDates}
+                topSongs={topSongs}
+                setTopSongs={setTopSongs}
+                topFeatures={topFeatures}
+                setTopFeatures={setTopFeatures}
+                combinedSongs={combinedSongs}
+                setCombinedSongs={setCombinedSongs}
               />
             </>
           }

@@ -44,13 +44,19 @@ export const useEffectOnce = (effect) => {
   }, []);
 };
 
-export default function Recommendations({ getGenres, userObjectId }) {
+export default function Recommendations({ topSongs, topFeatures }) {
   const [isFetching, setIsFetching] = useState(true);
   const [mostLiked, setMostLiked] = useState("");
   const [mostCommented, setMostCommented] = useState("");
   const [mostRelevant, setMostRelevant] = useState("");
   const [mostGenre, setMostGenre] = useState("");
   const [highestRated, setHighestRated] = useState("");
+
+  const combineSort = () => {
+    let combined = topSongs[topFeatures[0][0]].concat(
+      topSongs[topFeatures[1][0]]
+    );
+  };
 
   useEffectOnce(() => {
     async function getRecs() {
@@ -112,6 +118,7 @@ export default function Recommendations({ getGenres, userObjectId }) {
       <>
         <div className="col-sm-4">
           <h3>Recommendations</h3>
+          {topSongs["dance"].length === 0 ? null : null}
           <div className="row row-cols-1 row-cols-md-2 g-4">
             <div className="col">
               <div className="card">

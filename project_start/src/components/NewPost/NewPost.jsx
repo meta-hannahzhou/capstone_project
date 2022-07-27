@@ -13,6 +13,12 @@ export default function NewPost({
   setGraphData,
   uniqueDates,
   setUniqueDates,
+  topSongs,
+  setTopSongs,
+  topFeatures,
+  setTopFeatures,
+  combinedSongs,
+  setCombinedSongs,
 }) {
   const [tracks, setTracks] = useState([]);
   const [songId, setSongId] = useState("");
@@ -57,6 +63,47 @@ export default function NewPost({
     }
   };
 
+  const mapCategory = (category) => {
+    if (category === "dance") {
+      return "danceability";
+    } else if (category === "acoust") {
+      return "acousticness";
+    } else if (category === "live") {
+      return "liveness";
+    }
+  };
+
+  // Updating cache with top 5 songs
+  const updateTop = (max, index, audioFeatures, selectedSongName, songId) => {
+    const maxCategory = max[index][0];
+    let copy = {};
+    Object.assign(copy, topSongs);
+    for (let i = 0; i < copy[maxCategory].length; i++) {
+      if (
+        audioFeatures[mapCategory(maxCategory)] >
+        copy[maxCategory][i][maxCategory]
+      ) {
+        const newElement = {
+          dance: audioFeatures[mapCategory("dance")],
+          acoust: audioFeatures[mapCategory("acoust")],
+          live: audioFeatures[mapCategory("live")],
+          selectedSongName: selectedSongName,
+          songId: songId,
+        };
+        copy[maxCategory].splice(i, 0, newElement);
+        copy[maxCategory].pop();
+        console.log(copy);
+        break;
+      }
+    }
+    for (let i = 0; i < copy[maxCategory].length; i++) {
+      copy[maxCategory][i]["score"] =
+        max[0][1] * copy[max[0][0]][i][max[0][0]] +
+        max[1][1] * copy[max[1][0]][i][max[1][0]];
+    }
+    console.log(copy);
+    setTopSongs(copy);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -72,10 +119,11 @@ export default function NewPost({
     );
     const rating = ratings.find((rating) => rating.checked).value;
 
-    // Reset values
+    // Reset values in form
     setTracks([]);
     document.getElementById("review").value = "";
     document.getElementById("song-title").value = "";
+
     for (var i = 0; i < moods.length; i++) {
       moods[i].checked = false;
     }
@@ -83,6 +131,20 @@ export default function NewPost({
     for (var i = 0; i < ratings.length; i++) {
       ratings[i].checked = false;
     }
+
+    const audioFeatures = await axios.get(
+      `${baseUrl}/post/audio-features&songId=${songId}`
+    );
+
+    axios
+      .post(`${baseUrl}/post/new-post-rec`, {
+        audioFeatures: audioFeatures.data,
+      })
+      .then((max) => {
+        setTopFeatures(max);
+        updateTop(max.data, 0, audioFeatures.data, selectedSongName, songId);
+        updateTop(max.data, 1, audioFeatures.data, selectedSongName, songId);
+      });
 
     await axios
       .post(`${baseUrl}/post/new-post`, {
@@ -93,6 +155,7 @@ export default function NewPost({
         review: review,
         mood: mapMood(mood),
         rating: rating,
+        audioFeatures: audioFeatures.data,
       })
       .then((song) => {
         axios.post(`${baseUrl}/update-genre`, {
