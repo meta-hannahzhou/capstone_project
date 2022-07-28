@@ -1,5 +1,5 @@
 .pie-chart {
-    width: 500px;
+    width: 30vw;
     position: relative;
     top: -8vh;
     margin-left: 1vw;
@@ -73,4 +73,24 @@ tspan {
 .show>.btn-secondary.dropdown-toggle {
     background-color: #1DB954;
     border: none;
+}
+
+.post-genres {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 90vw;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: -100px;
+}
+
+.statistics {
+    margin-top: 10px;
+}
+
+.pie-chart-post {
+    margin-top: -50px;
+    width: 30vw;
 }

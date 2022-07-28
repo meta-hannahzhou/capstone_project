@@ -21,6 +21,9 @@ function App() {
   const [userObjectId, setUserObjectId] = useState("");
   const [graphData, setGraphData] = useState({});
   const [uniqueDates, setUniqueDates] = useState([]);
+  const [topSongs, setTopSongs] = useState({ dance: [], acoust: [], live: [] });
+  const [topFeatures, setTopFeatures] = useState({});
+  const [combinedSongs, setCombinedSongs] = useState({});
   /**
    *
    * @param {*} songList
@@ -74,11 +77,46 @@ function App() {
     });
     return results;
   };
+
+  const combineSort = (currTopSongs, currTopFeatures) => {
+    let combined = currTopSongs[currTopFeatures[0][0]].concat(
+      currTopSongs[currTopFeatures[1][0]]
+    );
+    combined.sort(function (first, second) {
+      return second["score"] - first["score"];
+    });
+
+    let removeDuplicates = [];
+    let result = [];
+    for (let i = 0; i < combined.length; i++) {
+      if (!removeDuplicates.includes(combined[i]["selectedSongName"])) {
+        result.push(combined[i]);
+        removeDuplicates.push(combined[i]["selectedSongName"]);
+      }
+    }
+    setCombinedSongs(result);
+  };
+
   useEffect(() => {
     async function startApp() {
       await sendUrl();
       const posts = await axios.get(`${baseUrl}/profile/posted/`);
       setGraphData(mapDates(posts.data.reverse()));
+
+      // Initialize cache
+      const results = await axios.get(`${baseUrl}/post/top-songs/`);
+      const allDict = {
+        dance: results.data[0],
+        acoust: results.data[1],
+        live: results.data[2],
+      };
+
+      // Set top songs cache
+      setTopSongs(allDict);
+
+      // Set top aatributes/features cache
+      setTopFeatures(results.data[3]);
+      combineSort(allDict, results.data[3]);
     }
     startApp();
   }, []);
@@ -113,6 +151,8 @@ function App() {
                 userObjectId={userObjectId}
                 setUserObjectId={setUserObjectId}
                 getGenres={getGenres}
+                topSongs={topSongs}
+                topFeatures={topFeatures}
               />
             </>
           }
@@ -125,7 +165,7 @@ function App() {
               <Navbar />
               <Profile
                 userObjectId={userObjectId}
-                setUserObjectId={setUserObjectId}
+                combinedSongs={combinedSongs}
               />
             </>
           }
@@ -141,6 +181,13 @@ function App() {
                 setGraphData={setGraphData}
                 uniqueDates={uniqueDates}
                 setUniqueDates={setUniqueDates}
+                topSongs={topSongs}
+                setTopSongs={setTopSongs}
+                topFeatures={topFeatures}
+                setTopFeatures={setTopFeatures}
+                combinedSongs={combinedSongs}
+                setCombinedSongs={setCombinedSongs}
+                combineSort={combineSort}
               />
             </>
           }

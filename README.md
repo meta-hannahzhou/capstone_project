@@ -144,6 +144,11 @@ _One common template for creating a user story is the Who, What, Why template: A
 | commentedGenres | Object | dictionary with the quantity of each genre user commented on                                  |
 | likedGenres     | Object | dictionary with the quantity of each genre user liked                                         |
 | topGenres       | Object | dictionary with scaled aggregation of posted (0.5), commented (0.25), and liked (0.25) genres |
+| acoust          | Number | sum of all acoustic values for every song user has posted                                     |
+| live            | Number | sum of all liveness values for every song user has posted                                     |
+| dance           | Number | sum of all dance values for every song user has posted                                        |
+| max1            | String | audio feature with max sum                                                                    |
+| max2            | String | audio feature with second greatest sum                                                        |
 
 ### Networking
 

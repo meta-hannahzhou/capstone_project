@@ -44,7 +44,13 @@ export const useEffectOnce = (effect) => {
  * @param {userObjectId, setUserObjectId, getGenres}
  * @returns Renders home page and recommendations sidebar asynchronously
  */
-export default function Home({ userObjectId, setUserObjectId, getGenres }) {
+export default function Home({
+  userObjectId,
+  setUserObjectId,
+  getGenres,
+  topSongs,
+  topFeatures,
+}) {
   const [posts, setPosts] = useState({});
   const [isFetching, setIsFetching] = useState(true);
 
@@ -103,7 +109,7 @@ export default function Home({ userObjectId, setUserObjectId, getGenres }) {
               })}
             </div>
           </div>
-          <Recommendations getGenres={getGenres} userObjectId={userObjectId} />
+          <Recommendations topSongs={topSongs} topFeatures={topFeatures} />
         </div>
       </div>
     );

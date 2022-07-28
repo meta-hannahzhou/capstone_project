@@ -10,7 +10,7 @@ import ReactLoading from "react-loading";
  * @param {userObjectId}
  * @returns Profile displaying recent posts and basic user info
  */
-export default function Profile({ userObjectId }) {
+export default function Profile({ userObjectId, combinedSongs }) {
   const [isFetching, setIsFetching] = useState(false);
   const [userInfo, setUserInfo] = useState({});
   const [liked, setLiked] = useState([]);
@@ -46,7 +46,7 @@ export default function Profile({ userObjectId }) {
   } else {
     return (
       <div className="recent">
-        <>
+        <div className="profile-header">
           {userInfo ? (
             <div className="profile">
               <div className="prof-wrapper">
@@ -56,16 +56,27 @@ export default function Profile({ userObjectId }) {
                 />
               </div>
               <div className="prof-text">
-                <h3>{userInfo.id}</h3>
-                <p>{userInfo.email}</p>
+                <h3 className="bolded">{userInfo.id}</h3>
+                <p className="green">{userInfo.email}</p>
                 <p>
                   {" "}
-                  Liked Posts: {liked.length} Commented Posts: {liked.length}
+                  Liked Posts - {liked.length} Commented Posts - {liked.length}
                 </p>
               </div>
             </div>
           ) : null}
-        </>
+
+          {Object.keys(combinedSongs).length != 0 ? (
+            <div className="user-based-recs">
+              <h4 className="bolded"> User Based Recs</h4>
+              <ol className="user-rec-list">
+                {combinedSongs.map((item) => {
+                  return <li>{item.selectedSongName}</li>;
+                })}
+              </ol>
+            </div>
+          ) : null}
+        </div>
         <div className="grid-profile">
           {posted.map((currPost) => {
             return (

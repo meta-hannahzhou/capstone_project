@@ -4,19 +4,16 @@ var request = require("request");
 
 const Parse = require("parse/node");
 const { default: axios } = require("axios");
-// Parse.initialize(
-//   "z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj",
-//   "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5"
-// );
 
 Parse.initialize(
-  "YmpmeHLzpiEt1IiupexyPzd9vCgETDvaeW2rWh0U",
-  "8xOR0nDLQMijBppInKvJFsLXcDDfl7RwQ1d2QnNS"
+  "8mJaCOPGxTw5RVUHZ8Dfqx8oaZ5H0N4gTtfeIkrE",
+  "phw3PutUNIb815ECj5D5acvbiNj90CfyKYi5i3om"
 );
 
 Parse.serverURL = "https://parseapi.back4app.com/";
 
 const baseTime = new Date("2022-07-19T20:36:06.609Z");
+const k = 5;
 
 // GET: search for specific tracks through Spotify API
 router.get("/search/:query", async (req, res, next) => {
@@ -37,6 +34,20 @@ router.get("/search/:query", async (req, res, next) => {
   }
 });
 
+router.get("/audio-features&songId=:songId", async (req, res, next) => {
+  try {
+    const features = await axios.get(
+      `https://api.spotify.com/v1/audio-features/${req.params.songId}`,
+      {
+        headers: { Authorization: "Bearer " + req.app.get("access_token") },
+        json: true,
+      }
+    );
+    res.status(200).json(features.data);
+  } catch (err) {
+    next(err);
+  }
+});
 // POST: allows user to make a new post from form
 // Updates POST table and SONGS table
 router.post("/new-post", async (req, res, next) => {
@@ -49,11 +60,12 @@ router.post("/new-post", async (req, res, next) => {
       review,
       mood,
       rating,
+      audioFeatures,
     } = req.body;
     const Posts = Parse.Object.extend("Posts");
     const post = new Posts();
 
-    post.set({
+    await post.set({
       songId: songId,
       review: review,
       mood: mood,
@@ -64,7 +76,7 @@ router.post("/new-post", async (req, res, next) => {
       score: 0,
     });
 
-    await post.save();
+    post.save();
 
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs);
@@ -80,6 +92,7 @@ router.post("/new-post", async (req, res, next) => {
           json: true,
         }
       );
+
       song.set({
         songId: songId,
         selectedSongUrl: selectedSongUrl,
@@ -91,9 +104,17 @@ router.post("/new-post", async (req, res, next) => {
         quantity: 1,
         genres: response.data.genres,
         score: 0,
+        dance: audioFeatures.danceability,
+        energy: audioFeatures.energy,
+        speech: audioFeatures.speechiness,
+        acoust: audioFeatures.acousticness,
+        instru: audioFeatures.instrumentalness,
+        live: audioFeatures.liveness,
+        vale: audioFeatures.valence,
       });
 
       await song.save();
+
       res.status(200).json(song);
     } else {
       const currSong = foundSong[0];
@@ -118,6 +139,45 @@ router.post("/new-post", async (req, res, next) => {
   }
 });
 
+//https://stackoverflow.com/questions/25500316/sort-a-dictionary-by-value-in-javascript
+router.post("/new-post-rec", async (req, res, next) => {
+  try {
+    const { audioFeatures } = req.body;
+    // Add to Rec table
+    const Rec = Parse.Object.extend("Rec");
+    const recQuery = new Parse.Query(Rec);
+    recQuery.equalTo("userId", req.app.get("userId"));
+    const response = await recQuery.first();
+
+    // dance acoustic liveness
+    let userDance = await response.get("dance");
+    let userAcoust = await response.get("acoust");
+    let userLive = await response.get("live");
+
+    response.set("dance", userDance + audioFeatures.danceability);
+    response.set("acoust", userAcoust + audioFeatures.acousticness);
+    response.set("live", userLive + audioFeatures.liveness);
+
+    var categories = [
+      ["dance", userDance + audioFeatures.danceability],
+      ["acoust", userAcoust + audioFeatures.acousticness],
+      ["live", userLive + audioFeatures.liveness],
+    ];
+
+    categories.sort(function (first, second) {
+      return second[1] - first[1];
+    });
+
+    response.set("max1", categories[0][0]);
+    response.set("max2", categories[1][0]);
+    response.save();
+
+    res.status(200).json([categories[0], categories[1]]);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Middleware for getting the current post to limit redundancy
 const getCurrPost = async (req, res, next) => {
   const postId = req.params.postId;
@@ -127,6 +187,79 @@ const getCurrPost = async (req, res, next) => {
   res.post = post;
   next();
 };
+
+const getMax = async (category, Songs, max1, max2, userVals) => {
+  const query = new Parse.Query(Songs);
+  query.descending(category);
+  query.limit(k);
+  query.select("songId", "selectedSongName", "dance", "acoust", "live");
+  let results = await query.find();
+  let finalOutput = [];
+  for (let i = 0; i < results.length; i++) {
+    let output = {};
+    output["songId"] = await results[i].get("songId");
+    output["selectedSongName"] = await results[i].get("selectedSongName");
+    output["dance"] = await results[i].get("dance");
+    output["acoust"] = await results[i].get("acoust");
+    output["live"] = await results[i].get("live");
+    output["score"] =
+      output[max1] * userVals[max1] + output[max2] * userVals[max2];
+    finalOutput.push(output);
+  }
+  return finalOutput;
+};
+
+//GET: initializes cache that stores info about top k songs
+router.get("/top-songs", async (req, res, next) => {
+  try {
+    const Rec = Parse.Object.extend("Rec");
+    const recQuery = new Parse.Query(Rec);
+    recQuery.equalTo("userId", await req.app.get("userId"));
+    const response = await recQuery.first();
+
+    // dance acoustic liveness
+    let userDance = await response.get("dance");
+    let userAcoust = await response.get("acoust");
+    let userLive = await response.get("live");
+
+    let userVals = { dance: userDance, acoust: userAcoust, live: userLive };
+    let max1 = await response.get("max1");
+    let max1Val = await response.get(max1);
+
+    let max2 = await response.get("max2");
+    let max2Val = await response.get(max2);
+
+    const Songs = Parse.Object.extend("Songs");
+
+    let topDance = await getMax("dance", Songs, max1, max2, userVals);
+    let topAcoust = await getMax("acoust", Songs, max1, max2, userVals);
+    let topLive = await getMax("live", Songs, max1, max2, userVals);
+
+    res.status(200).json([
+      topDance,
+      topAcoust,
+      topLive,
+      [
+        [max1, max1Val],
+        [max2, max2Val],
+      ],
+    ]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+//GET: get all posts that have been made
+router.get("/all", async (req, res, next) => {
+  try {
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    const all = await postQuery.find();
+    res.status(200).json(all);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET: get info for specific song from post from post object id
 router.get("/:postId", getCurrPost, async (req, res, next) => {
@@ -220,7 +353,7 @@ router.put(
     let currSongScore = await foundSong[0].get("score");
     currSongComments.push(req.body.commentId);
     foundSong[0].set("comments", currSongComments);
-    foundSong[0].set("score", currSongScore);
+    foundSong[0].set("score", currSongScore + 1 / 50);
     foundSong[0].save();
 
     res.status(200).json(currComments);

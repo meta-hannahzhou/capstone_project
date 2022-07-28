@@ -44,7 +44,7 @@ export const useEffectOnce = (effect) => {
   }, []);
 };
 
-export default function Recommendations({ getGenres, userObjectId }) {
+export default function Recommendations({ topSongs, topFeatures }) {
   const [isFetching, setIsFetching] = useState(true);
   const [mostLiked, setMostLiked] = useState("");
   const [mostCommented, setMostCommented] = useState("");
@@ -111,7 +111,8 @@ export default function Recommendations({ getGenres, userObjectId }) {
     return (
       <>
         <div className="col-sm-4">
-          <h3>Recommendations</h3>
+          <h3 className="bolded">Recommendations</h3>
+          {topSongs["dance"].length === 0 ? null : null}
           <div className="row row-cols-1 row-cols-md-2 g-4">
             <div className="col">
               <div className="card">

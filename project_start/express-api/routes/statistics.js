@@ -3,10 +3,10 @@ const router = express.Router();
 var request = require("request");
 
 const Parse = require("parse/node");
-// Parse.initialize("z81Jsr6Tc1lcHyxZK7a5psWRFOBuOs2e0nxXudMj", "JTrwOsEpJabYLzZVqKuG07FD5Lxwm2SzhM5EUVt5")
+
 Parse.initialize(
-  "YmpmeHLzpiEt1IiupexyPzd9vCgETDvaeW2rWh0U",
-  "8xOR0nDLQMijBppInKvJFsLXcDDfl7RwQ1d2QnNS"
+  "8mJaCOPGxTw5RVUHZ8Dfqx8oaZ5H0N4gTtfeIkrE",
+  "phw3PutUNIb815ECj5D5acvbiNj90CfyKYi5i3om"
 );
 Parse.serverURL = "https://parseapi.back4app.com/";
 
