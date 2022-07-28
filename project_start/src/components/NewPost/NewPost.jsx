@@ -19,6 +19,7 @@ export default function NewPost({
   setTopFeatures,
   combinedSongs,
   setCombinedSongs,
+  combineSort,
 }) {
   const [tracks, setTracks] = useState([]);
   const [songId, setSongId] = useState("");
@@ -78,6 +79,9 @@ export default function NewPost({
     const maxCategory = max[index][0];
     let copy = {};
     Object.assign(copy, topSongs);
+
+    // Iterates through all k songs currently in cache and inserts in proper position if
+    // current value is greater
     for (let i = 0; i < copy[maxCategory].length; i++) {
       if (
         audioFeatures[mapCategory(maxCategory)] >
@@ -90,20 +94,25 @@ export default function NewPost({
           selectedSongName: selectedSongName,
           songId: songId,
         };
+
+        // Adds new element in
         copy[maxCategory].splice(i, 0, newElement);
+
+        // Removes old element
         copy[maxCategory].pop();
-        console.log(copy);
         break;
       }
     }
+
+    // Updates scores for values in cache
     for (let i = 0; i < copy[maxCategory].length; i++) {
       copy[maxCategory][i]["score"] =
         max[0][1] * copy[max[0][0]][i][max[0][0]] +
         max[1][1] * copy[max[1][0]][i][max[1][0]];
     }
-    console.log(copy);
     setTopSongs(copy);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -141,9 +150,10 @@ export default function NewPost({
         audioFeatures: audioFeatures.data,
       })
       .then((max) => {
-        setTopFeatures(max);
+        setTopFeatures(max.data);
         updateTop(max.data, 0, audioFeatures.data, selectedSongName, songId);
         updateTop(max.data, 1, audioFeatures.data, selectedSongName, songId);
+        combineSort(topSongs, max.data);
       });
 
     await axios

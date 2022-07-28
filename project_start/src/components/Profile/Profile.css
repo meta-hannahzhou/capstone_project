@@ -34,3 +34,28 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.user-based-recs {
+    width: 30vw;
+    background-color: #181818;
+    margin-left: auto;
+    border-radius: 10px;
+    margin-bottom: auto;
+    height: 200px;
+    margin-top: auto;
+    margin-right: 7vw;
+}
+
+.profile-header {
+    display: flex;
+}
+
+.user-rec-list {
+    height: 200px;
+    columns: 2;
+    text-align: left
+}
+
+.green {
+    color: #1db954;
+}

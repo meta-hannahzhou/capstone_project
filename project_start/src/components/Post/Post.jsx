@@ -10,13 +10,6 @@ import axios from "axios";
 import Spotify from "./index.tsx";
 import { useEffect, useState } from "react";
 import { baseUrl } from "../../baseUrl";
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
 
 /**
  *
@@ -36,8 +29,6 @@ export default function Post({
   setIsFetching,
   isProfile,
 }) {
-  const queryClient = useQueryClient();
-
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState(0);

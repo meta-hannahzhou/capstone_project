@@ -19,6 +19,7 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
   const [isFetching, setIsFetching] = useState(true);
   const [displaySpotify, setDisplaySpotify] = useState([]);
   const [displayPost, setDisplayPost] = useState([]);
+  const [displayAll, setDisplayAll] = useState([]);
   const [top, setTop] = useState({});
   const [endAngle, setEndAngle] = useState(0);
   const [time, setTime] = useState("long_term");
@@ -78,6 +79,9 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
       const posts = await axios.get(`${baseUrl}/profile/posted/`);
       setDisplayPost(await getGenres(posts.data, true));
 
+      const allPosts = await axios.get(`${baseUrl}/post/all`);
+      setDisplayAll(await getGenres(allPosts.data, true));
+
       const result = await axios.get(`${baseUrl}/statistics/moods`);
 
       setMoods(result.data.moods);
@@ -103,8 +107,6 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
   } else {
     return (
       <div className="statistics">
-        <h1> Statistics</h1>
-
         <div className="top">
           <>
             {isChanging ? (
@@ -116,7 +118,7 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
               <>
                 <div className="list">
                   <div className="top-list">
-                    <h4>Top Tracks Of {title}</h4>
+                    <h4 className="bolded">Top Tracks Of {title}</h4>
                     <div class="dropdown">
                       <button
                         class="btn btn-secondary dropdown-toggle"
@@ -189,22 +191,41 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
           </>
         </div>
 
-        <div className="pie-chart">
-          <h3>Post Genres</h3>
-          <VictoryPie
-            data={displayPost}
-            colorScale="green"
-            radius={100}
-            style={{ labels: { fill: "white" } }}
-            animate={{
-              duration: 2000,
-            }}
-            endAngle={endAngle}
-          />
+        <div className="post-genres">
+          <div className="chart-post">
+            <h5 className="bolded">Post Genres - You</h5>
+            <div className="pie-chart-post">
+              <VictoryPie
+                data={displayPost}
+                colorScale="green"
+                radius={100}
+                style={{ labels: { fill: "white" } }}
+                animate={{
+                  duration: 2000,
+                }}
+                endAngle={endAngle}
+              />
+            </div>
+          </div>
+          <div className="chart-post">
+            <h5 className="bolded">Post Genres - The World</h5>
+            <div className="pie-chart-post">
+              <VictoryPie
+                data={displayPost}
+                colorScale="green"
+                radius={100}
+                style={{ labels: { fill: "white" } }}
+                animate={{
+                  duration: 2000,
+                }}
+                endAngle={endAngle}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="line-graph">
-          <h3>Posts Over Time</h3>
+          <h3 className="bolded">Posts Over Time</h3>
           <VictoryChart
             width={1000}
             height={350}
@@ -259,7 +280,7 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
           </VictoryChart>
         </div>
 
-        <h3>Mood</h3>
+        <h3 className="bolded">Mood</h3>
 
         <h4>You:</h4>
         <VictoryBoxPlot

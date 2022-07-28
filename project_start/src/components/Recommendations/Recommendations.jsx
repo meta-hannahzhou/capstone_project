@@ -52,12 +52,6 @@ export default function Recommendations({ topSongs, topFeatures }) {
   const [mostGenre, setMostGenre] = useState("");
   const [highestRated, setHighestRated] = useState("");
 
-  const combineSort = () => {
-    let combined = topSongs[topFeatures[0][0]].concat(
-      topSongs[topFeatures[1][0]]
-    );
-  };
-
   useEffectOnce(() => {
     async function getRecs() {
       setIsFetching(true);
@@ -117,7 +111,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
     return (
       <>
         <div className="col-sm-4">
-          <h3>Recommendations</h3>
+          <h3 className="bolded">Recommendations</h3>
           {topSongs["dance"].length === 0 ? null : null}
           <div className="row row-cols-1 row-cols-md-2 g-4">
             <div className="col">

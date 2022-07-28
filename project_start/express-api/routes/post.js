@@ -150,18 +150,18 @@ router.post("/new-post-rec", async (req, res, next) => {
     const response = await recQuery.first();
 
     // dance acoustic liveness
-    let currDance = await response.get("dance");
-    let currAcoust = await response.get("acoust");
-    let currLive = await response.get("live");
+    let userDance = await response.get("dance");
+    let userAcoust = await response.get("acoust");
+    let userLive = await response.get("live");
 
-    response.set("dance", currDance + audioFeatures.danceability);
-    response.set("acoust", currAcoust + audioFeatures.acousticness);
-    response.set("live", currLive + audioFeatures.liveness);
+    response.set("dance", userDance + audioFeatures.danceability);
+    response.set("acoust", userAcoust + audioFeatures.acousticness);
+    response.set("live", userLive + audioFeatures.liveness);
 
     var categories = [
-      ["dance", currDance + audioFeatures.danceability],
-      ["acoust", currAcoust + audioFeatures.acousticness],
-      ["live", currLive + audioFeatures.liveness],
+      ["dance", userDance + audioFeatures.danceability],
+      ["acoust", userAcoust + audioFeatures.acousticness],
+      ["live", userLive + audioFeatures.liveness],
     ];
 
     categories.sort(function (first, second) {
@@ -209,31 +209,58 @@ const getMax = async (category, Songs, max1, max2, userVals) => {
   return finalOutput;
 };
 
+//GET: initializes cache that stores info about top k songs
 router.get("/top-songs", async (req, res, next) => {
   try {
     const Rec = Parse.Object.extend("Rec");
     const recQuery = new Parse.Query(Rec);
-    recQuery.equalTo("userId", req.app.get("userId"));
+    recQuery.equalTo("userId", await req.app.get("userId"));
     const response = await recQuery.first();
 
     // dance acoustic liveness
-    let currDance = await response.get("dance");
-    let currAcoust = await response.get("acoust");
-    let currLive = await response.get("live");
+    let userDance = await response.get("dance");
+    let userAcoust = await response.get("acoust");
+    let userLive = await response.get("live");
 
-    let userVals = { dance: currDance, acoust: currAcoust, live: currLive };
+    let userVals = { dance: userDance, acoust: userAcoust, live: userLive };
     let max1 = await response.get("max1");
+    let max1Val = await response.get(max1);
+
     let max2 = await response.get("max2");
+    let max2Val = await response.get(max2);
 
     const Songs = Parse.Object.extend("Songs");
+
     let topDance = await getMax("dance", Songs, max1, max2, userVals);
     let topAcoust = await getMax("acoust", Songs, max1, max2, userVals);
     let topLive = await getMax("live", Songs, max1, max2, userVals);
-    res.status(200).json([topDance, topAcoust, topLive]);
+
+    res.status(200).json([
+      topDance,
+      topAcoust,
+      topLive,
+      [
+        [max1, max1Val],
+        [max2, max2Val],
+      ],
+    ]);
   } catch (err) {
     next(err);
   }
 });
+
+//GET: get all posts that have been made
+router.get("/all", async (req, res, next) => {
+  try {
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    const all = await postQuery.find();
+    res.status(200).json(all);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // GET: get info for specific song from post from post object id
 router.get("/:postId", getCurrPost, async (req, res, next) => {
   try {
@@ -326,7 +353,7 @@ router.put(
     let currSongScore = await foundSong[0].get("score");
     currSongComments.push(req.body.commentId);
     foundSong[0].set("comments", currSongComments);
-    foundSong[0].set("score", currSongScore);
+    foundSong[0].set("score", currSongScore + 1 / 50);
     foundSong[0].save();
 
     res.status(200).json(currComments);
