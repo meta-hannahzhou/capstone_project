@@ -20,6 +20,7 @@
     "react-scripts": "5.0.1",
     "react-spotify-embed": "^0.2.3",
     "surge": "^0.23.1",
+    "toad-scheduler": "^1.6.1",
     "victory": "^36.5.3",
     "victory-axis": "^36.5.3",
     "victory-box-plot": "^36.5.3",
