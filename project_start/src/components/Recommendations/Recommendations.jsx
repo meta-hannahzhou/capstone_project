@@ -159,6 +159,15 @@ export default function Recommendations({ topSongs, topFeatures }) {
                 </div>
               </div>
             </div>
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">ML Rec</h5>
+                  <RecCard song={mostRelevant} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </>

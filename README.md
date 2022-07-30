@@ -132,7 +132,7 @@ _One common template for creating a user story is the Who, What, Why template: A
 | genres           | Array  | array of all genres associated with the specific song                                |
 | score            | Number | score that accounts for quantity, avgRating, number of likes, and number of comments |
 
-#### Rec
+#### Recommendations
 
 | Property        | Type   | Description                                                                                   |
 | --------------- | ------ | --------------------------------------------------------------------------------------------- |
@@ -149,6 +149,21 @@ _One common template for creating a user story is the Who, What, Why template: A
 | dance           | Number | sum of all dance values for every song user has posted                                        |
 | max1            | String | audio feature with max sum                                                                    |
 | max2            | String | audio feature with second greatest sum                                                        |
+| mlModel         | Object | trained network for specific user saved in JSON format                                        |
+| topMLSong       | Object | dictionary containing current ml predicted songId with the highest rating and the rating      |
+
+#### TopResults
+
+| Property    | Type   | Description                                                                                                             |
+| ----------- | ------ | ----------------------------------------------------------------------------------------------------------------------- |
+| objectId    | String | unique id for the user post (default field)                                                                             |
+| createdAt   | Date   | (default auto generated field)                                                                                          |
+| updatedAt   | Date   | (default auto generated field)                                                                                          |
+| userId      | String | users unique Spotify username                                                                                           |
+| topFolk     | Object | dictionary containing top folk song id and top score for that song                                                      |
+| topPop      | Object | dictionary containing top pop song id and top score for that song                                                       |
+| top\_\_\_\_ | Object | dictionary containing top \_\_ song id and top score for that song (could be many of these as num genres increase)      |
+| topGenre    | Object | dictionary containing users top genre and the respective count from the weighted aggregation from Recommendations table |
 
 ### Networking
 

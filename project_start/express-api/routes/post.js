@@ -144,8 +144,8 @@ router.post("/new-post-rec", async (req, res, next) => {
   try {
     const { audioFeatures } = req.body;
     // Add to Rec table
-    const Rec = Parse.Object.extend("Rec");
-    const recQuery = new Parse.Query(Rec);
+    const Recommendation = Parse.Object.extend("Recommendation");
+    const recQuery = new Parse.Query(Recommendation);
     recQuery.equalTo("userId", req.app.get("userId"));
     const response = await recQuery.first();
 
@@ -212,8 +212,8 @@ const getMax = async (category, Songs, max1, max2, userVals) => {
 //GET: initializes cache that stores info about top k songs
 router.get("/top-songs", async (req, res, next) => {
   try {
-    const Rec = Parse.Object.extend("Rec");
-    const recQuery = new Parse.Query(Rec);
+    const Recommendation = Parse.Object.extend("Recommendation");
+    const recQuery = new Parse.Query(Recommendation);
     recQuery.equalTo("userId", await req.app.get("userId"));
     const response = await recQuery.first();
 

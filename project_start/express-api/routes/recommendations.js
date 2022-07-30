@@ -69,8 +69,8 @@ router.get("/most-commented", async (req, res, next) => {
 });
 
 router.get(`/top-genre`, async (req, res, next) => {
-  const Rec = Parse.Object.extend("Rec");
-  const query = new Parse.Query(Rec);
+  const Recommendation = Parse.Object.extend("Recommendation");
+  const query = new Parse.Query(Recommendation);
   query.equalTo("userId", req.app.get("userId"));
   const currRec = await query.first();
   const allGenres = await currRec.get("topGenres");
