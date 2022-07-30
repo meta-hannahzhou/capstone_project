@@ -156,4 +156,26 @@ router.get("/highest-rated", async (req, res, next) => {
   }
 });
 
+// GET: song predicted by ml model for specific user
+router.get("/ml-predict", async (req, res, next) => {
+  try {
+    const Recommendation = Parse.Object.extend("Recommendation");
+    const query = new Parse.Query(Recommendation);
+    query.select("topMLSong");
+    const result = await query.first();
+
+    var options = {
+      url: `https://api.spotify.com/v1/tracks/${result[0].get("songId")}`,
+      headers: { Authorization: "Bearer " + req.app.get("access_token") },
+      json: true,
+    };
+
+    request.get(options, function (error, response, body) {
+      res.status(200).json({ body });
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
