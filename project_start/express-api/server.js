@@ -16,88 +16,88 @@ var brain = require("brain.js");
 
 const ParseKeys = require("./parseKeys.js");
 
-// const {
-//   ToadScheduler,
-//   SimpleIntervalJob,
-//   AsyncTask,
-// } = require(`toad-scheduler`);
+const {
+  ToadScheduler,
+  SimpleIntervalJob,
+  AsyncTask,
+} = require(`toad-scheduler`);
 
-// const scheduler = new ToadScheduler();
+const scheduler = new ToadScheduler();
 
-// let counter = 0;
+let counter = 0;
 
-// const net = new brain.NeuralNetwork({
-//   activation: "sigmoid",
-//   hiddenLayers: [3],
-//   iterations: 200,
-//   learningRate: 0.5,
-// });
+const net = new brain.NeuralNetwork({
+  activation: "sigmoid",
+  hiddenLayers: [3],
+  iterations: 200,
+  learningRate: 0.5,
+});
 
-// const getAccuracy = function (net, testData) {
-//   let hits = 0;
-//   testData.forEach((datapoint) => {
-//     const output = net.run(datapoint.input);
-//     if (Math.round(output[0]) === datapoint.output[0]) {
-//       hits += 1;
-//     }
-//   });
-//   return hits / testData.length;
-// };
+const getAccuracy = function (net, testData) {
+  let hits = 0;
+  testData.forEach((datapoint) => {
+    const output = net.run(datapoint.input);
+    if (Math.round(output[0]) === datapoint.output[0]) {
+      hits += 1;
+    }
+  });
+  return hits / testData.length;
+};
 
-// const task = new AsyncTask("simple task", () => {
-//   const Songs = Parse.Object.extend("Songs");
-//   const inputQuery = new Parse.Query(Songs);
-//   inputQuery.select(
-//     "speech",
-//     "vale",
-//     "energy",
-//     "acoust",
-//     "instru",
-//     "live",
-//     "dance"
-//   );
+const task = new AsyncTask("simple task", () => {
+  const Songs = Parse.Object.extend("Songs");
+  const inputQuery = new Parse.Query(Songs);
+  inputQuery.select(
+    "speech",
+    "vale",
+    "energy",
+    "acoust",
+    "instru",
+    "live",
+    "dance"
+  );
 
-//   const outputQuery = new Parse.Query(Songs);
-//   outputQuery.select("avgRating");
+  const outputQuery = new Parse.Query(Songs);
+  outputQuery.select("avgRating");
 
-//   return inputQuery.find().then((input) => {
-//     const samples = input.map((item) => {
-//       const { dance, energy, speech, acoust, instru, live, vale } =
-//         item.attributes;
-//       return [dance, energy, speech, acoust, instru, live, vale];
-//     });
-//     outputQuery.find().then((result) => {
-//       const labels = result.map((item) => {
-//         const { avgRating } = item.attributes;
-//         return [avgRating / 5];
-//       });
+  return inputQuery.find().then((input) => {
+    const samples = input.map((item) => {
+      const { dance, energy, speech, acoust, instru, live, vale } =
+        item.attributes;
+      return [dance, energy, speech, acoust, instru, live, vale];
+    });
+    outputQuery.find().then((result) => {
+      const labels = result.map((item) => {
+        const { avgRating } = item.attributes;
+        return [avgRating / 5];
+      });
 
-//       const orderedData = samples.map((sample, index) => {
-//         return {
-//           input: sample,
-//           output: labels[index],
-//         };
-//       });
+      const orderedData = samples.map((sample, index) => {
+        return {
+          input: sample,
+          output: labels[index],
+        };
+      });
 
-//       const SPLIT_RATIO = 5 / 7;
-//       const SPLIT = parseInt(SPLIT_RATIO * orderedData.length);
-//       const trainData = orderedData.slice(0, SPLIT);
-//       const testData = orderedData.slice(SPLIT + 1);
+      const SPLIT_RATIO = 5 / 7;
+      const SPLIT = parseInt(SPLIT_RATIO * orderedData.length);
+      const trainData = orderedData.slice(0, SPLIT);
+      const testData = orderedData.slice(SPLIT + 1);
 
-//       const { error, iterations } = net.train(trainData);
+      const { error, iterations } = net.train(trainData);
 
-//       // save trained algorithm as json file which can be saved in table
-//       const json2 = net.toJSON();
+      // save trained algorithm as json file which can be saved in table
+      const json2 = net.toJSON();
 
-//       const loadedNet = new brain.NeuralNetwork();
-//       loadedNet.fromJSON(json2); // store the loaded net in rec table?
-//       const output = loadedNet.run(samples[0]);
-//     });
-//   });
-// });
-// const job = new SimpleIntervalJob({ seconds: 5 }, task);
+      const loadedNet = new brain.NeuralNetwork();
+      loadedNet.fromJSON(json2); // store the loaded net in rec table?
+      const output = loadedNet.run(samples[0]);
+    });
+  });
+});
+const job = new SimpleIntervalJob({ seconds: 5 }, task);
 
-// scheduler.addSimpleIntervalJob(job);
+scheduler.addSimpleIntervalJob(job);
 
 const port = process.env.PORT || 8888;
 
@@ -308,7 +308,7 @@ app.post("/", async (req, res, next) => {
       const topSongs = new TopSongs();
       topSongs.set({
         userId: userId,
-        topSong: {},
+        topGenre: {},
       });
 
       await topSongs.save();
