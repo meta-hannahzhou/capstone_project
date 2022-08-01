@@ -4,11 +4,9 @@ var request = require("request");
 const { BadRequestError } = require("../utils/errors.js");
 
 const Parse = require("parse/node");
+const ParseKeys = require("../parseKeys.js");
 
-Parse.initialize(
-  "8mJaCOPGxTw5RVUHZ8Dfqx8oaZ5H0N4gTtfeIkrE",
-  "phw3PutUNIb815ECj5D5acvbiNj90CfyKYi5i3om"
-);
+Parse.initialize(ParseKeys[0], ParseKeys[1]);
 Parse.serverURL = "https://parseapi.back4app.com/";
 
 // GET: most liked cumulative song
