@@ -67,21 +67,14 @@ router.get("/most-commented", async (req, res, next) => {
 });
 
 router.get(`/top-genre`, async (req, res, next) => {
-  const Recommendation = Parse.Object.extend("Recommendation");
-  const query = new Parse.Query(Recommendation);
+  const TopSongs = Parse.Object.extend("TopSongs");
+  const query = new Parse.Query(TopSongs);
   query.equalTo("userId", req.app.get("userId"));
-  const currRec = await query.first();
-  const allGenres = await currRec.get("topGenres");
 
-  let max = 0;
-  let topGenre = "";
-  for (var key in allGenres) {
-    if (allGenres[key] > max) {
-      max = allGenres[key];
-      topGenre = key;
-    }
-  }
-  res.status(200).json(topGenre);
+  const currTop = await query.first();
+  const top = await currTop.get("topGenre");
+
+  res.status(200).json(top["genre"]);
 });
 
 // GET: most relevant song based on genre and likes

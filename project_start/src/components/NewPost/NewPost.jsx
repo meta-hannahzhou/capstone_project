@@ -171,6 +171,7 @@ export default function NewPost({
         axios.post(`${baseUrl}/update-genre`, {
           updateType: "post",
           song: song,
+          songId: songId,
         });
       });
 

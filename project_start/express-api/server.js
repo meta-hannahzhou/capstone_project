@@ -16,88 +16,88 @@ var brain = require("brain.js");
 
 const ParseKeys = require("./parseKeys.js");
 
-const {
-  ToadScheduler,
-  SimpleIntervalJob,
-  AsyncTask,
-} = require(`toad-scheduler`);
+// const {
+//   ToadScheduler,
+//   SimpleIntervalJob,
+//   AsyncTask,
+// } = require(`toad-scheduler`);
 
-const scheduler = new ToadScheduler();
+// const scheduler = new ToadScheduler();
 
-let counter = 0;
+// let counter = 0;
 
-const net = new brain.NeuralNetwork({
-  activation: "sigmoid",
-  hiddenLayers: [3],
-  iterations: 200,
-  learningRate: 0.5,
-});
+// const net = new brain.NeuralNetwork({
+//   activation: "sigmoid",
+//   hiddenLayers: [3],
+//   iterations: 200,
+//   learningRate: 0.5,
+// });
 
-const getAccuracy = function (net, testData) {
-  let hits = 0;
-  testData.forEach((datapoint) => {
-    const output = net.run(datapoint.input);
-    if (Math.round(output[0]) === datapoint.output[0]) {
-      hits += 1;
-    }
-  });
-  return hits / testData.length;
-};
+// const getAccuracy = function (net, testData) {
+//   let hits = 0;
+//   testData.forEach((datapoint) => {
+//     const output = net.run(datapoint.input);
+//     if (Math.round(output[0]) === datapoint.output[0]) {
+//       hits += 1;
+//     }
+//   });
+//   return hits / testData.length;
+// };
 
-const task = new AsyncTask("simple task", () => {
-  const Songs = Parse.Object.extend("Songs");
-  const inputQuery = new Parse.Query(Songs);
-  inputQuery.select(
-    "speech",
-    "vale",
-    "energy",
-    "acoust",
-    "instru",
-    "live",
-    "dance"
-  );
+// const task = new AsyncTask("simple task", () => {
+//   const Songs = Parse.Object.extend("Songs");
+//   const inputQuery = new Parse.Query(Songs);
+//   inputQuery.select(
+//     "speech",
+//     "vale",
+//     "energy",
+//     "acoust",
+//     "instru",
+//     "live",
+//     "dance"
+//   );
 
-  const outputQuery = new Parse.Query(Songs);
-  outputQuery.select("avgRating");
+//   const outputQuery = new Parse.Query(Songs);
+//   outputQuery.select("avgRating");
 
-  return inputQuery.find().then((input) => {
-    const samples = input.map((item) => {
-      const { dance, energy, speech, acoust, instru, live, vale } =
-        item.attributes;
-      return [dance, energy, speech, acoust, instru, live, vale];
-    });
-    outputQuery.find().then((result) => {
-      const labels = result.map((item) => {
-        const { avgRating } = item.attributes;
-        return [avgRating / 5];
-      });
+//   return inputQuery.find().then((input) => {
+//     const samples = input.map((item) => {
+//       const { dance, energy, speech, acoust, instru, live, vale } =
+//         item.attributes;
+//       return [dance, energy, speech, acoust, instru, live, vale];
+//     });
+//     outputQuery.find().then((result) => {
+//       const labels = result.map((item) => {
+//         const { avgRating } = item.attributes;
+//         return [avgRating / 5];
+//       });
 
-      const orderedData = samples.map((sample, index) => {
-        return {
-          input: sample,
-          output: labels[index],
-        };
-      });
+//       const orderedData = samples.map((sample, index) => {
+//         return {
+//           input: sample,
+//           output: labels[index],
+//         };
+//       });
 
-      const SPLIT_RATIO = 5 / 7;
-      const SPLIT = parseInt(SPLIT_RATIO * orderedData.length);
-      const trainData = orderedData.slice(0, SPLIT);
-      const testData = orderedData.slice(SPLIT + 1);
+//       const SPLIT_RATIO = 5 / 7;
+//       const SPLIT = parseInt(SPLIT_RATIO * orderedData.length);
+//       const trainData = orderedData.slice(0, SPLIT);
+//       const testData = orderedData.slice(SPLIT + 1);
 
-      const { error, iterations } = net.train(trainData);
+//       const { error, iterations } = net.train(trainData);
 
-      // save trained algorithm as json file which can be saved in table
-      const json2 = net.toJSON();
+//       // save trained algorithm as json file which can be saved in table
+//       const json2 = net.toJSON();
 
-      const loadedNet = new brain.NeuralNetwork();
-      loadedNet.fromJSON(json2); // store the loaded net in rec table?
-      const output = loadedNet.run(samples[0]);
-    });
-  });
-});
-const job = new SimpleIntervalJob({ seconds: 5 }, task);
+//       const loadedNet = new brain.NeuralNetwork();
+//       loadedNet.fromJSON(json2); // store the loaded net in rec table?
+//       const output = loadedNet.run(samples[0]);
+//     });
+//   });
+// });
+// const job = new SimpleIntervalJob({ seconds: 5 }, task);
 
-scheduler.addSimpleIntervalJob(job);
+// scheduler.addSimpleIntervalJob(job);
 
 const port = process.env.PORT || 8888;
 
@@ -302,7 +302,17 @@ app.post("/", async (req, res, next) => {
         max1: "dance",
         max2: "acoust",
       });
-      rec.save();
+      await rec.save();
+
+      const TopSongs = Parse.Object.extend("TopSongs");
+      const topSongs = new TopSongs();
+      topSongs.set({
+        userId: userId,
+        topSong: {},
+      });
+
+      await topSongs.save();
+
       res.status(200).json(userLogin);
     } else {
       res.status(200).json(checkSong[0]);
@@ -334,6 +344,7 @@ app.post("/update-genre", async (req, res, next) => {
     const query = new Parse.Query(Songs);
     let queryString = "";
     let scale = 0.25;
+    const songId = await req.body.songId;
 
     if (req.body.updateType == "post") {
       queryString = "postedGenres";
@@ -341,12 +352,12 @@ app.post("/update-genre", async (req, res, next) => {
       currGenres = await req.body.song.data.genres;
     } else if (req.body.updateType === "like") {
       queryString = "likedGenres";
-      query.equalTo("songId", req.body.songId);
+      query.equalTo("songId", songId);
       const currSong = await query.first();
       currGenres = await currSong.get("genres");
     } else {
       queryString = "commentedGenres";
-      query.equalTo("songId", req.body.songId);
+      query.equalTo("songId", songId);
       const currSong = await query.first();
       currGenres = await currSong.get("genres");
     }
@@ -359,23 +370,55 @@ app.post("/update-genre", async (req, res, next) => {
     let currQuery = await response.get(queryString);
     let allQuery = await response.get("topGenres");
 
+    const TopSongs = Parse.Object.extend("TopSongs");
+    const topSongsQuery = new Parse.Query(TopSongs);
+    topSongsQuery.equalTo("userId", userId);
+    const topResponse = await topSongsQuery.first();
+
     for (let i = 0; i < currGenres.length; i++) {
+      // Updating topComments, likes, posts respective category
       if (currGenres[i] in currQuery) {
         currQuery[currGenres[i]] = currQuery[currGenres[i]] + 1;
       } else {
         currQuery[currGenres[i]] = 1;
       }
 
+      // Updating topSongs aggregate column
       if (currGenres[i] in allQuery) {
         allQuery[currGenres[i]] = allQuery[currGenres[i]] + scale;
       } else {
         allQuery[currGenres[i]] = scale;
+      }
+
+      const songExists = await topResponse.get(currGenres[i]);
+      if (
+        typeof songExists === "undefined" ||
+        allQuery[currGenres[i]] > songExists[score]
+      ) {
+        topResponse.set(currGenres[i].replace(/\s/g, ""), {
+          songId: songId,
+          score: allQuery[currGenres[i]],
+        });
+      }
+
+      const topGenre = await topResponse.get("topGenre");
+
+      if (
+        Object.keys(topGenre).length == 0 ||
+        allQuery[currGenres[i]] > topGenre["score"]
+      ) {
+        topResponse.set("topGenre", {
+          genre: currGenres[i],
+          songId: await req.body.songId,
+          score: allQuery[currGenres[i]],
+        });
       }
     }
     response.set(queryString, currQuery);
     response.set("topGenres", allQuery);
 
     await response.save();
+    await topResponse.save();
 
     res.status(200).send("completed");
   } catch (err) {
