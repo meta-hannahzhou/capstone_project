@@ -4,10 +4,10 @@ var request = require("request");
 
 const Parse = require("parse/node");
 
-Parse.initialize(
-  "8mJaCOPGxTw5RVUHZ8Dfqx8oaZ5H0N4gTtfeIkrE",
-  "phw3PutUNIb815ECj5D5acvbiNj90CfyKYi5i3om"
-);
+const ParseKeys = require("../parseKeys.js");
+
+Parse.initialize(ParseKeys[0], ParseKeys[1]);
+
 Parse.serverURL = "https://parseapi.back4app.com/";
 
 router.get("/moods", async (req, res, next) => {
