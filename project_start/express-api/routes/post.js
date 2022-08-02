@@ -73,8 +73,6 @@ router.put("/ml-rec", async (req, res, next) => {
 
     const topMLSong = await response.get("topMLSong");
 
-    console.log("topMLSong currently: ", topMLSong);
-
     if (predictedRating > topMLSong["rating"]) {
       const updateTopSong = {
         rating: predictedRating["0"],

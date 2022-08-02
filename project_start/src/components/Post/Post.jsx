@@ -64,12 +64,6 @@ export default function Post({
   // Add comment to database
   const handleSubmitComment = async (e) => {
     // Post to Comments table
-    axios
-      .post(`${baseUrl}/update-genre`, {
-        updateType: "comment",
-        songId: songId,
-      })
-      .then((value) => {});
 
     const savedComment = await axios.post(
       `${baseUrl}/post/${postId}/new-comment`,
@@ -84,6 +78,14 @@ export default function Post({
     await axios.put(`${baseUrl}/post/${postId}/update-post-comment`, {
       commentId: savedComment.data.objectId,
     });
+
+    axios
+      .post(`${baseUrl}/update-genre`, {
+        updateType: "comment",
+        songId: songId,
+      })
+      .then((value) => {});
+
     // Call get comments to update count displayed on page
     getComments();
   };
@@ -119,13 +121,6 @@ export default function Post({
   // Add like to database
   const handleLike = async () => {
     if (!isLiked) {
-      axios
-        .post(`${baseUrl}/update-genre`, {
-          updateType: "like",
-          songId: songId,
-        })
-        .then((value) => {});
-
       // Update Likes Table
       const savedLike = await axios.post(`${baseUrl}/post/${postId}/new-like`, {
         songId: songId,
@@ -137,6 +132,13 @@ export default function Post({
         likeId: savedLike.data.objectId,
         isLiked: isLiked,
       });
+
+      axios
+        .post(`${baseUrl}/update-genre`, {
+          updateType: "like",
+          songId: songId,
+        })
+        .then((value) => {});
     } else {
       await axios.delete(
         `${baseUrl}/post/${postId}/delete-like&likedObjectId=${likedObjectId}`
