@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 var request = require("request");
+var brain = require("brain.js");
 
 const { default: axios } = require("axios");
 
@@ -47,6 +48,49 @@ router.get("/audio-features&songId=:songId", async (req, res, next) => {
     next(err);
   }
 });
+
+router.put("/ml-rec", async (req, res, next) => {
+  try {
+    const audioFeatures = req.body.audioFeatures;
+
+    const Recommendation = Parse.Object.extend("Recommendation");
+    const recQuery = new Parse.Query(Recommendation);
+    recQuery.equalTo("userId", req.app.get("userId"));
+    const response = await recQuery.first();
+
+    const modelJSON = await response.get("mlModel");
+    const loadedNet = new brain.NeuralNetwork();
+    loadedNet.fromJSON(modelJSON);
+    const predictedRating = loadedNet.run([
+      audioFeatures.danceability,
+      audioFeatures.energy,
+      audioFeatures.speechiness,
+      audioFeatures.acousticness,
+      audioFeatures.instrumentalness,
+      audioFeatures.liveness,
+      audioFeatures.valence,
+    ]);
+
+    const topMLSong = await response.get("topMLSong");
+
+    console.log("topMLSong currently: ", topMLSong);
+
+    if (predictedRating > topMLSong["rating"]) {
+      const updateTopSong = {
+        rating: predictedRating["0"],
+        songId: req.body.songId,
+      };
+      response.set("topMLSong", updateTopSong);
+    }
+
+    await response.save();
+
+    res.status(200).send("completed!");
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST: allows user to make a new post from form
 // Updates POST table and SONGS table
 router.post("/new-post", async (req, res, next) => {

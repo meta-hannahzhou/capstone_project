@@ -148,6 +148,7 @@ export default function NewPost({
     axios
       .post(`${baseUrl}/post/new-post-rec`, {
         audioFeatures: audioFeatures.data,
+        songId: songId,
       })
       .then((max) => {
         setTopFeatures(max.data);
@@ -155,6 +156,11 @@ export default function NewPost({
         updateTop(max.data, 1, audioFeatures.data, selectedSongName, songId);
         combineSort(topSongs, max.data);
       });
+
+    axios.put(`${baseUrl}/post/ml-rec`, {
+      audioFeatures: audioFeatures.data,
+      songId: songId,
+    });
 
     await axios
       .post(`${baseUrl}/post/new-post`, {
@@ -171,6 +177,7 @@ export default function NewPost({
         axios.post(`${baseUrl}/update-genre`, {
           updateType: "post",
           song: song,
+          songId: songId,
         });
       });
 

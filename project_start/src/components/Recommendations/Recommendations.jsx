@@ -51,6 +51,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
   const [mostRelevant, setMostRelevant] = useState("");
   const [mostGenre, setMostGenre] = useState("");
   const [highestRated, setHighestRated] = useState("");
+  const [mlPredict, setMLPredict] = useState("");
 
   useEffectOnce(() => {
     async function getRecs() {
@@ -85,11 +86,17 @@ export default function Recommendations({ topSongs, topFeatures }) {
           setMostGenre(responseGenre.data.body);
         });
 
+      // Get most relevant song based on score (num posts, num likes, num comments)
       axios
         .get(`${baseUrl}/recommendations/most-relevant`)
         .then((responseRelevance) => {
           setMostRelevant(responseRelevance.data.body);
         });
+
+      // Get song predicted by ML algorithm for specific user
+      axios.get(`${baseUrl}/recommendations/ml-predict`).then((responseML) => {
+        setMLPredict(responseML.data);
+      });
     }
     getRecs();
   }, []);
@@ -99,7 +106,8 @@ export default function Recommendations({ topSongs, topFeatures }) {
     mostCommented == "" ||
     highestRated === "" ||
     mostRelevant === "" ||
-    mostGenre === ""
+    mostGenre === "" ||
+    mlPredict === ""
   ) {
     return (
       <div className="loading">
@@ -164,7 +172,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
                 <img />
                 <div className="card-body">
                   <h5 className="card-title">ML Rec</h5>
-                  <RecCard song={mostRelevant} />
+                  <RecCard song={mlPredict} />
                 </div>
               </div>
             </div>

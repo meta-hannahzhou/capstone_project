@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 var request = require("request");
-const { BadRequestError } = require("../utils/errors.js");
 
 const Parse = require("parse/node");
 const ParseKeys = require("../parseKeys.js");
@@ -67,21 +66,14 @@ router.get("/most-commented", async (req, res, next) => {
 });
 
 router.get(`/top-genre`, async (req, res, next) => {
-  const Recommendation = Parse.Object.extend("Recommendation");
-  const query = new Parse.Query(Recommendation);
+  const TopSongs = Parse.Object.extend("TopSongs");
+  const query = new Parse.Query(TopSongs);
   query.equalTo("userId", req.app.get("userId"));
-  const currRec = await query.first();
-  const allGenres = await currRec.get("topGenres");
 
-  let max = 0;
-  let topGenre = "";
-  for (var key in allGenres) {
-    if (allGenres[key] > max) {
-      max = allGenres[key];
-      topGenre = key;
-    }
-  }
-  res.status(200).json(topGenre);
+  const currTop = await query.first();
+  const top = await currTop.get("topGenre");
+
+  res.status(200).json(top["genre"]);
 });
 
 // GET: most relevant song based on genre and likes
@@ -162,14 +154,15 @@ router.get("/ml-predict", async (req, res, next) => {
     query.select("topMLSong");
     const result = await query.first();
 
+    const topMLSong = await result.get("topMLSong");
     var options = {
-      url: `https://api.spotify.com/v1/tracks/${result[0].get("songId")}`,
+      url: `https://api.spotify.com/v1/tracks/${topMLSong["songId"]}`,
       headers: { Authorization: "Bearer " + req.app.get("access_token") },
       json: true,
     };
 
     request.get(options, function (error, response, body) {
-      res.status(200).json({ body });
+      res.status(200).json(body);
     });
   } catch (err) {
     next(err);
