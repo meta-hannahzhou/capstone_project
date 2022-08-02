@@ -131,6 +131,7 @@ _One common template for creating a user story is the Who, What, Why template: A
 | quantity         | Number | number of reviews made for certain song                                              |
 | genres           | Array  | array of all genres associated with the specific song                                |
 | score            | Number | score that accounts for quantity, avgRating, number of likes, and number of comments |
+| views            | Number | number of views for music video associated with that song                            |
 
 #### Recommendations
 
@@ -154,16 +155,16 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### TopResults
 
-| Property    | Type   | Description                                                                                                             |
-| ----------- | ------ | ----------------------------------------------------------------------------------------------------------------------- |
-| objectId    | String | unique id for the user post (default field)                                                                             |
-| createdAt   | Date   | (default auto generated field)                                                                                          |
-| updatedAt   | Date   | (default auto generated field)                                                                                          |
-| userId      | String | users unique Spotify username                                                                                           |
-| topFolk     | Object | dictionary containing top folk song id and top score for that song                                                      |
-| topPop      | Object | dictionary containing top pop song id and top score for that song                                                       |
-| top\_\_\_\_ | Object | dictionary containing top \_\_ song id and top score for that song (could be many of these as num genres increase)      |
-| topGenre    | Object | dictionary containing users top genre and the respective count from the weighted aggregation from Recommendations table |
+| Property  | Type   | Description                                                                                                        |
+| --------- | ------ | ------------------------------------------------------------------------------------------------------------------ |
+| objectId  | String | unique id for the user post (default field)                                                                        |
+| createdAt | Date   | (default auto generated field)                                                                                     |
+| updatedAt | Date   | (default auto generated field)                                                                                     |
+| userId    | String | users unique Spotify username                                                                                      |
+| folk      | Object | dictionary containing top folk song id and top score for that song                                                 |
+| pop       | Object | dictionary containing top pop song id and top score for that song                                                  |
+| \_\_\_\_  | Object | dictionary containing top \_\_ song id and top score for that song (could be many of these as num genres increase) |
+| topGenre  | Object | dictionary containing users top genre, songId, and the top score                                                   |
 
 ### Networking
 

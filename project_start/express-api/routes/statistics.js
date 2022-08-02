@@ -3,11 +3,8 @@ const router = express.Router();
 var request = require("request");
 
 const Parse = require("parse/node");
-
 const ParseKeys = require("../parseKeys.js");
-
 Parse.initialize(ParseKeys[0], ParseKeys[1]);
-
 Parse.serverURL = "https://parseapi.back4app.com/";
 
 router.get("/moods", async (req, res, next) => {
