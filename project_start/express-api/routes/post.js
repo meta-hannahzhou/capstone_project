@@ -73,8 +73,6 @@ router.put("/ml-rec", async (req, res, next) => {
 
     const topMLSong = await response.get("topMLSong");
 
-    console.log("topMLSong currently: ", topMLSong);
-
     if (predictedRating > topMLSong["rating"]) {
       const updateTopSong = {
         rating: predictedRating["0"],
@@ -170,7 +168,7 @@ router.post("/new-post", async (req, res, next) => {
       currSong.increment("quantity");
       currSong.set(
         "score",
-        currSong.get("avgRating") * Math.log(currSong.get("quantity")) +
+        currSong.get("avgRating") * Math.log(currSong.get("quantity") + 1) +
           currSong.get("likes").length / 50 +
           currSong.get("comments").length / 50
       );

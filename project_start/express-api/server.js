@@ -360,9 +360,14 @@ app.post("/update-genre", async (req, res, next) => {
     let currGenres = [];
     const Songs = Parse.Object.extend("Songs");
     const query = new Parse.Query(Songs);
+
     let queryString = "";
     let scale = 0.25;
     const songId = await req.body.songId;
+    query.equalTo("songId", songId);
+    const currSong = await query.first();
+
+    const currSongScore = await currSong.get("score");
 
     if (req.body.updateType == "post") {
       queryString = "postedGenres";
@@ -370,13 +375,9 @@ app.post("/update-genre", async (req, res, next) => {
       currGenres = await req.body.song.data.genres;
     } else if (req.body.updateType === "like") {
       queryString = "likedGenres";
-      query.equalTo("songId", songId);
-      const currSong = await query.first();
       currGenres = await currSong.get("genres");
     } else {
       queryString = "commentedGenres";
-      query.equalTo("songId", songId);
-      const currSong = await query.first();
       currGenres = await currSong.get("genres");
     }
 
@@ -410,11 +411,11 @@ app.post("/update-genre", async (req, res, next) => {
       const songExists = await topResponse.get(currGenres[i]);
       if (
         typeof songExists === "undefined" ||
-        allQuery[currGenres[i]] > songExists["score"]
+        currSongScore > songExists["score"]
       ) {
         topResponse.set(currGenres[i].replace(/\s/g, ""), {
           songId: songId,
-          score: allQuery[currGenres[i]],
+          score: currSongScore,
         });
       }
 
@@ -422,12 +423,12 @@ app.post("/update-genre", async (req, res, next) => {
 
       if (
         Object.keys(topGenre).length == 0 ||
-        allQuery[currGenres[i]] > topGenre["score"]
+        currSongScore > topGenre["score"]
       ) {
         topResponse.set("topGenre", {
           genre: currGenres[i],
           songId: await req.body.songId,
-          score: allQuery[currGenres[i]],
+          score: currSongScore,
         });
       }
     }
