@@ -102,6 +102,7 @@ router.post("/new-post", async (req, res, next) => {
       mood,
       rating,
       audioFeatures,
+      youtubeStatistics,
     } = req.body;
     const Posts = Parse.Object.extend("Posts");
     const post = new Posts();
@@ -144,7 +145,9 @@ router.post("/new-post", async (req, res, next) => {
         avgRating: parseInt(rating),
         quantity: 1,
         genres: response.data.genres,
-        score: 0,
+        score:
+          parseInt(rating) * Math.log(2) +
+          Math.log(youtubeStatistics.viewCount) / Math.log(100),
         dance: audioFeatures.danceability,
         energy: audioFeatures.energy,
         speech: audioFeatures.speechiness,
@@ -152,6 +155,7 @@ router.post("/new-post", async (req, res, next) => {
         instru: audioFeatures.instrumentalness,
         live: audioFeatures.liveness,
         vale: audioFeatures.valence,
+        youtubeStatistics: youtubeStatistics,
       });
 
       await song.save();
@@ -170,7 +174,8 @@ router.post("/new-post", async (req, res, next) => {
         "score",
         currSong.get("avgRating") * Math.log(currSong.get("quantity") + 1) +
           currSong.get("likes").length / 50 +
-          currSong.get("comments").length / 50
+          currSong.get("comments").length / 50 +
+          Math.log(currSong.get(youtubeStatistics).viewCount) / Math.log(100)
       );
       await currSong.save();
       res.status(200).json(currSong);
