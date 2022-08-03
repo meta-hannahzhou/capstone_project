@@ -162,6 +162,13 @@ export default function NewPost({
       songId: songId,
     });
 
+    const youtubeStatistics = await axios.get(
+      `${baseUrl}/youtube/search-list`,
+      {
+        query: selectedSongName,
+      }
+    );
+
     await axios
       .post(`${baseUrl}/post/new-post`, {
         songId: songId,
@@ -172,6 +179,7 @@ export default function NewPost({
         mood: mapMood(mood),
         rating: rating,
         audioFeatures: audioFeatures.data,
+        youtubeStatistics: youtubeStatistics.data,
       })
       .then((song) => {
         axios.post(`${baseUrl}/update-genre`, {

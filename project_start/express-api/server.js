@@ -25,6 +25,7 @@ const Post = require("./routes/post.js");
 const Recommendations = require("./routes/recommendations.js");
 const Statistics = require("./routes/statistics.js");
 const Profile = require("./routes/profile.js");
+const YouTube = require("./routes/youtube.js");
 
 const Parse = require("parse/node");
 
@@ -192,6 +193,7 @@ app.use("/post", Post);
 app.use("/recommendations", Recommendations);
 app.use("/statistics", Statistics);
 app.use("/profile", Profile);
+app.use("/youtube", YouTube);
 
 // Initialize Login table and check if user has previously logged in already
 app.post("/", async (req, res, next) => {
