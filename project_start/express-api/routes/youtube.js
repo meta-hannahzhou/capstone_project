@@ -16,7 +16,7 @@ router.get("/search-list", async (req, res, next) => {
     maxResults: 1,
   });
   const videoId = result.data.items[0].id.videoId;
-  console.log(videoId);
+
   const getIdResults = await youtube.videos.list({
     id: videoId,
     part: ["statistics"],
@@ -27,16 +27,5 @@ router.get("/search-list", async (req, res, next) => {
 
   res.status(200).json(youtubeStatistics);
 });
-
-// router.get("/id", async (req, res, next) => {
-//   console.log("reached inside!!!!!");
-//   console.log(req.body.id);
-//   const result = await youtube.videos.list({
-//     id: [req.body.id],
-//     part: ["snippet", "contentDetails", "statistics"],
-//     maxResults: 1,
-//   });
-//   res.status(200).json(result);
-// });
 
 module.exports = router;
