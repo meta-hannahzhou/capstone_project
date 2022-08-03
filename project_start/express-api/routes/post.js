@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 var request = require("request");
 var brain = require("brain.js");
+var Sentiment = require("sentiment");
+var sentiment = new Sentiment();
 
 const { default: axios } = require("axios");
 
@@ -344,11 +346,16 @@ router.put("/:postId/score", getCurrPost, async (req, res, next) => {
  */
 
 // GET: get all comments on a certain post
-router.get("/:postId/comments", async (req, res, next) => {
+router.get("/:postId/comments&mood=:mood", async (req, res, next) => {
   try {
     const Comments = Parse.Object.extend("Comments");
     const commentQuery = new Parse.Query(Comments);
     commentQuery.equalTo("postId", req.params.postId);
+    if (req.params.mood == 1) {
+      commentQuery.descending("sentiment");
+    } else if (req.params.mood == -1) {
+      commentQuery.ascending("sentiment");
+    }
     const results = await commentQuery.find();
     res.status(200).json(results);
     next();
@@ -364,12 +371,14 @@ router.post("/:postId/new-comment", async (req, res, next) => {
     const { songId, userObjectId, comment } = req.body;
     const Comments = Parse.Object.extend("Comments");
     const currComment = new Comments();
+    var commentSentiment = sentiment.analyze(comment);
     currComment.set({
       comment: comment,
       songId: songId,
       postId: req.params.postId,
       userObjectId: userObjectId,
       userId: req.app.get("userId"),
+      sentiment: commentSentiment["score"],
     });
 
     // Updating Posts database and appending comment id to commments field

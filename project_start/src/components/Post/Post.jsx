@@ -51,7 +51,9 @@ export default function Post({
 
   // Get all comments for current post
   const getComments = async () => {
-    const response = await axios.get(`${baseUrl}/post/${postId}/comments`);
+    const response = await axios.get(
+      `${baseUrl}/post/${postId}/comments&mood=${mood}`
+    );
 
     setComments(response.data);
   };
