@@ -85,26 +85,27 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Comments
 
-| Property     | Type    | Description                                  |
-| ------------ | ------- | -------------------------------------------- |
-| objectId     | String  | unique id for the user post (default field)  |
-| createdAt    | Date    | (default auto generated field)               |
-| updatedAt    | Date    | (default auto generated field)               |
-| comment      | String  | user inputted comment for each post          |
-| songId       | String  | unique song id from Spotify                  |
-| postId       | Pointer | pointer to unique id for the user post       |
-| userObjectId | String  | object id for user who commented on the post |
+| Property  | Type    | Description                                                                      |
+| --------- | ------- | -------------------------------------------------------------------------------- |
+| objectId  | String  | unique id for the user post (default field)                                      |
+| createdAt | Date    | (default auto generated field)                                                   |
+| updatedAt | Date    | (default auto generated field)                                                   |
+| comment   | String  | user inputted comment for each post                                              |
+| songId    | String  | unique song id from Spotify                                                      |
+| postId    | Pointer | pointer to unique id for the user post                                           |
+| userId    | String  | object id for user who commented on the post                                     |
+| sentiment | number  | value from -5 (negative) to 5 (positive) reflecting sentiment of current comment |
 
 #### Likes
 
-| Property     | Type    | Description                                 |
-| ------------ | ------- | ------------------------------------------- |
-| objectId     | String  | unique id for the user post (default field) |
-| createdAt    | Date    | (default auto generated field)              |
-| updatedAt    | Date    | (default auto generated field)              |
-| songId       | String  | unique song id from Spotify                 |
-| postId       | Pointer | pointer to unique id for the user post      |
-| userObjectId | String  | object id for user who liked the post       |
+| Property  | Type    | Description                                 |
+| --------- | ------- | ------------------------------------------- |
+| objectId  | String  | unique id for the user post (default field) |
+| createdAt | Date    | (default auto generated field)              |
+| updatedAt | Date    | (default auto generated field)              |
+| songId    | String  | unique song id from Spotify                 |
+| postId    | Pointer | pointer to unique id for the user post      |
+| userId    | String  | object id for user who liked the post       |
 
 #### Login
 
@@ -117,21 +118,22 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Songs
 
-| Property         | Type   | Description                                                                          |
-| ---------------- | ------ | ------------------------------------------------------------------------------------ |
-| objectId         | String | unique id for the user post (default field)                                          |
-| createdAt        | Date   | (default auto generated field)                                                       |
-| updatedAt        | Date   | (default auto generated field)                                                       |
-| songId           | String | unique song id from Spotify                                                          |
-| selectedSongUrl  | String | song image URL from api search call                                                  |
-| selectedSongName | String | song title from api search                                                           |
-| likes            | Array  | array of Likes objectIds for all posts made for selected song                        |
-| comments         | Array  | array of Comments objectIds for all posts made for selected song                     |
-| avgRating        | Number | average rating across all reviews                                                    |
-| quantity         | Number | number of reviews made for certain song                                              |
-| genres           | Array  | array of all genres associated with the specific song                                |
-| score            | Number | score that accounts for quantity, avgRating, number of likes, and number of comments |
-| views            | Number | number of views for music video associated with that song                            |
+| Property          | Type   | Description                                                                                                           |
+| ----------------- | ------ | --------------------------------------------------------------------------------------------------------------------- |
+| objectId          | String | unique id for the user post (default field)                                                                           |
+| createdAt         | Date   | (default auto generated field)                                                                                        |
+| updatedAt         | Date   | (default auto generated field)                                                                                        |
+| songId            | String | unique song id from Spotify                                                                                           |
+| selectedSongUrl   | String | song image URL from api search call                                                                                   |
+| selectedSongName  | String | song title from api search                                                                                            |
+| likes             | Array  | array of Likes objectIds for all posts made for selected song                                                         |
+| comments          | Array  | array of Comments objectIds for all posts made for selected song                                                      |
+| avgRating         | Number | average rating across all reviews                                                                                     |
+| quantity          | Number | number of reviews made for certain song                                                                               |
+| genres            | Array  | array of all genres associated with the specific song                                                                 |
+| score             | Number | score that accounts for quantity, avgRating, number of likes, and number of comments                                  |
+| views             | Number | number of views for music video associated with that song                                                             |
+| youtubeStatistics | Object | dictionary containing num views, num comments, and num likes on the youtube music video associated with specific song |
 
 #### Recommendations
 
