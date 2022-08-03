@@ -14,7 +14,8 @@
     "parse": "^3.4.3",
     "querystring": "~0.2.0",
     "request": "~2.83.0",
-    "sentiment": "^5.0.2"
+    "sentiment": "^5.0.2",
+    "tiny-tfidf": "^0.9.1"
   },
   "scripts": {
     "start": "node server/server.js"
