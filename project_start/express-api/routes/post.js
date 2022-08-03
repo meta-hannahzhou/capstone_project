@@ -353,7 +353,7 @@ router.get("/:postId/comments&mood=:mood", async (req, res, next) => {
     commentQuery.equalTo("postId", req.params.postId);
     if (req.params.mood == 1) {
       commentQuery.descending("sentiment");
-    } else {
+    } else if (req.params.mood == -1) {
       commentQuery.ascending("sentiment");
     }
     const results = await commentQuery.find();
