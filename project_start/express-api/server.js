@@ -13,6 +13,18 @@ var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 var brain = require("brain.js");
+const model = require("wink-eng-lite-model");
+const nlp = require("wink-nlp")(model);
+const its = nlp.its;
+
+const BM25Vectorizer = require("wink-nlp/utilities/bm25-vectorizer");
+const bm25 = BM25Vectorizer();
+
+const corpus = ["Bach", "J Bach", "Johann S Bach", "Johann Sebastian Bach"];
+corpus.forEach((doc) => bm25.learn(nlp.readDoc(doc).tokens().out(its.normal)));
+const x = bm25.vectorOf(
+  nlp.readDoc("Johann Bach symphony").tokens().out(its.normal)
+);
 
 const ParseKeys = require("./parseKeys.js");
 
@@ -338,7 +350,7 @@ const task = new AsyncTask("ML Prediction", async () => {
     });
   }
 });
-const job = new SimpleIntervalJob({ seconds: 10 }, task);
+const job = new SimpleIntervalJob({ seconds: 3600 }, task);
 
 scheduler.addSimpleIntervalJob(job);
 
