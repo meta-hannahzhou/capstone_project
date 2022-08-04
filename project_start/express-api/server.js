@@ -13,6 +13,12 @@ var cors = require("cors");
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 var brain = require("brain.js");
+const model = require("wink-eng-lite-model");
+const nlp = require("wink-nlp")(model);
+const its = nlp.its;
+
+const BM25Vectorizer = require("wink-nlp/utilities/bm25-vectorizer");
+const bm25 = BM25Vectorizer();
 
 const ParseKeys = require("./parseKeys.js");
 
@@ -271,6 +277,7 @@ const getAccuracy = function (net, testData) {
   return hits / testData.length;
 };
 
+// Initializing new task
 const task = new AsyncTask("ML Prediction", async () => {
   if (userId.length != 0) {
     const Recommendation = Parse.Object.extend("Recommendation");
@@ -301,12 +308,14 @@ const task = new AsyncTask("ML Prediction", async () => {
       "dance",
       "songId"
     );
-    // if (userId.length != 0) {
+
     const outputQuery = new Parse.Query(Songs);
     outputQuery.select("avgRating");
 
     return inputQuery.find().then((input) => {
       let samples = [];
+
+      // Get input data to be trained
       for (let i = 0; i < input.length; i++) {
         const { songId, dance, energy, speech, acoust, instru, live, vale } =
           input[i].attributes;
@@ -315,6 +324,7 @@ const task = new AsyncTask("ML Prediction", async () => {
         }
       }
 
+      // Get labels for machine learning model
       outputQuery.find().then((result) => {
         const labels = result.map((item) => {
           const { avgRating } = item.attributes;
@@ -328,9 +338,10 @@ const task = new AsyncTask("ML Prediction", async () => {
           };
         });
 
+        // Train model
         const { error, iterations } = net.train(trainData);
 
-        // save trained model as json file which can be saved in table
+        // Save trained model as json file which can be saved in table
         const netAsJson = net.toJSON();
         response.set("mlModel", netAsJson);
         response.save();
@@ -338,7 +349,7 @@ const task = new AsyncTask("ML Prediction", async () => {
     });
   }
 });
-const job = new SimpleIntervalJob({ seconds: 10 }, task);
+const job = new SimpleIntervalJob({ seconds: 3600 }, task);
 
 scheduler.addSimpleIntervalJob(job);
 
