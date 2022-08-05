@@ -69,19 +69,20 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Posts
 
-| Property  | Type   | Description                                        |
-| --------- | ------ | -------------------------------------------------- |
-| objectId  | String | unique id for the user post (default field)        |
-| createdAt | Date   | (default auto generated field)                     |
-| updatedAt | Date   | (default auto generated field)                     |
-| songId    | String | unique song id from Spotify                        |
-| mood      | String | user inputted mood                                 |
-| review    | String | user inputted review for the song                  |
-| rating    | String | user inputted rating for the song (1-5)            |
-| userId    | String | users unique Spotify username                      |
-| likes     | Array  | array of Like objectIds that have been posted      |
-| comments  | Array  | array of Comment objectIds that have been posted   |
-| score     | Number | score for feed ranking based on HackerNews Ranking |
+| Property   | Type   | Description                                        |
+| ---------- | ------ | -------------------------------------------------- |
+| objectId   | String | unique id for the user post (default field)        |
+| createdAt  | Date   | (default auto generated field)                     |
+| updatedAt  | Date   | (default auto generated field)                     |
+| songId     | String | unique song id from Spotify                        |
+| mood       | String | user inputted mood                                 |
+| review     | String | user inputted review for the song                  |
+| rating     | String | user inputted rating for the song (1-5)            |
+| userId     | String | users unique Spotify username                      |
+| likes      | Array  | array of Like objectIds that have been posted      |
+| comments   | Array  | array of Comment objectIds that have been posted   |
+| score      | Number | score for feed ranking based on HackerNews Ranking |
+| tfIdfScore | Number | score based on tf-idf for all comments on a post   |
 
 #### Comments
 
@@ -137,25 +138,26 @@ _One common template for creating a user story is the Who, What, Why template: A
 
 #### Recommendations
 
-| Property        | Type   | Description                                                                                   |
-| --------------- | ------ | --------------------------------------------------------------------------------------------- |
-| objectId        | String | unique id for the user post (default field)                                                   |
-| createdAt       | Date   | (default auto generated field)                                                                |
-| updatedAt       | Date   | (default auto generated field)                                                                |
-| userId          | String | users unique Spotify username                                                                 |
-| postedGenres    | Object | dictionary with the quantity of each genre user posted about                                  |
-| commentedGenres | Object | dictionary with the quantity of each genre user commented on                                  |
-| likedGenres     | Object | dictionary with the quantity of each genre user liked                                         |
-| topGenres       | Object | dictionary with scaled aggregation of posted (0.5), commented (0.25), and liked (0.25) genres |
-| acoust          | Number | sum of all acoustic values for every song user has posted                                     |
-| live            | Number | sum of all liveness values for every song user has posted                                     |
-| dance           | Number | sum of all dance values for every song user has posted                                        |
-| max1            | String | audio feature with max sum                                                                    |
-| max2            | String | audio feature with second greatest sum                                                        |
-| mlModel         | Object | trained network for specific user saved in JSON format                                        |
-| topMLSong       | Object | dictionary containing current ml predicted songId with the highest rating and the rating      |
+| Property        | Type   | Description                                                                                       |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| objectId        | String | unique id for the user post (default field)                                                       |
+| createdAt       | Date   | (default auto generated field)                                                                    |
+| updatedAt       | Date   | (default auto generated field)                                                                    |
+| userId          | String | users unique Spotify username                                                                     |
+| postedGenres    | Object | dictionary with the quantity of each genre user posted about                                      |
+| commentedGenres | Object | dictionary with the quantity of each genre user commented on                                      |
+| likedGenres     | Object | dictionary with the quantity of each genre user liked                                             |
+| topGenres       | Object | dictionary with scaled aggregation of posted (0.5), commented (0.25), and liked (0.25) genres     |
+| acoust          | Number | sum of all acoustic values for every song user has posted                                         |
+| live            | Number | sum of all liveness values for every song user has posted                                         |
+| dance           | Number | sum of all dance values for every song user has posted                                            |
+| max1            | String | audio feature with max sum                                                                        |
+| max2            | String | audio feature with second greatest sum                                                            |
+| mlModel         | Object | trained network for specific user saved in JSON format                                            |
+| topMLSong       | Object | dictionary containing current ml predicted songId with the highest rating and the rating          |
+| topTFSong       | Object | dictionary containing current tf-idf predicted songId with the highest score and the actual score |
 
-#### TopResults
+#### TopGenres
 
 | Property  | Type   | Description                                                                                                        |
 | --------- | ------ | ------------------------------------------------------------------------------------------------------------------ |
