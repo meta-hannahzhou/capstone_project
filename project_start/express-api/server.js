@@ -17,9 +17,6 @@ const model = require("wink-eng-lite-model");
 const nlp = require("wink-nlp")(model);
 const its = nlp.its;
 
-const BM25Vectorizer = require("wink-nlp/utilities/bm25-vectorizer");
-const bm25 = BM25Vectorizer();
-
 const ParseKeys = require("./parseKeys.js");
 
 const port = process.env.PORT || 8888;
@@ -255,6 +252,7 @@ const {
   ToadScheduler,
   SimpleIntervalJob,
   AsyncTask,
+  Task,
 } = require(`toad-scheduler`);
 
 const scheduler = new ToadScheduler();
@@ -277,7 +275,7 @@ const getAccuracy = function (net, testData) {
   return hits / testData.length;
 };
 
-// Initializing new task
+// Initializing new task for ML Prediction
 const task = new AsyncTask("ML Prediction", async () => {
   if (userId.length != 0) {
     const Recommendation = Parse.Object.extend("Recommendation");
@@ -349,9 +347,73 @@ const task = new AsyncTask("ML Prediction", async () => {
     });
   }
 });
-const job = new SimpleIntervalJob({ seconds: 3600 }, task);
 
-scheduler.addSimpleIntervalJob(job);
+const BM25Vectorizer = require("wink-nlp/utilities/bm25-vectorizer");
+const bm25 = BM25Vectorizer();
+const corpus = require("./fileToArray.js");
+
+corpus.forEach((doc) => {
+  bm25.learn(nlp.readDoc(doc).tokens().out(its.normal));
+});
+
+// Initializing new task for NLP TF-IDF Recommendation
+const nlpTask = new Task("TF-IDF", async () => {
+  if (userId.length != 0) {
+    const Posts = Parse.Object.extend("Posts");
+    const postQuery = new Parse.Query(Posts);
+    postQuery.equalTo("userId", userId);
+    const response = await postQuery.find();
+
+    const Comments = Parse.Object.extend("Comments");
+
+    const Recommendation = Parse.Object.extend("Recommendation");
+    const recQuery = new Parse.Query(Recommendation);
+    recQuery.equalTo("userId", userId);
+    const recResponse = await recQuery.first();
+
+    const currMaxTfIdf = await recResponse.get("topTFSong");
+    let currMaxScore = currMaxTfIdf["score"];
+    let currMaxId = currMaxTfIdf["songId"];
+
+    for (let i = 0; i < response.length; i++) {
+      const postComments = await response[i].get("comments");
+      let currDoc = "";
+      if (postComments.length != 0) {
+        for (let j = 0; j < postComments.length; j++) {
+          const commentQuery = new Parse.Query(Comments);
+          const currParseComment = await commentQuery.get(postComments[j]);
+          const currComment = await currParseComment.get("comment");
+          currDoc += currComment + " ";
+        }
+        const tfIdfArr = bm25.vectorOf(
+          nlp.readDoc(currDoc).tokens().out(its.normal)
+        );
+        const reducer = (accumulator, curr) => accumulator + curr;
+        const currScore = tfIdfArr.reduce(reducer);
+        response[i].set("tfIdfScore", currScore);
+
+        if (currScore > currMaxScore) {
+          currMaxScore = currScore;
+          currMaxId = await response[i].get("songId");
+        }
+      } else {
+        response[i].set("tfIdfScore", 0);
+      }
+      await recResponse.set("topTFSong", {
+        score: currMaxScore,
+        songId: currMaxId,
+      });
+      await recResponse.save();
+      await response[i].save();
+    }
+  }
+});
+
+const job1 = new SimpleIntervalJob({ seconds: 3600 }, task);
+const job2 = new SimpleIntervalJob({ seconds: 5 }, nlpTask);
+
+scheduler.addSimpleIntervalJob(job1);
+scheduler.addSimpleIntervalJob(job2);
 
 // GET: all posts in a user's feed sorted reverse chronologically
 app.get("/feed", async (req, res, next) => {

@@ -151,12 +151,37 @@ router.get("/ml-predict", async (req, res, next) => {
   try {
     const Recommendation = Parse.Object.extend("Recommendation");
     const query = new Parse.Query(Recommendation);
+    query.equalTo("userId", req.app.get("userId"));
     query.select("topMLSong");
     const result = await query.first();
 
     const topMLSong = await result.get("topMLSong");
     var options = {
       url: `https://api.spotify.com/v1/tracks/${topMLSong["songId"]}`,
+      headers: { Authorization: "Bearer " + req.app.get("access_token") },
+      json: true,
+    };
+
+    request.get(options, function (error, response, body) {
+      res.status(200).json(body);
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET: song predicted by tf-idf based on all posts
+router.get("/tf-predict", async (req, res, next) => {
+  try {
+    const Recommendation = Parse.Object.extend("Recommendation");
+    const query = new Parse.Query(Recommendation);
+    query.equalTo("userId", req.app.get("userId"));
+    query.select("topTFSong");
+    const result = await query.first();
+
+    const topTFSong = await result.get("topTFSong");
+    var options = {
+      url: `https://api.spotify.com/v1/tracks/${topTFSong["songId"]}`,
       headers: { Authorization: "Bearer " + req.app.get("access_token") },
       json: true,
     };
