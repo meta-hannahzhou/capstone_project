@@ -101,7 +101,6 @@ export default function Recommendations({ topSongs, topFeatures }) {
 
       // Get song predicted by ML algorithm for specific user
       axios.get(`${baseUrl}/recommendations/tf-predict`).then((responseTF) => {
-        console.log(responseTF.data);
         setHighestTF(responseTF.data);
       });
     }

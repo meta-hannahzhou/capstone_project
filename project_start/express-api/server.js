@@ -410,7 +410,7 @@ const nlpTask = new Task("TF-IDF", async () => {
 });
 
 const job1 = new SimpleIntervalJob({ seconds: 3600 }, task);
-const job2 = new SimpleIntervalJob({ seconds: 5 }, nlpTask);
+const job2 = new SimpleIntervalJob({ seconds: 1800 }, nlpTask);
 
 scheduler.addSimpleIntervalJob(job1);
 scheduler.addSimpleIntervalJob(job2);
@@ -552,6 +552,4 @@ app.get("/post-genre/:songId", async (req, res, next) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is up on port ${port}!`);
-});
+app.listen(port, () => {});
