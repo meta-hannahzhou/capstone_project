@@ -52,6 +52,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
   const [mostGenre, setMostGenre] = useState("");
   const [highestRated, setHighestRated] = useState("");
   const [mlPredict, setMLPredict] = useState("");
+  const [highestTF, setHighestTF] = useState("");
 
   useEffectOnce(() => {
     async function getRecs() {
@@ -97,6 +98,12 @@ export default function Recommendations({ topSongs, topFeatures }) {
       axios.get(`${baseUrl}/recommendations/ml-predict`).then((responseML) => {
         setMLPredict(responseML.data);
       });
+
+      // Get song predicted by ML algorithm for specific user
+      axios.get(`${baseUrl}/recommendations/tf-predict`).then((responseTF) => {
+        console.log(responseTF.data);
+        setHighestTF(responseTF.data);
+      });
     }
     getRecs();
   }, []);
@@ -107,7 +114,8 @@ export default function Recommendations({ topSongs, topFeatures }) {
     highestRated === "" ||
     mostRelevant === "" ||
     mostGenre === "" ||
-    mlPredict === ""
+    mlPredict === "" ||
+    highestTF === ""
   ) {
     return (
       <div className="loading">
@@ -173,6 +181,15 @@ export default function Recommendations({ topSongs, topFeatures }) {
                 <div className="card-body">
                   <h5 className="card-title">ML Rec</h5>
                   <RecCard song={mlPredict} />
+                </div>
+              </div>
+            </div>
+            <div className="col">
+              <div className="card">
+                <img />
+                <div className="card-body">
+                  <h5 className="card-title">TF-IDF Rec</h5>
+                  <RecCard song={highestTF} />
                 </div>
               </div>
             </div>
