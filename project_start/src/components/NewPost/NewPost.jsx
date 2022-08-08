@@ -1,8 +1,9 @@
 import "./NewPost.css";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import SearchSong from "../SearchSong/SearchSong";
 import { baseUrl } from "../../baseUrl";
+import Slider from "@mui/material/Slider";
 
 /**
  *
@@ -26,6 +27,7 @@ export default function NewPost({
   const [selectedSongUrl, setSelectedSongUrl] = useState("");
   const [selectedSongName, setSelectedSongName] = useState("");
   const [selectedArtistId, setSelectedArtistId] = useState("");
+  const [valuetext, setvaluetext] = useState(1);
 
   const searchTracks = async (e) => {
     e.preventDefault();
@@ -219,7 +221,7 @@ export default function NewPost({
 
       <div className="all-form">
         <form className="my-form">
-          <div className="form-group row">
+          <div className="form-group">
             <label for="song title" className="col-sm-2 col-form-label">
               Song Title
             </label>

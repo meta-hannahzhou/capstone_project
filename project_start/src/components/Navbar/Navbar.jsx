@@ -1,6 +1,10 @@
 import * as React from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import Home from "./home.png";
+import Profile from "./account.png";
+import Statistic from "./statistic.png";
+import NewPost from "./plus.png";
 
 /**
  *
@@ -14,23 +18,23 @@ export default function Navbar() {
           <ul className="nav nav-tabs">
             <li className="nav-item">
               <Link to="/home" className="nav-link ">
-                Home
+                <img src={Home} className="icon" />
               </Link>
             </li>
 
             <li className="nav-item">
               <Link to="/profile" className="nav-link  ">
-                Profile
+                <img src={Profile} className="icon" />
               </Link>
             </li>
             <li className="nav-item">
               <Link to="/new-post" className="nav-link  ">
-                New Post
+                <img src={NewPost} className="smaller-icon" />
               </Link>
             </li>
             <li className="nav-item">
               <Link to="/statistics" className="nav-link ">
-                Statistics
+                <img src={Statistic} className="icon" />
               </Link>
             </li>
           </ul>
