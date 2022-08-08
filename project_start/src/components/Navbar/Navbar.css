@@ -13,3 +13,11 @@
 .App-link:hover {
     color:#1DB954;
 }
+
+.icon {
+    width: 30px;
+}
+
+.smaller-icon {
+    width: 26px;
+}

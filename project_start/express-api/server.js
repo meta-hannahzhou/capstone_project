@@ -206,7 +206,6 @@ app.post("/", async (req, res, next) => {
 
     loginQuery.equalTo("userId", userId);
     const checkSong = await loginQuery.find();
-
     if (checkSong.length == 0) {
       const login = new Login();
       login.set("userId", userId);
