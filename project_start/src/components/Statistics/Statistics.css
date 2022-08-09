@@ -94,3 +94,8 @@ tspan {
     margin-top: -50px;
     width: 30vw;
 }
+
+.loading-text {
+    font-family: 'Gotham';
+    margin-top: 15px;
+}

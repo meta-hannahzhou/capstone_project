@@ -1,6 +1,9 @@
 .prof-pic {
     width: 15vw;
     border-radius: 15vw;
+    border: solid green;
+    border-width: 3px;
+    border-spacing: 10px;
 }
 
 .profile {
@@ -54,8 +57,4 @@
     height: 200px;
     columns: 2;
     text-align: left
-}
-
-.green {
-    color: #1db954;
 }

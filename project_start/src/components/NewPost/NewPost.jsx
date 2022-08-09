@@ -217,20 +217,19 @@ export default function NewPost({
 
   return (
     <div className="new-post">
-      <h1> New Post</h1>
+      <h1 className="gotham-header bolded"> New Post</h1>
 
       <div className="all-form">
         <form className="my-form">
-          <div className="form-group">
-            <label for="song title" className="col-sm-2 col-form-label">
-              Song Title
-            </label>
-            <div className="col-sm-5">
+          <div className="form-group-new">
+            <div className="gotham-font bolded">Song Title</div>
+
+            <div className="new-post-input">
               <input
                 type="text"
-                className="form-control"
+                className="form-control-title"
                 id="song-title"
-                placeholder="Song Title"
+                placeholder="Yellow Submarine"
                 onChange={(e) => searchTracks(e)}
               />
             </div>
@@ -238,145 +237,137 @@ export default function NewPost({
 
           {tracks ? <div className="">{displayTracks()}</div> : null}
 
-          <div className="form-group row">
-            <label for="review" className="col-sm-2 col-form-label">
-              Review
-            </label>
-            <div className="col-sm-5">
-              <input
+          <div className="form-group-new">
+            <div className="gotham-font bolded">Review</div>
+            <div className="new-post-input">
+              <textarea
                 type="text"
-                className="form-control"
+                className="form-control-new"
                 id="review"
-                placeholder="Review"
+                placeholder="This is my favorite song!"
               />
             </div>
           </div>
 
-          <fieldset className="form-group" id="mood">
-            <div className="row">
-              <legend className="col-form-label col-sm-2 pt-0">Mood</legend>
-              <div className="inputs">
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="gridRadios"
-                    id="gridRadios1"
-                    value="happy"
-                  />
-                  <label className="form-check-label" for="gridRadios1">
-                    Happy
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="gridRadios"
-                    id="gridRadios2"
-                    value="sad"
-                  />
-                  <label className="form-check-label" for="gridRadios2">
-                    Sad
-                  </label>
-                </div>
-                <div className="form-check ">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="gridRadios"
-                    id="gridRadios3"
-                    value="neutral"
-                  />
-                  <label className="form-check-label" for="gridRadios3">
-                    Neutral
-                  </label>
-                </div>
+          <div className="form-group-new" id="mood">
+            <div className="gotham-font bolded">Mood</div>
+            <div className="inputs">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="gridRadios"
+                  id="gridRadios1"
+                  value="happy"
+                />
+                <label className="form-check-label gotham" for="gridRadios1">
+                  Happy
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="gridRadios"
+                  id="gridRadios2"
+                  value="sad"
+                />
+                <label className="form-check-label gotham" for="gridRadios2">
+                  Sad
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="gridRadios"
+                  id="gridRadios3"
+                  value="neutral"
+                />
+                <label className="form-check-label gotham" for="gridRadios3">
+                  Neutral
+                </label>
               </div>
             </div>
-          </fieldset>
+          </div>
 
-          <fieldset className="form-group-new">
-            <div className="row">
-              <legend className="col-form-label col-sm-2 pt-0">Rating</legend>
-              <div className="inputs">
-                <div className="form-check">
-                  <input
-                    className="form-check-input-rating"
-                    type="radio"
-                    name="gridRadios-2"
-                    id="gridRadios1"
-                    value="1"
-                  />
-                  <label className="form-check-label" for="gridRadios1">
-                    1
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    className="form-check-input-rating"
-                    type="radio"
-                    name="gridRadios-2"
-                    id="gridRadios2"
-                    value="2"
-                  />
-                  <label className="form-check-label" for="gridRadios2">
-                    2
-                  </label>
-                </div>
-                <div className="form-check ">
-                  <input
-                    className="form-check-input-rating"
-                    type="radio"
-                    name="gridRadios-2"
-                    id="gridRadios3"
-                    value="3"
-                  />
-                  <label className="form-check-label" for="gridRadios3">
-                    3
-                  </label>
-                </div>
-                <div className="form-check ">
-                  <input
-                    className="form-check-input-rating"
-                    type="radio"
-                    name="gridRadios-2"
-                    id="gridRadios3"
-                    value="4"
-                  />
-                  <label className="form-check-label" for="gridRadios3">
-                    4
-                  </label>
-                </div>
-                <div className="form-check ">
-                  <input
-                    className="form-check-input-rating"
-                    type="radio"
-                    name="gridRadios-2"
-                    id="gridRadios3"
-                    value="5"
-                  />
-                  <label className="form-check-label" for="gridRadios3">
-                    5
-                  </label>
-                </div>
+          <div className="form-group-new">
+            <div className="gotham-font bolded">Rating</div>
+            <div className="inputs">
+              <div className="form-check">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios1"
+                  value="1"
+                />
+                <label className="form-check-label" for="gridRadios1">
+                  1
+                </label>
+              </div>
+              <div className="form-check">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios2"
+                  value="2"
+                />
+                <label className="form-check-label" for="gridRadios2">
+                  2
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios3"
+                  value="3"
+                />
+                <label className="form-check-label" for="gridRadios3">
+                  3
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios3"
+                  value="4"
+                />
+                <label className="form-check-label" for="gridRadios3">
+                  4
+                </label>
+              </div>
+              <div className="form-check ">
+                <input
+                  className="form-check-input-rating"
+                  type="radio"
+                  name="gridRadios-2"
+                  id="gridRadios3"
+                  value="5"
+                />
+                <label className="form-check-label" for="gridRadios3">
+                  5
+                </label>
               </div>
             </div>
-          </fieldset>
+          </div>
 
-          <div className="form-group row">
-            <div className="col-sm-10">
-              <button
-                type="submit"
-                className="btn-submit"
-                id="submit"
-                onClick={(e) => {
-                  handleSubmit(e);
-                }}
-              >
-                Submit
-              </button>
-            </div>
+          <div className="form-submit">
+            <button
+              type="submit"
+              className="btn-submit"
+              id="submit"
+              onClick={(e) => {
+                handleSubmit(e);
+              }}
+            >
+              Submit
+            </button>
           </div>
         </form>
       </div>

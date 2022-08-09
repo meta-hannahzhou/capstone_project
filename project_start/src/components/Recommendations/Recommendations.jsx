@@ -118,7 +118,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
   ) {
     return (
       <div className="loading">
-        <h1>Loading</h1>
+        <h1 className="loading-text">Loading</h1>
         <ReactLoading type={"bars"} />
       </div>
     );
@@ -165,7 +165,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
                 </div>
               </div>
             </div>
-            <div className="col">
+            {/* <div className="col">
               <div className="card">
                 <img />
                 <div className="card-body">
@@ -173,7 +173,7 @@ export default function Recommendations({ topSongs, topFeatures }) {
                   <RecCard song={mostRelevant} />
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="col">
               <div className="card">
                 <img />

@@ -3,6 +3,7 @@ import "./Post.css";
 import Heart from "./heart.png";
 import Star from "./star.png";
 import CommentBubble from "./comment-bubble.png";
+import Playlist from "./add_playlist.png";
 import HeartLiked from "./heart-liked.png";
 import Comments from "../Comments/Comments";
 import Mood from "../Mood/Mood";
@@ -66,7 +67,6 @@ export default function Post({
   // Add comment to database
   const handleSubmitComment = async (e) => {
     // Post to Comments table
-
     const savedComment = await axios.post(
       `${baseUrl}/post/${postId}/new-comment`,
       {
@@ -89,6 +89,7 @@ export default function Post({
       .then((value) => {});
 
     // Call get comments to update count displayed on page
+    document.getElementById("comment").value = "";
     getComments();
   };
 
@@ -166,7 +167,7 @@ export default function Post({
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading...</h1>
+        <h1 className="loading-text">Loading...</h1>
       </div>
     );
   } else {
@@ -195,7 +196,7 @@ export default function Post({
                   <img src={Heart} className="heart" />
                 )}
               </button>
-              {likes.length}
+              <span className="comment-text">{likes.length}</span>
             </span>
           </div>
           {}

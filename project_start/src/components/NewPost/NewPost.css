@@ -1,12 +1,12 @@
 .inputs {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     align-items: center;
 }
 
 .form-check {
     padding-right: 5px;
+    margin-left: 10px;
 }
 
 .new-post {
@@ -19,11 +19,83 @@
     border-color: #1DB954;
     color: white;
     border: none;
-    border-radius: 2px;
+    border-radius: 5px;
+    width: 80px;
+    height: 40px;
 }
 
 .btn-submit:hover {
     background-color: #1DB954;
     border-color: #1DB954;
     color: white;
+}
+
+.all-form {
+    background-color: #181818;
+    border-radius: 20px;
+    width: 75vw;
+    margin-left: 10px;
+}
+
+.gotham-font {
+    font-family: 'Gotham', sans-serif;
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.gotham-header {
+    font-family: 'Gotham', sans-serif;
+    font-size: 30px;
+    margin-top: 20px;
+    text-align: left;
+    margin-left: 25px;
+}
+
+.gotham {
+    font-family: 'Gotham', sans-serif; 
+    font-size: 16px;
+}
+
+.gotham-text {
+    font-family: 'Gotham', sans-serif; 
+}
+
+.form-group-new {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    text-align: left;
+    margin-left: 20px;
+}
+
+.form-group-radio {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-check-label {
+    margin-left: 5px;
+}
+
+.form-control-new {
+    color:#181818;
+    font-size: 15px;
+    width: 400px;
+    height: 80px;
+    border-radius: 5px;
+}
+
+.form-control-title {
+    color:#181818;
+    font-size: 15px;
+    width: 400px;
+    height: 30px;
+    border-radius: 5px;
+}
+
+.form-submit {
+    margin-top: 10px;
+    margin-left: 20px;
+    text-align: left;
 }

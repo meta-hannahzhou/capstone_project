@@ -100,7 +100,7 @@ export default function Statistics({ getGenres, graphData, setGraphData }) {
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading</h1>
+        <h1 className="loading-text">Loading</h1>
         <ReactLoading type={"bars"} />
       </div>
     );
