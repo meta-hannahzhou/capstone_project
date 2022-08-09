@@ -39,7 +39,7 @@ export default function Profile({ userObjectId, combinedSongs }) {
   if (isFetching) {
     return (
       <div className="loading">
-        <h1>Loading</h1>
+        <h1 className="loading-text">Loading</h1>
         <ReactLoading type={"bars"} />
       </div>
     );
@@ -57,7 +57,7 @@ export default function Profile({ userObjectId, combinedSongs }) {
               </div>
               <div className="prof-text">
                 <h3 className="bolded">{userInfo.id}</h3>
-                <p className="green">{userInfo.email}</p>
+                <p className="gotham-text bolded">{userInfo.email}</p>
                 <p>
                   {" "}
                   Liked Posts - {liked.length} Commented Posts - {liked.length}

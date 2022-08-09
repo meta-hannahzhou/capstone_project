@@ -33,6 +33,8 @@
 
 .rating {
     margin-left: 3px;
+    /* font-family: 'Gotham';
+    font-weight: bold; */
 }
 .star-img {
     width: 20px;
@@ -50,6 +52,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    /* font-family: 'Gotham';
+    font-weight: bold; */
 }
 
 .comment-text {
@@ -106,5 +110,7 @@
     font-weight: bold;
     margin-bottom: 1px;
     background-color: #181818;
+    font-family: 'Gotham';
+    font-size: 20px;
 }
 

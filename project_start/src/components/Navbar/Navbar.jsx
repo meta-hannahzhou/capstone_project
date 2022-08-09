@@ -15,6 +15,10 @@ export default function Navbar() {
     <nav>
       <div className="navbar-container">
         <div className="navbar-links">
+          <div className="navbar-logo gotham-navbar">
+            Mu<span className="green">Soc</span>
+          </div>
+
           <ul className="nav nav-tabs">
             <li className="nav-item">
               <Link to="/home" className="nav-link ">

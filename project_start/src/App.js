@@ -129,16 +129,31 @@ function App() {
         <Route
           path="/"
           element={
-            <header className="App-header">
-              <a
-                className="App-link"
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span className="login-text">Login to Spotify</span>
-              </a>
-            </header>
+            <div className="login">
+              <div className="login-header-top">
+                Mu<span className="green">Soc</span>
+              </div>
+              <div className="login-header-bottom">
+                (<span className="green">Soc</span>)ial Media for (Mu)sic
+              </div>
+              <div className="login-header-bottom">
+                share, review, and find the{" "}
+                <span className="green">next big song</span>
+              </div>
+
+              <div className="login-redirect">
+                <header className="App-header">
+                  <a
+                    className="App-link"
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="login-text bolded">Login to Spotify</span>
+                  </a>
+                </header>
+              </div>
+            </div>
           }
         />
 

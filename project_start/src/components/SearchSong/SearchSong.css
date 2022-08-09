@@ -3,14 +3,25 @@
 }
 
 .song  {
-    background-color: #121212;
+    background-color: #181818;
+    padding: 3px;
+    margin-left: 20px;
 }
 .active{
-    background-color: lightgreen;
-    opacity: 50%;
+    background-color: #1DB954;
+    border-radius: 10px;
 }
 
-.description {
+.description-rec-card {
     display: flex;
     flex-direction: column;
+    font-family: 'Gotham';
+    justify-content: center;
+    text-align: left;
+    margin-left: 12px;
+}
+
+.search-img {
+    width: 50px;
+    border-radius: 8px;
 }
