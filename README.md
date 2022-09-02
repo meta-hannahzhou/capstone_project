@@ -1,6 +1,7 @@
 # Capstone Project
 
-Repository for MetaU capstone project.
+Repository for Meta University Capstone Project. MuSoc: a social media web application for users to share, review, and find songs.
+https://user-images.githubusercontent.com/26664975/188181879-e96583f0-c4bf-4937-a177-ca64ff30a8d5.mp4
 
 ## Table of Contents
 
